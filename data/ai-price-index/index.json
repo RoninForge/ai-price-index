@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-06-14T00:00:00Z",
+  "license": "CC-BY-4.0",
+  "models": [
+    {
+      "id": "claude-opus-4-20250514",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-20250514.v860719f7.json",
+      "latestRev": "860719f7"
+    },
+    {
+      "id": "claude-opus-4-5-20251101",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-5-20251101.v12f2b73d.json",
+      "latestRev": "12f2b73d"
+    },
+    {
+      "id": "claude-sonnet-4-5-20250929",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-sonnet-4-5-20250929.vc41a8475.json",
+      "latestRev": "c41a8475"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# ai-price-index system of record (isolated, no public exposure).
+# A one-shot job runner, not a long-running service: SQLite has nothing to serve (the served layer
+# is the static export, and the read-only query API is deferred). Run jobs with:
+#   docker compose run --rm aipi tools/db/aipi.py init
+#   docker compose run --rm aipi tools/db/aipi.py seed
+#   docker compose run --rm aipi tools/db/aipi.py export
+# The DB persists on the host bind mount at ./db (transparent + easy to back up); no ports, no
+# network, no restart policy. Blast-radius isolated from the goei stack and the static site.
+services:
+  aipi:
+    build:
+      context: .
+      dockerfile: tools/db/Dockerfile
+    image: ai-price-index-tools
+    container_name: aipi-tools
+    working_dir: /work
+    volumes:
+      - .:/work
+    network_mode: none
+    profiles: ["tools"]

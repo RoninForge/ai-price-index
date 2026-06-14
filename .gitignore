@@ -3,3 +3,9 @@ node_modules/
 *.log
 .env
 .env.*
+
+# the SQLite system-of-record is runtime state (lives on the VPS, regenerable from data/records);
+# the repo holds the schema, tooling, curated records, and the exported artifacts, not the binary DB
+db/*.db
+db/*.db-wal
+db/*.db-shm

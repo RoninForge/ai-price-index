@@ -134,7 +134,7 @@ for (const dir of ['examples/records', 'data/records']) {
 	}
 }
 
-for (const dir of ['examples/series', 'data/series']) {
+for (const dir of ['examples/series', 'data/series', 'data/ai-price-index/models']) {
 	for (const file of listJson(dir)) {
 		const data = parse(file);
 		if (data === undefined) continue;

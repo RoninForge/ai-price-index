@@ -1,0 +1,82 @@
+[
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-20250514",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2025-05-14",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4 flagship tier. effective_from is the dated snapshot release date."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-20250514",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 75,
+    "effective_from": "2025-05-14",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-5-20251101",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2025-11-01",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4.5 cut the Opus flagship input price from 15 to 5 per Mtok."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-5-20251101",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2025-11-01",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-5-20250929",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 3,
+    "effective_from": "2025-09-29",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-5-20250929",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2025-09-29",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  }
+]

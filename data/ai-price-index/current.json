@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-06-14T00:00:00Z",
+  "license": "CC-BY-4.0",
+  "prices": [
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-4-20250514",
+      "variation": "input",
+      "price_usd": 15,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-4-20250514",
+      "variation": "output",
+      "price_usd": 75,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-4-5-20251101",
+      "variation": "input",
+      "price_usd": 5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-opus-4-5-20251101",
+      "variation": "output",
+      "price_usd": 25,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "variation": "input",
+      "price_usd": 3,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-5-20250929",
+      "variation": "output",
+      "price_usd": 15,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    }
+  ]
+}
