@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/RoninForge/ai-price-index/schema/price-record.schema.json",
+  "title": "AI Price Index price record",
+  "description": "One dated, first-party-sourced price assertion. This is the human-facing / contribution form. On ingestion the system of record adds the bitemporal bookkeeping fields (record_id, recorded_at, superseded_at, supersedes_id, change_reason, recorded_by); contributors and examples never set those.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "model_id",
+    "variation",
+    "unit",
+    "price_usd",
+    "effective_from",
+    "last_validated_at",
+    "source_url",
+    "source_kind",
+    "confidence"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Canonical provider slug, e.g. 'anthropic', 'openai', 'google'."
+    },
+    "model_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canonical model id, preferably the dated snapshot id, e.g. 'claude-opus-4-5-20251101'."
+    },
+    "variation": {
+      "type": "string",
+      "enum": [
+        "input",
+        "output",
+        "cache_read",
+        "cache_write_5m",
+        "cache_write_1h",
+        "batch_input",
+        "batch_output",
+        "tier2_input",
+        "tier2_output",
+        "embeddings",
+        "audio_per_min",
+        "image_per_item"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "usd_per_mtok",
+        "usd_per_ktok",
+        "usd_per_image",
+        "usd_per_min",
+        "usd_per_character",
+        "usd_per_request"
+      ]
+    },
+    "price_usd": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Price in USD for one unit. A garbage filter only; real bounds are per provider."
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Valid-time start (inclusive): the date this price took effect in the real world."
+    },
+    "effective_to": {
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Valid-time end (exclusive); null means still current."
+    },
+    "last_validated_at": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "When this price was last CONFIRMED against its source. For a backfilled record, the evidence date (a Wayback capture date). Required on every record, including historical ones."
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "description": "First-party provider pricing page, or an archive link for a backfilled record."
+    },
+    "source_kind": {
+      "type": "string",
+      "enum": ["provider_live", "wayback", "changelog", "aggregator", "manual"]
+    },
+    "source_snapshot_ts": {
+      "type": "string",
+      "pattern": "^\\d{8,14}$",
+      "description": "Wayback capture stamp, e.g. '20250427064348'. Omit for live records."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["verified", "archived", "inferred", "estimated"],
+      "description": "verified = confirmed against the live first-party page; archived = a dated archive capture; inferred = derived from a changelog/announcement; estimated = best effort, clearly labelled."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional human note (a caveat, a tier condition)."
+    }
+  }
+}

@@ -1,0 +1,25 @@
+name: validate
+
+# Validates every record + published series on each push and pull request. Zero npm install:
+# the validator is a single dependency-free Node script, so this runs on free public-repo Actions.
+# A contribution without a dated first-party source fails here, by policy (see CONTRIBUTING.md).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Validate records and series
+        run: node tools/validate.mjs

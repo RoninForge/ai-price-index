@@ -1,0 +1,28 @@
+{
+  "model": "claude-opus-4-5-20251101",
+  "provider": "anthropic",
+  "variations": {
+    "input": [
+      {
+        "from": "2025-11-01",
+        "to": null,
+        "price_usd": 5,
+        "unit": "usd_per_mtok",
+        "last_validated": "2026-06-12",
+        "confidence": "verified",
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+      }
+    ],
+    "output": [
+      {
+        "from": "2025-11-01",
+        "to": null,
+        "price_usd": 25,
+        "unit": "usd_per_mtok",
+        "last_validated": "2026-06-12",
+        "confidence": "verified",
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+      }
+    ]
+  }
+}

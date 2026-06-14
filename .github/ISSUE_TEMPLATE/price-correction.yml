@@ -1,0 +1,79 @@
+name: Price correction
+description: Report a wrong or missing AI model price. A first-party source and date are required.
+title: "[price] <provider> <model>: <what is wrong>"
+labels: ["price-correction", "needs-confirm"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep the index accurate. The one hard rule: every price needs a
+        first-party source URL and the date you confirmed it. Without that we cannot record it.
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      description: Canonical slug, e.g. anthropic, openai, google.
+      placeholder: anthropic
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      description: The model id, preferably the dated snapshot id.
+      placeholder: claude-opus-4-5-20251101
+    validations:
+      required: true
+  - type: dropdown
+    id: variation
+    attributes:
+      label: Variation
+      options:
+        - input
+        - output
+        - cache_read
+        - cache_write_5m
+        - cache_write_1h
+        - batch_input
+        - batch_output
+        - other (describe below)
+    validations:
+      required: true
+  - type: input
+    id: price
+    attributes:
+      label: Correct price (USD)
+      description: Price for one unit, e.g. per 1M tokens. Numbers only.
+      placeholder: "5"
+    validations:
+      required: true
+  - type: input
+    id: effective_from
+    attributes:
+      label: Effective from (YYYY-MM-DD)
+      description: When this price took effect, if you know it.
+      placeholder: "2025-11-01"
+    validations:
+      required: false
+  - type: input
+    id: source_url
+    attributes:
+      label: First-party source URL
+      description: The provider's own pricing page, or a Wayback link for historical data.
+      placeholder: https://docs.claude.com/en/docs/about-claude/pricing
+    validations:
+      required: true
+  - type: input
+    id: validated_on
+    attributes:
+      label: Date you confirmed this against the source (YYYY-MM-DD)
+      placeholder: "2026-06-14"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Tier conditions, caveats, or context.
+    validations:
+      required: false

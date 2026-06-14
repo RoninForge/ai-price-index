@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/RoninForge/ai-price-index/schema/index.schema.json",
+  "title": "AI Price Index index.json (published artifact)",
+  "description": "The thin, mutable pointer at the root of the published dataset. Lists every model and the content-hashed file that holds its series. The only file with a short cache TTL; the per-model files are immutable (their filename hash changes on every edit).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "license", "models"],
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generatedAt": { "type": "string", "description": "ISO 8601 timestamp of this export." },
+    "license": { "type": "string", "description": "SPDX id of the data license, e.g. 'CC-BY-4.0'." },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "provider", "file"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "provider": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "file": { "type": "string", "description": "Repo-relative path to the content-hashed series file." },
+          "latestRev": { "type": "string", "description": "Content hash of the current series file." }
+        }
+      }
+    }
+  }
+}
