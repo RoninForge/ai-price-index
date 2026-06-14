@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-06-12",
+  "dataModified": "2026-06-15",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -56,6 +56,78 @@
       "provider": "anthropic",
       "file": "models/anthropic/claude-sonnet-4-5-20250929.vc41a8475.json",
       "latestRev": "c41a8475"
+    },
+    {
+      "id": "gemini-1.5-flash",
+      "provider": "google",
+      "file": "models/google/gemini-1.5-flash.v0a2af119.json",
+      "latestRev": "0a2af119"
+    },
+    {
+      "id": "gemini-1.5-pro",
+      "provider": "google",
+      "file": "models/google/gemini-1.5-pro.v2dd62db5.json",
+      "latestRev": "2dd62db5"
+    },
+    {
+      "id": "gemini-2.0-flash",
+      "provider": "google",
+      "file": "models/google/gemini-2.0-flash.v393e109b.json",
+      "latestRev": "393e109b"
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "provider": "google",
+      "file": "models/google/gemini-2.5-flash.v6dfd4e6c.json",
+      "latestRev": "6dfd4e6c"
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "provider": "google",
+      "file": "models/google/gemini-2.5-flash-lite.v22f9c9b1.json",
+      "latestRev": "22f9c9b1"
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "provider": "google",
+      "file": "models/google/gemini-2.5-pro.vd27b2825.json",
+      "latestRev": "d27b2825"
+    },
+    {
+      "id": "gpt-4",
+      "provider": "openai",
+      "file": "models/openai/gpt-4.va3684099.json",
+      "latestRev": "a3684099"
+    },
+    {
+      "id": "gpt-4-turbo",
+      "provider": "openai",
+      "file": "models/openai/gpt-4-turbo.v78152e2a.json",
+      "latestRev": "78152e2a"
+    },
+    {
+      "id": "gpt-4.1",
+      "provider": "openai",
+      "file": "models/openai/gpt-4.1.v872debd6.json",
+      "latestRev": "872debd6"
+    },
+    {
+      "id": "gpt-4o",
+      "provider": "openai",
+      "file": "models/openai/gpt-4o.vac3888d0.json",
+      "latestRev": "ac3888d0"
+    },
+    {
+      "id": "gpt-4o-mini",
+      "provider": "openai",
+      "file": "models/openai/gpt-4o-mini.v27cc35fb.json",
+      "latestRev": "27cc35fb"
+    },
+    {
+      "id": "gpt-5",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.v6938aea6.json",
+      "latestRev": "6938aea6"
     }
   ]
 }

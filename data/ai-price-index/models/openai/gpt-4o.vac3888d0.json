@@ -1,0 +1,50 @@
+{
+  "model": "gpt-4o",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2024-05-13",
+        "last_validated": "2024-05-24",
+        "price_usd": 5,
+        "snapshot": "20240524210913",
+        "src": "https://web.archive.org/web/20240524210913/https://openai.com/pricing/",
+        "to": "2024-08-06",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "archived",
+        "from": "2024-08-06",
+        "last_validated": "2024-08-12",
+        "price_usd": 2.5,
+        "snapshot": "20240812003130",
+        "src": "https://web.archive.org/web/20240812003130/https://openai.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2024-05-13",
+        "last_validated": "2024-05-24",
+        "price_usd": 15,
+        "snapshot": "20240524210913",
+        "src": "https://web.archive.org/web/20240524210913/https://openai.com/pricing/",
+        "to": "2024-08-06",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "archived",
+        "from": "2024-08-06",
+        "last_validated": "2024-08-12",
+        "price_usd": 10,
+        "snapshot": "20240812003130",
+        "src": "https://web.archive.org/web/20240812003130/https://openai.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

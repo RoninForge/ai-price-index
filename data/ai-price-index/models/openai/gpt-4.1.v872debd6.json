@@ -1,0 +1,28 @@
+{
+  "model": "gpt-4.1",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-04-14",
+        "last_validated": "2026-06-15",
+        "price_usd": 2,
+        "src": "https://developers.openai.com/api/docs/models/gpt-4.1",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-04-14",
+        "last_validated": "2026-06-15",
+        "price_usd": 8,
+        "src": "https://developers.openai.com/api/docs/models/gpt-4.1",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "model": "gpt-4o-mini",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2024-07-18",
+        "last_validated": "2024-07-22",
+        "price_usd": 0.15,
+        "snapshot": "20240722005830",
+        "src": "https://web.archive.org/web/20240722005830/https://openai.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2024-07-18",
+        "last_validated": "2024-07-22",
+        "price_usd": 0.6,
+        "snapshot": "20240722005830",
+        "src": "https://web.archive.org/web/20240722005830/https://openai.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

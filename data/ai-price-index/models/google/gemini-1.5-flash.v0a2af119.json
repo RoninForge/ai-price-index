@@ -1,0 +1,30 @@
+{
+  "model": "gemini-1.5-flash",
+  "provider": "google",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2024-08-12",
+        "last_validated": "2024-10-01",
+        "price_usd": 0.075,
+        "snapshot": "20241001092414",
+        "src": "https://web.archive.org/web/20241001092414/https://ai.google.dev/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2024-08-12",
+        "last_validated": "2024-10-01",
+        "price_usd": 0.3,
+        "snapshot": "20241001092414",
+        "src": "https://web.archive.org/web/20241001092414/https://ai.google.dev/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

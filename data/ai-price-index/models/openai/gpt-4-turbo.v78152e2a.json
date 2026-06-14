@@ -1,0 +1,30 @@
+{
+  "model": "gpt-4-turbo",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2023-11-06",
+        "last_validated": "2023-11-10",
+        "price_usd": 10,
+        "snapshot": "20231110022605",
+        "src": "https://web.archive.org/web/20231110022605/https://openai.com/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2023-11-06",
+        "last_validated": "2023-11-10",
+        "price_usd": 30,
+        "snapshot": "20231110022605",
+        "src": "https://web.archive.org/web/20231110022605/https://openai.com/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
