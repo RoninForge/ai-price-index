@@ -187,9 +187,12 @@ def cmd_export(args):
                 "src": cur_iv["src"],
             })
 
-    generated_at = now_iso(args.now)
+    # dataModified is derived from the DATA (the latest validation date), not the wall clock, so a
+    # re-export is byte-identical unless the data actually changed. That keeps the daily publish cron
+    # from committing on every run, and maps cleanly onto Dataset JSON-LD dateModified at step 5.
+    data_modified = max((r["last_validated_at"] for r in rows), default="1970-01-01")
     index = {
-        "schemaVersion": SCHEMA_VERSION, "generatedAt": generated_at, "license": LICENSE,
+        "schemaVersion": SCHEMA_VERSION, "dataModified": data_modified, "license": LICENSE,
         "models": index_models,
     }
     with open(os.path.join(out, "index.json"), "w", encoding="utf-8") as f:
@@ -199,7 +202,7 @@ def cmd_export(args):
     current.sort(key=lambda x: (x["provider"], x["model"], x["variation"]))
     with open(os.path.join(out, "current.json"), "w", encoding="utf-8") as f:
         json.dump({
-            "schemaVersion": SCHEMA_VERSION, "generatedAt": generated_at, "license": LICENSE,
+            "schemaVersion": SCHEMA_VERSION, "dataModified": data_modified, "license": LICENSE,
             "prices": current,
         }, f, indent=2)
         f.write("\n")
