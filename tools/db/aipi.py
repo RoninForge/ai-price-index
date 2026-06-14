@@ -177,9 +177,11 @@ def cmd_export(args):
         index_models.append({"id": model_id, "provider": provider, "file": rel, "latestRev": digest})
 
         for variation, ivs in variations.items():
+            # "current" means there is an OPEN interval (to is None). A model whose every interval has
+            # closed (a retired model) is history, not a current price, so it is omitted from current.json.
             cur_iv = next((iv for iv in ivs if iv["to"] is None), None)
             if cur_iv is None:
-                cur_iv = max(ivs, key=lambda x: x["from"])
+                continue
             current.append({
                 "provider": provider, "model": model_id, "variation": variation,
                 "price_usd": cur_iv["price_usd"], "unit": cur_iv["unit"],
