@@ -64,6 +64,18 @@
       "latestRev": "c41a8475"
     },
     {
+      "id": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "file": "models/deepseek/deepseek-v4-flash.vcc9da720.json",
+      "latestRev": "cc9da720"
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "provider": "deepseek",
+      "file": "models/deepseek/deepseek-v4-pro.ve17043d8.json",
+      "latestRev": "e17043d8"
+    },
+    {
       "id": "gemini-1.5-flash",
       "provider": "google",
       "file": "models/google/gemini-1.5-flash.v0a2af119.json",
@@ -100,6 +112,96 @@
       "latestRev": "d27b2825"
     },
     {
+      "id": "gemini-3-flash-preview",
+      "provider": "google",
+      "file": "models/google/gemini-3-flash-preview.vfbd88efb.json",
+      "latestRev": "fbd88efb"
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "provider": "google",
+      "file": "models/google/gemini-3.1-flash-lite.vc72c1c0b.json",
+      "latestRev": "c72c1c0b"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "provider": "google",
+      "file": "models/google/gemini-3.1-pro-preview.ve7d30712.json",
+      "latestRev": "e7d30712"
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "provider": "google",
+      "file": "models/google/gemini-3.5-flash.v33e5710e.json",
+      "latestRev": "33e5710e"
+    },
+    {
+      "id": "codestral-25.08",
+      "provider": "mistral",
+      "file": "models/mistral/codestral-25.08.vfb1036e4.json",
+      "latestRev": "fb1036e4"
+    },
+    {
+      "id": "devstral-2",
+      "provider": "mistral",
+      "file": "models/mistral/devstral-2.v8a4f0794.json",
+      "latestRev": "8a4f0794"
+    },
+    {
+      "id": "devstral-small-2",
+      "provider": "mistral",
+      "file": "models/mistral/devstral-small-2.vc299041a.json",
+      "latestRev": "c299041a"
+    },
+    {
+      "id": "magistral-medium",
+      "provider": "mistral",
+      "file": "models/mistral/magistral-medium.vfbab096f.json",
+      "latestRev": "fbab096f"
+    },
+    {
+      "id": "magistral-small",
+      "provider": "mistral",
+      "file": "models/mistral/magistral-small.v7d10fe36.json",
+      "latestRev": "7d10fe36"
+    },
+    {
+      "id": "ministral-3-14b",
+      "provider": "mistral",
+      "file": "models/mistral/ministral-3-14b.vd6e48f37.json",
+      "latestRev": "d6e48f37"
+    },
+    {
+      "id": "ministral-3-3b",
+      "provider": "mistral",
+      "file": "models/mistral/ministral-3-3b.v7e8e2c18.json",
+      "latestRev": "7e8e2c18"
+    },
+    {
+      "id": "ministral-3-8b",
+      "provider": "mistral",
+      "file": "models/mistral/ministral-3-8b.va2eeeec1.json",
+      "latestRev": "a2eeeec1"
+    },
+    {
+      "id": "mistral-large-3",
+      "provider": "mistral",
+      "file": "models/mistral/mistral-large-3.v85c4b698.json",
+      "latestRev": "85c4b698"
+    },
+    {
+      "id": "mistral-medium-3.5",
+      "provider": "mistral",
+      "file": "models/mistral/mistral-medium-3.5.vf57d9ff3.json",
+      "latestRev": "f57d9ff3"
+    },
+    {
+      "id": "mistral-small-4",
+      "provider": "mistral",
+      "file": "models/mistral/mistral-small-4.v146e73f9.json",
+      "latestRev": "146e73f9"
+    },
+    {
       "id": "gpt-4",
       "provider": "openai",
       "file": "models/openai/gpt-4.va3684099.json",
@@ -134,6 +236,60 @@
       "provider": "openai",
       "file": "models/openai/gpt-5.v6938aea6.json",
       "latestRev": "6938aea6"
+    },
+    {
+      "id": "gpt-5.4",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.4.v42a17bf3.json",
+      "latestRev": "42a17bf3"
+    },
+    {
+      "id": "gpt-5.4-mini",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.4-mini.vb59aea77.json",
+      "latestRev": "b59aea77"
+    },
+    {
+      "id": "gpt-5.4-nano",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.4-nano.v404323a4.json",
+      "latestRev": "404323a4"
+    },
+    {
+      "id": "gpt-5.4-pro",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.4-pro.v91e4b6ef.json",
+      "latestRev": "91e4b6ef"
+    },
+    {
+      "id": "gpt-5.5",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.5.v1b0cf4d8.json",
+      "latestRev": "1b0cf4d8"
+    },
+    {
+      "id": "gpt-5.5-pro",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.5-pro.v57c3d834.json",
+      "latestRev": "57c3d834"
+    },
+    {
+      "id": "grok-4.20-0309-reasoning",
+      "provider": "xai",
+      "file": "models/xai/grok-4.20-0309-reasoning.v929de0b7.json",
+      "latestRev": "929de0b7"
+    },
+    {
+      "id": "grok-4.3",
+      "provider": "xai",
+      "file": "models/xai/grok-4.3.v00d3b1d2.json",
+      "latestRev": "00d3b1d2"
+    },
+    {
+      "id": "grok-build-0.1",
+      "provider": "xai",
+      "file": "models/xai/grok-build-0.1.v03fa9e7c.json",
+      "latestRev": "03fa9e7c"
     }
   ]
 }

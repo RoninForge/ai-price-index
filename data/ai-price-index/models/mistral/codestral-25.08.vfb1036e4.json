@@ -1,0 +1,28 @@
+{
+  "model": "codestral-25.08",
+  "provider": "mistral",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-07-30",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.3,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-07-30",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.9,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "model": "ministral-3-3b",
+  "provider": "mistral",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-12-02",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.1,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-12-02",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.1,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "model": "gpt-5.4-mini",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-03-17",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.75,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-03-17",
+        "last_validated": "2026-06-15",
+        "price_usd": 4.5,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

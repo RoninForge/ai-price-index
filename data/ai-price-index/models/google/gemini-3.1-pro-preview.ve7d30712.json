@@ -1,0 +1,28 @@
+{
+  "model": "gemini-3.1-pro-preview",
+  "provider": "google",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-02-19",
+        "last_validated": "2026-06-15",
+        "price_usd": 2,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-02-19",
+        "last_validated": "2026-06-15",
+        "price_usd": 12,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

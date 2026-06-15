@@ -1,0 +1,28 @@
+{
+  "model": "mistral-medium-3.5",
+  "provider": "mistral",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-04-29",
+        "last_validated": "2026-06-15",
+        "price_usd": 1.5,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-04-29",
+        "last_validated": "2026-06-15",
+        "price_usd": 7.5,
+        "src": "https://mistral.ai/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
