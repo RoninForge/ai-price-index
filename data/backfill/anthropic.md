@@ -16,7 +16,9 @@ evidence date. Confidence is `archived` (confirmed from a dated archive). Prices
 | claude-3-5-haiku-20241022 | 1 -> 0.80 | 5 -> 4 | 2024-11-04 -> 2024-12-03 | 2026-02-19 | a real two-step price change, both stated in news/3-5-models-and-computer-use |
 | claude-3-7-sonnet-20250219 | 3 | 15 | 2025-02-24 | 2026-02-19 | Wayback /pricing 20250224210640 + news/claude-3-7-sonnet |
 
-The current models (Opus 4, Opus 4.5, Sonnet 4.5) were already seeded from the live pricing page.
+The current models (Opus 4, Opus 4.5, Sonnet 4.5, and Fable 5) were seeded from the live pricing page.
+Fable 5 (`claude-fable-5`, $10/$50, Anthropic's first public Mythos-class model) launched 2026-06-09;
+the listed API rate is free for subscription plans through 2026-06-22, standard metered from 2026-06-23.
 
 ## Notable findings
 

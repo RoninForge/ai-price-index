@@ -79,7 +79,6 @@
     "source_kind": "provider_live",
     "confidence": "verified"
   },
-
   {
     "provider": "anthropic",
     "model_id": "claude-3-opus-20240229",
@@ -282,5 +281,32 @@
     "source_kind": "wayback",
     "source_snapshot_ts": "20250224210640",
     "confidence": "archived"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5",
+    "unit": "usd_per_mtok",
+    "effective_from": "2026-06-09",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "variation": "input",
+    "price_usd": 10,
+    "notes": "Claude Fable 5, Anthropic's first public Mythos-class model, launched 2026-06-09. Listed API price (2x Opus 4.5 at $5/$25). Free for Pro/Max/Team/Enterprise plans through 2026-06-22; standard metered rate from 2026-06-23."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5",
+    "unit": "usd_per_mtok",
+    "effective_from": "2026-06-09",
+    "effective_to": null,
+    "last_validated_at": "2026-06-12",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "variation": "output",
+    "price_usd": 50
   }
 ]
