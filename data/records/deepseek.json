@@ -1,0 +1,56 @@
+[
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.14,
+    "effective_from": "2026-04-24",
+    "effective_to": null,
+    "last_validated_at": "2026-06-15",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Cache-miss (standard, non-cached) input. Cache-hit input is $0.0028/Mtok. Date = DeepSeek-V4 launch per the first-party change log. Legacy deepseek-chat / deepseek-reasoner aliases map here and retire 2026-07-24."
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.28,
+    "effective_from": "2026-04-24",
+    "effective_to": null,
+    "last_validated_at": "2026-06-15",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-pro",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.435,
+    "effective_from": "2026-06-01",
+    "effective_to": null,
+    "last_validated_at": "2026-06-15",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "Cache-miss (standard) price. The price is first-party (live pricing page) but DeepSeek's change log does not date the cut; date inferred 2026-06-01 (the 75% promo became the permanent list price). Cache-hit input is $0.003625/Mtok."
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-pro",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.87,
+    "effective_from": "2026-06-01",
+    "effective_to": null,
+    "last_validated_at": "2026-06-15",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred"
+  }
+]

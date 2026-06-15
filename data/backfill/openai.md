@@ -41,3 +41,22 @@ The GPT flagship input price fell from **$30 (GPT-4, Mar 2023)** to **$10 (GPT-4
 - https://developers.openai.com/api/docs/models/gpt-5
 - https://developers.openai.com/api/docs/pricing (current live page)
 - https://developers.openai.com/api/docs/deprecations (retirement dates)
+
+## 2026-06-15 update: current GPT-5.4 / 5.5 line added
+
+The latest GPT line was added from the live first-party developers pricing page, dated via the
+official developers changelog (all `verified`, standard sync tier, USD per 1M tokens):
+
+| model | input | output | effective_from |
+| --- | --- | --- | --- |
+| gpt-5.4 | 2.50 | 15 | 2026-03-05 |
+| gpt-5.4-mini | 0.75 | 4.50 | 2026-03-17 |
+| gpt-5.4-nano | 0.20 | 1.25 | 2026-03-17 |
+| gpt-5.4-pro | 30 | 180 | 2026-03-05 |
+| gpt-5.5 | 5 | 30 | 2026-04-24 |
+| gpt-5.5-pro | 30 | 180 | 2026-04-24 |
+
+Still gaps (no price on the current first-party page, so not added): the o-series (o1/o3/o3-mini/
+o3-pro/o4-mini) and gpt-5.1/5.2 are absent from the live pricing page; gpt-5.3-codex (code-specialized,
+$1.75/$14) is out of scope. Batch and cached-input tiers remain unrecorded. The gpt-5.4-mini/nano day
+(Mar 16 vs 17) had minor changelog ambiguity; 2026-03-17 used.

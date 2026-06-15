@@ -40,3 +40,19 @@ input is text/image/video, and audio input is higher. These caveats are in each 
 - https://developers.googleblog.com/en/gemini-2-family-expands/
 - https://developers.googleblog.com/en/gemini-2-5-thinking-model-updates/
 - https://ai.google.dev/gemini-api/docs/pricing (current live page)
+
+## 2026-06-15 update: Gemini 3.x line added
+
+The Gemini 3.x line was added from the live first-party AI Studio pricing page, dated via the
+first-party Gemini API changelog (all `verified`, base tier, USD per 1M tokens):
+
+| model | input | output | effective_from |
+| --- | --- | --- | --- |
+| gemini-3-flash-preview | 0.50 | 3.00 | 2025-12-17 |
+| gemini-3.1-pro-preview | 2.00 | 12.00 | 2026-02-19 |
+| gemini-3.1-flash-lite | 0.25 | 1.50 | 2026-05-07 |
+| gemini-3.5-flash | 1.50 | 9.00 | 2026-05-19 |
+
+gemini-3.1-pro-preview is context-tiered; the recorded value is the base tier (prompts <=200k); the
+>200k tier is $4.00/$18.00. Cached-input, audio/Live models (3.5 Live Translate, 3.1 Flash Live),
+image, embeddings, and batch remain unrecorded. The Gemini 2.5 line was re-confirmed unchanged.
