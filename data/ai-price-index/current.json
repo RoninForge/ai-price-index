@@ -5,6 +5,26 @@
   "prices": [
     {
       "provider": "anthropic",
+      "model": "claude-fable-5",
+      "variation": "input",
+      "price_usd": 10,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-fable-5",
+      "variation": "output",
+      "price_usd": 50,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-06-12",
+      "confidence": "verified",
+      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
+    },
+    {
+      "provider": "anthropic",
       "model": "claude-opus-4-20250514",
       "variation": "input",
       "price_usd": 15,

@@ -40,6 +40,12 @@
       "latestRev": "3a53987a"
     },
     {
+      "id": "claude-fable-5",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-fable-5.vc100e363.json",
+      "latestRev": "c100e363"
+    },
+    {
       "id": "claude-opus-4-20250514",
       "provider": "anthropic",
       "file": "models/anthropic/claude-opus-4-20250514.v860719f7.json",
