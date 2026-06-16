@@ -1,0 +1,375 @@
+name: pricing-audit
+
+# Daily pricing audit for the AI Price Index dataset. Runs two checks against the
+# PUBLISHED current prices (data/ai-price-index/current.json) and bundles the result
+# into ONE draft pull request:
+#
+# 1. New-model detection. Calls Anthropic's GET /v1/models and flags any claude-*
+#    ids that are not yet priced in current.json. For each new model it drafts a
+#    full input + output record into data/records/anthropic.json, pre-filled with
+#    LiteLLM's suggested rate (or a clearly-marked placeholder when LiteLLM has no
+#    rate) plus TODO placeholders for the first-party fields a human must verify.
+#
+# 2. Rate cross-check. For every Anthropic model already priced, compares input +
+#    output rates to BerriAI/litellm's pricing data. Disagreements above a
+#    $0.01/MTok tolerance are surfaced in the PR body as suggested interval edits
+#    (drafting a bitemporal interval edit into JSON is error-prone, so a clear
+#    description is the deliverable for rate changes).
+#
+# Why combined: a new-model launch often coincides with price cuts on older models
+# in the same tier (Opus 4.5 launched and cut the Opus input price from 15 to 5 in
+# the same release). Treating both signals as one event keeps the maintainer's
+# mental model simple - one PR, one review, one release.
+#
+# Output is a GitHub DRAFT PR on branch pricing/audit-<date>. validate.yml runs on
+# the PR and is EXPECTED to be red until a human fills the TODO fields and flips
+# confidence from "inferred" to "verified". That red CI is the natural gate.
+# Merging is the only manual step - publish-on-merge.yml automates everything after.
+#
+# Requires repo secret ANTHROPIC_API_KEY (metadata-only, free).
+
+on:
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pricing-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Fetch Anthropic /v1/models
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY repo secret is not set."
+            exit 1
+          fi
+          curl -fsS \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            https://api.anthropic.com/v1/models > anthropic-raw.json
+          jq '[.data[].id | select(startswith("claude-"))]' anthropic-raw.json > anthropic-models.json
+          echo "Anthropic returned $(jq 'length' anthropic-models.json) claude-* model(s)."
+
+      - name: Fetch LiteLLM
+        run: |
+          curl -fsSL \
+            "https://raw.githubusercontent.com/BerriAI/litellm/main/litellm/model_prices_and_context_window_backup.json" \
+            > litellm.json
+          echo "LiteLLM JSON fetched ($(wc -c < litellm.json) bytes)."
+
+      - name: Combined audit
+        id: audit
+        env:
+          AUDIT_DATE: ${{ github.run_id }}
+        run: |
+          # TODAY is the date stamp used for last_validated_at on drafted records and
+          # for the PR branch name. UTC keeps it deterministic with the cron.
+          TODAY="$(date -u +%Y-%m-%d)"
+          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
+
+          python3 - "$TODAY" <<'PY' > report.json
+          import json
+          import sys
+
+          today = sys.argv[1]
+
+          with open("data/ai-price-index/current.json") as f:
+              current = json.load(f)
+          with open("anthropic-models.json") as f:
+              anthropic = json.load(f)
+          with open("litellm.json") as f:
+              litellm = json.load(f)
+
+          # Build the "models we already price" set + rate map from the PUBLISHED current
+          # prices, restricted to the anthropic provider. current.json shape:
+          #   { "prices": [ { provider, model, variation, price_usd, unit, ... } ] }
+          our_rates = {}      # model -> {"input": price, "output": price, "unit": unit}
+          for p in current.get("prices", []):
+              if p.get("provider") != "anthropic":
+                  continue
+              m = p["model"]
+              entry = our_rates.setdefault(m, {"input": None, "output": None, "unit": None})
+              if p["variation"] in ("input", "output"):
+                  entry[p["variation"]] = p["price_usd"]
+                  entry["unit"] = p.get("unit", "usd_per_mtok")
+
+          # The "already priced" membership set must be alias-aware. current.json only
+          # carries canonical model ids, but Anthropic's /v1/models can return a model
+          # under a short undated id that is really an ALIAS of one we already price
+          # (e.g. claude-haiku-4-5 aliases claude-haiku-4-5-20251001). The dataset index
+          # carries those aliases, so union them in to avoid false-positive "new model"
+          # rows. Missing file or missing aliases degrade gracefully to current.json-only.
+          our_set = set(our_rates.keys())
+          try:
+              with open("data/ai-price-index/index.json") as f:
+                  index = json.load(f)
+              for entry in index.get("models", []):
+                  if entry.get("provider") != "anthropic":
+                      continue
+                  if entry.get("id"):
+                      our_set.add(entry["id"])
+                  for alias in entry.get("aliases") or []:
+                      our_set.add(alias)
+          except FileNotFoundError:
+              pass
+
+          tolerance = 0.01  # USD/MTok; whole-dollar Claude pricing means a real change is at least $0.50.
+
+          def litellm_rate(model):
+              entry = litellm.get(model) or litellm.get(f"anthropic/{model}")
+              if entry is None:
+                  return None
+              return (
+                  entry.get("input_cost_per_token", 0) * 1_000_000,
+                  entry.get("output_cost_per_token", 0) * 1_000_000,
+              )
+
+          def alias_guess(model):
+              # If the API id is a dated snapshot (ends in -YYYYMMDD), the obvious alias
+              # is the undated short form Claude Code emits. Otherwise no obvious alias.
+              parts = model.rsplit("-", 1)
+              if len(parts) == 2 and len(parts[1]) == 8 and parts[1].isdigit():
+                  return parts[0]
+              return None
+
+          # 1. New models on Anthropic's API not yet priced in current.json.
+          new_models = []
+          for m in anthropic:
+              if m in our_set:
+                  continue
+              ll = litellm_rate(m)
+              new_models.append({
+                  "model": m,
+                  "ll_in": ll[0] if ll else None,
+                  "ll_out": ll[1] if ll else None,
+                  "alias": alias_guess(m),
+              })
+
+          # 2. Rate disagreements on Anthropic models we already price.
+          rate_diffs = []
+          for m, r in our_rates.items():
+              our_in, our_out = r["input"], r["output"]
+              ll = litellm_rate(m)
+              if ll is None or our_in is None or our_out is None:
+                  continue
+              ll_in, ll_out = ll
+              if abs(ll_in - our_in) > tolerance or abs(ll_out - our_out) > tolerance:
+                  rate_diffs.append({
+                      "model": m,
+                      "ours_in": our_in, "ours_out": our_out,
+                      "ll_in": ll_in, "ll_out": ll_out,
+                  })
+
+          # Build the drafted records for each new model. Match data/records/anthropic.json
+          # exactly: full input + output record, inferred confidence, TODO placeholders for
+          # the first-party fields a human verifies before flipping confidence to verified.
+          drafted = []
+          for nm in new_models:
+              for variation in ("input", "output"):
+                  ll = nm["ll_in"] if variation == "input" else nm["ll_out"]
+                  if ll is not None:
+                      # round to a sensible cent; whole-dollar tiers stay whole.
+                      price = round(ll, 2)
+                      if price == int(price):
+                          price = int(price)
+                  else:
+                      price = "TODO-set-price-usd-from-anthropic-pricing-page"
+                  rec = {
+                      "provider": "anthropic",
+                      "model_id": nm["model"],
+                      "variation": variation,
+                      "unit": "usd_per_mtok",
+                      "price_usd": price,
+                      "effective_from": "TODO-set-first-party-effective-date",
+                      "effective_to": None,
+                      "last_validated_at": today,
+                      "source_url": "TODO-set-first-party-anthropic-url",
+                      "source_kind": "provider_live",
+                      "confidence": "inferred",
+                  }
+                  if nm["alias"]:
+                      rec["aliases"] = [nm["alias"]]
+                  drafted.append(rec)
+
+          json.dump({
+              "new_models": new_models,
+              "rate_diffs": rate_diffs,
+              "drafted": drafted,
+          }, sys.stdout)
+          PY
+
+          new_count=$(jq '.new_models | length' report.json)
+          diff_count=$(jq '.rate_diffs | length' report.json)
+          total=$((new_count + diff_count))
+
+          echo "new_count=$new_count" >> "$GITHUB_OUTPUT"
+          echo "diff_count=$diff_count" >> "$GITHUB_OUTPUT"
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+
+          if [ "$total" -eq 0 ]; then
+            echo "Pricing audit clean: no new models, no rate disagreements."
+          else
+            echo "Found $new_count new model(s), $diff_count rate disagreement(s):"
+            jq . report.json
+          fi
+
+      - name: Idempotency check
+        id: idem
+        if: steps.audit.outputs.total != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODAY: ${{ steps.audit.outputs.today }}
+        run: |
+          branch="pricing/audit-${TODAY}"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+          # Skip if a branch of this name already exists on the remote, or an open PR
+          # from such a branch already exists. Either means today's audit already ran.
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo "Branch $branch already exists on origin; skipping (already audited today)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          existing=$(gh pr list --state open --head "$branch" --json number --jq '. | length')
+          if [ "$existing" -gt 0 ]; then
+            echo "Open PR from $branch already exists; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Draft records into data/records/anthropic.json
+        if: steps.audit.outputs.total != '0' && steps.audit.outputs.new_count != '0' && steps.idem.outputs.skip == 'false'
+        run: |
+          # Append the drafted input + output records to the existing array, preserving
+          # 2-space indentation to match the file. Pure data merge; no other edits.
+          python3 - <<'PY'
+          import json
+
+          path = "data/records/anthropic.json"
+          with open(path) as f:
+              records = json.load(f)
+          with open("report.json") as f:
+              report = json.load(f)
+
+          records.extend(report["drafted"])
+
+          with open(path, "w") as f:
+              json.dump(records, f, indent=2)
+              f.write("\n")
+
+          print(f"Appended {len(report['drafted'])} drafted record(s) to {path}.")
+          PY
+
+      - name: Compose PR body
+        id: body
+        if: steps.audit.outputs.total != '0' && steps.idem.outputs.skip == 'false'
+        env:
+          NEW_COUNT: ${{ steps.audit.outputs.new_count }}
+          DIFF_COUNT: ${{ steps.audit.outputs.diff_count }}
+        run: |
+          {
+            echo "The daily \`pricing-audit\` workflow detected drift against Anthropic's \`/v1/models\` and/or BerriAI/litellm's pricing data."
+            echo ""
+
+            if [ "$NEW_COUNT" -gt 0 ]; then
+              echo "## New models on Anthropic's API"
+              echo ""
+              echo "Full draft record(s) (input + output) have been appended to \`data/records/anthropic.json\` in this PR."
+              echo ""
+              jq -r '
+                "| Model | LiteLLM rate (in / out per MTok) | Alias guess |\n|---|---|---|\n" +
+                (.new_models | map(
+                  "| `\(.model)` | " +
+                  (if .ll_in == null then "(not in LiteLLM yet - price is a TODO placeholder)" else "$\(.ll_in) / $\(.ll_out)" end) +
+                  " | " + (if .alias == null then "(none obvious)" else "`\(.alias)`" end) + " |"
+                ) | join("\n"))
+              ' report.json
+              echo ""
+            fi
+
+            if [ "$DIFF_COUNT" -gt 0 ]; then
+              echo "## Rate disagreements (existing models)"
+              echo ""
+              if [ "$NEW_COUNT" -gt 0 ]; then
+                echo "A new-model launch often coincides with price cuts on older models in the same tier. The rate change(s) below are likely related to the new-model row(s) above."
+                echo ""
+              fi
+              echo "These are suggested interval edits, NOT drafted into JSON (a bitemporal interval edit is error-prone to auto-generate). Verify each rate on the first-party Anthropic pricing page, then hand-edit the matching record(s) in \`data/records/anthropic.json\` (close the current interval with \`effective_to\` and add a new interval, per CONTRIBUTING)."
+              echo ""
+              jq -r '
+                "| Model | Ours (in / out per MTok) | LiteLLM (in / out per MTok) |\n|---|---|---|\n" +
+                (.rate_diffs | map(
+                  "| `\(.model)` | $\(.ours_in) / $\(.ours_out) | $\(.ll_in) / $\(.ll_out) |"
+                ) | join("\n"))
+              ' report.json
+              echo ""
+            fi
+
+            echo "## What to do"
+            echo ""
+            echo "This is a SUGGESTED record. For each drafted model:"
+            echo ""
+            echo "1. Verify the rate against the first-party Anthropic pricing page."
+            echo "2. Set \`effective_from\` from the official announcement date."
+            echo "3. Set \`source_url\` to the first-party Anthropic URL."
+            echo "4. Flip \`confidence\` from \`inferred\` to \`verified\`."
+            echo "5. Replace any \`TODO-...\` placeholder values."
+            echo ""
+            echo "\`validate.yml\` is EXPECTED to be red until the TODO fields are filled and confidence is verified. That red CI is the gate. Once it is green, merging is the only manual step - everything downstream (re-seed, re-export, tag, and notifying BudgetClaw + Goei) is automated by \`publish-on-merge.yml\`."
+            echo ""
+            echo "Generated by \`.github/workflows/pricing-audit.yml\`."
+          } > pr-body.md
+
+          echo "Wrote pr-body.md ($(wc -l < pr-body.md) lines)."
+
+      - name: Open draft PR
+        if: steps.audit.outputs.total != '0' && steps.idem.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.idem.outputs.branch }}
+          NEW_COUNT: ${{ steps.audit.outputs.new_count }}
+          DIFF_COUNT: ${{ steps.audit.outputs.diff_count }}
+        run: |
+          new_list=$(jq -r '.new_models | map(.model) | join(", ")' report.json)
+          diff_list=$(jq -r '.rate_diffs | map(.model) | join(", ")' report.json)
+
+          if [ "$NEW_COUNT" -gt 0 ] && [ "$DIFF_COUNT" -gt 0 ]; then
+            title="pricing: new model(s) [$new_list] + rate change(s) [$diff_list]"
+          elif [ "$NEW_COUNT" -gt 0 ]; then
+            title="pricing: new model(s) detected: $new_list"
+          else
+            title="pricing: rate disagreement vs LiteLLM for $diff_list"
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+
+          if [ -n "$(git status --porcelain -- data/records)" ]; then
+            git add data/records
+            git commit -m "pricing: draft record(s) from daily audit"
+          else
+            # Rate-change-only run: no JSON edit, so make an empty commit to anchor the PR branch.
+            git commit --allow-empty -m "pricing: rate-change audit (see PR body for suggested edits)"
+          fi
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --draft \
+            --base main \
+            --head "$BRANCH" \
+            --title "$title" \
+            --body-file pr-body.md
