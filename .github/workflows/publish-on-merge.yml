@@ -23,7 +23,7 @@ name: publish-on-merge
 #   VPS_HOST              (optional, defaults to 204.168.172.83)
 #   VPS_USER              (optional, defaults to root)
 #   CONSUMER_DISPATCH_TOKEN  fine-grained PAT able to fire repository_dispatch on
-#                            RoninForge/budgetclaw + RoninForge/goei-web
+#                            RoninForge/budgetclaw + RoninForge/goei-web + RoninForge/platform
 
 on:
   push:
@@ -101,7 +101,7 @@ jobs:
           payload=$(jq -nc --arg tag "$TAG" \
             '{event_type: "ai-price-index-release", client_payload: {tag: $tag}}')
 
-          for repo in RoninForge/budgetclaw RoninForge/goei-web; do
+          for repo in RoninForge/budgetclaw RoninForge/goei-web RoninForge/platform; do
             echo "Dispatching ai-price-index-release ($TAG) to $repo"
             code=$(curl -sS -o /tmp/dispatch-resp.txt -w '%{http_code}' \
               -X POST \
