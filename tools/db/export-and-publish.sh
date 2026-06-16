@@ -48,3 +48,8 @@ TAG="v${DATE}-${SHA}"
 git tag "$TAG"
 git push --quiet origin "$TAG"
 log "published ${TAG}"
+
+# Machine-readable sentinel for the publish-on-merge CI step. It greps for a line matching
+# ^PUBLISHED_TAG= to learn the new tag and then notifies the downstream consumers. This line
+# is printed ONLY on a real publish; a no-op run exits earlier and never prints it.
+echo "PUBLISHED_TAG=${TAG}"
