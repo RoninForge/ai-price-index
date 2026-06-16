@@ -484,5 +484,32 @@
     "confidence": "verified",
     "aliases": ["claude-opus-4-1"],
     "notes": "Opus 4.1 at the original $15/$75 Opus tier. Deprecated 2026-06-05 with scheduled retirement 2026-08-05 (per the model-deprecations page); retirement is in the FUTURE so effective_to stays null (model still current) per the locked modeling rule."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-20250514",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 3,
+    "effective_from": "2025-05-14",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Sonnet 4 launch tier; $3/$15 input/output since 2025-05-14, unchanged. Listed on the live pricing page (retired on the first-party API, available on Bedrock and Vertex AI). effective_from is the dated snapshot release date. Mirrors the Opus 4 sibling record; was missing from the initial backfill."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-20250514",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2025-05-14",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
