@@ -104,7 +104,26 @@ jobs:
               if p["variation"] in ("input", "output"):
                   entry[p["variation"]] = p["price_usd"]
                   entry["unit"] = p.get("unit", "usd_per_mtok")
+
+          # The "already priced" membership set must be alias-aware. current.json only
+          # carries canonical model ids, but Anthropic's /v1/models can return a model
+          # under a short undated id that is really an ALIAS of one we already price
+          # (e.g. claude-haiku-4-5 aliases claude-haiku-4-5-20251001). The dataset index
+          # carries those aliases, so union them in to avoid false-positive "new model"
+          # rows. Missing file or missing aliases degrade gracefully to current.json-only.
           our_set = set(our_rates.keys())
+          try:
+              with open("data/ai-price-index/index.json") as f:
+                  index = json.load(f)
+              for entry in index.get("models", []):
+                  if entry.get("provider") != "anthropic":
+                      continue
+                  if entry.get("id"):
+                      our_set.add(entry["id"])
+                  for alias in entry.get("aliases") or []:
+                      our_set.add(alias)
+          except FileNotFoundError:
+              pass
 
           tolerance = 0.01  # USD/MTok; whole-dollar Claude pricing means a real change is at least $0.50.
 
