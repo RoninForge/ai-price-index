@@ -102,6 +102,12 @@
     "notes": {
       "type": "string",
       "description": "Optional human note (a caveat, a tier condition)."
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "description": "Optional alternate model ids that resolve to this canonical model_id (e.g. an undated short form Claude Code emits). Series metadata only; does not alter pricing."
     }
   }
 }

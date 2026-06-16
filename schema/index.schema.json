@@ -20,7 +20,13 @@
           "id": { "type": "string", "minLength": 1 },
           "provider": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
           "file": { "type": "string", "description": "Repo-relative path to the content-hashed series file." },
-          "latestRev": { "type": "string", "description": "Content hash of the current series file." }
+          "latestRev": { "type": "string", "description": "Content hash of the current series file." },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true,
+            "description": "Optional alternate model ids that resolve to this canonical model (sorted, deduped)."
+          }
         }
       }
     }

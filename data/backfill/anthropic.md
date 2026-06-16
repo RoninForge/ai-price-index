@@ -20,6 +20,33 @@ The current models (Opus 4, Opus 4.5, Sonnet 4.5, and Fable 5) were seeded from 
 Fable 5 (`claude-fable-5`, $10/$50, Anthropic's first public Mythos-class model) launched 2026-06-09;
 the listed API rate is free for subscription plans through 2026-06-22, standard metered from 2026-06-23.
 
+## What was added (2026-06-16, current Claude flagships + aliases)
+
+First-party verified against the Anthropic announcement pages below. Prices are USD per 1M tokens.
+All new rows are `provider_live` / `verified`, `last_validated_at` 2026-06-16, with `effective_to: null`.
+
+| model | input | output | effective_from | source_url |
+| --- | --- | --- | --- | --- |
+| claude-opus-4-6 | 5 | 25 | 2026-02-05 | https://www.anthropic.com/news/claude-opus-4-6 |
+| claude-opus-4-7 | 5 | 25 | 2026-04-16 | https://www.anthropic.com/news/claude-opus-4-7 |
+| claude-opus-4-8 | 5 | 25 | 2026-05-28 | https://www.anthropic.com/news/claude-opus-4-8 |
+| claude-sonnet-4-6 | 3 | 15 | 2026-02-17 | https://www.anthropic.com/news/claude-sonnet-4-6 |
+| claude-haiku-4-5-20251001 | 1 | 5 | 2025-10-15 | https://www.anthropic.com/news/claude-haiku-4-5 |
+| claude-opus-4-1-20250805 | 15 | 75 | 2025-08-05 | https://www.anthropic.com/news/claude-opus-4-1 |
+
+Aliases (an undated short id Claude Code also emits) were attached as series metadata, not new rows:
+`claude-opus-4-5-20251101` -> `claude-opus-4-5`, `claude-sonnet-4-5-20250929` -> `claude-sonnet-4-5`,
+`claude-haiku-4-5-20251001` -> `claude-haiku-4-5`, `claude-opus-4-1-20250805` -> `claude-opus-4-1`.
+The Opus 4.6 / 4.7 / 4.8 and Sonnet 4.6 short undated ids are the canonical ids (no dated form in the
+wild), so they carry no alias.
+
+`claude-opus-4-1-20250805` is deprecated (2026-06-05) with a scheduled retirement of 2026-08-05 per the
+model-deprecations page. Because the retirement is in the future, `effective_to` stays `null` (the model
+is still current) per the locked modeling rule; it flips to a closed interval only once retirement passes.
+
+BudgetClaw's bundled price table was used only as a corroborating cross-check; every price above was
+read directly off the first-party Anthropic announcement page, not from any aggregator or our own tool.
+
 ## Notable findings
 
 - **Claude 3.5 Haiku launched at a 4x premium over Claude 3 Haiku** ($1/$5 vs $0.25/$1.25) on

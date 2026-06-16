@@ -48,14 +48,29 @@ def connect(db_path):
     return con
 
 
+def has_column(con, table, column):
+    rows = con.execute("PRAGMA table_info(%s)" % table).fetchall()
+    return any(r["name"] == column for r in rows)
+
+
+def ensure_aliases_column(con):
+    """Idempotent migration: add the nullable JSON aliases column if an older DB predates it."""
+    if has_column(con, "price_records", "aliases"):
+        return False
+    con.execute("ALTER TABLE price_records ADD COLUMN aliases TEXT")
+    return True
+
+
 def cmd_init(args):
     con = connect(args.db)
     with open(args.schema, "r", encoding="utf-8") as f:
         con.executescript(f.read())
+    migrated = ensure_aliases_column(con)
     con.commit()
     mode = con.execute("PRAGMA journal_mode;").fetchone()[0]
     con.close()
-    print("init ok: schema applied to %s (journal_mode=%s)" % (args.db, mode))
+    print("init ok: schema applied to %s (journal_mode=%s)%s" % (
+        args.db, mode, " [migrated: +aliases]" if migrated else ""))
 
 
 def load_record_files(records_dir):
@@ -77,18 +92,32 @@ def load_record_files(records_dir):
     return out
 
 
+def encode_aliases(r):
+    """JSON-encode the record's aliases (sorted, deduped) for storage, or None if absent/empty."""
+    raw = r.get("aliases")
+    if not raw:
+        return None
+    uniq = sorted({a for a in raw if isinstance(a, str) and a})
+    if not uniq:
+        return None
+    return json.dumps(uniq, separators=(",", ":"))
+
+
 def cmd_seed(args):
     con = connect(args.db)
+    ensure_aliases_column(con)
     recorded_at = now_iso(args.now)
     records = load_record_files(args.records_dir)
     inserted = superseded = unchanged = 0
     for _path, _i, r in records:
         existing = con.execute(
-            "SELECT record_id, price_usd, unit, source_url, last_validated_at, effective_to, confidence "
+            "SELECT record_id, price_usd, unit, source_url, last_validated_at, effective_to, confidence, aliases "
             "FROM price_records WHERE superseded_at IS NULL "
             "AND provider=? AND model_id=? AND variation=? AND effective_from=?",
             (r["provider"], r["model_id"], r["variation"], r["effective_from"]),
         ).fetchone()
+
+        aliases_json = encode_aliases(r)
 
         if existing is not None:
             same = (
@@ -98,6 +127,7 @@ def cmd_seed(args):
                 and existing["last_validated_at"] == r["last_validated_at"]
                 and (existing["effective_to"] or None) == (r.get("effective_to") or None)
                 and existing["confidence"] == r["confidence"]
+                and (existing["aliases"] or None) == aliases_json
             )
             if same:
                 unchanged += 1
@@ -117,12 +147,12 @@ def cmd_seed(args):
         con.execute(
             "INSERT INTO price_records (record_id, provider, model_id, variation, unit, price_usd, "
             "effective_from, effective_to, recorded_at, superseded_at, last_validated_at, source_url, "
-            "source_kind, source_snapshot_ts, confidence, supersedes_id, change_reason, recorded_by) "
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "source_kind, source_snapshot_ts, confidence, aliases, supersedes_id, change_reason, recorded_by) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 str(uuid.uuid4()), r["provider"], r["model_id"], r["variation"], r["unit"], float(r["price_usd"]),
                 r["effective_from"], r.get("effective_to"), recorded_at, None, r["last_validated_at"], r["source_url"],
-                r["source_kind"], r.get("source_snapshot_ts"), r["confidence"], supersedes_id, change_reason, args.recorded_by,
+                r["source_kind"], r.get("source_snapshot_ts"), r["confidence"], aliases_json, supersedes_id, change_reason, args.recorded_by,
             ),
         )
     con.commit()
@@ -132,15 +162,17 @@ def cmd_seed(args):
 
 def cmd_export(args):
     con = connect(args.db)
+    ensure_aliases_column(con)
     rows = con.execute(
         "SELECT provider, model_id, variation, unit, price_usd, effective_from, effective_to, "
-        "last_validated_at, source_url, source_snapshot_ts, confidence "
+        "last_validated_at, source_url, source_snapshot_ts, confidence, aliases "
         "FROM price_records WHERE superseded_at IS NULL "
         "ORDER BY provider, model_id, variation, effective_from"
     ).fetchall()
     con.close()
 
     models = {}
+    model_aliases = {}  # (provider, model_id) -> set of alias strings, unioned across current rows
     for r in rows:
         key = (r["provider"], r["model_id"])
         iv = {
@@ -156,6 +188,15 @@ def cmd_export(args):
             iv["snapshot"] = r["source_snapshot_ts"]
         models.setdefault(key, {}).setdefault(r["variation"], []).append(iv)
 
+        bucket = model_aliases.setdefault(key, set())
+        if r["aliases"]:
+            try:
+                for a in json.loads(r["aliases"]):
+                    if isinstance(a, str) and a:
+                        bucket.add(a)
+            except (ValueError, TypeError):
+                pass
+
     out = args.out_dir
     models_dir = os.path.join(out, "models")
     if os.path.isdir(models_dir):
@@ -165,7 +206,10 @@ def cmd_export(args):
     index_models = []
     current = []
     for (provider, model_id), variations in sorted(models.items()):
+        aliases = sorted(model_aliases.get((provider, model_id), set()))
         content = {"model": model_id, "provider": provider, "variations": variations}
+        if aliases:
+            content["aliases"] = aliases
         blob = json.dumps(content, sort_keys=True, separators=(",", ":")).encode("utf-8")
         digest = hashlib.sha256(blob).hexdigest()[:8]
         rel = "models/%s/%s.v%s.json" % (provider, model_id, digest)
@@ -174,7 +218,10 @@ def cmd_export(args):
         with open(abspath, "w", encoding="utf-8") as f:
             json.dump(content, f, indent=2, sort_keys=True)
             f.write("\n")
-        index_models.append({"id": model_id, "provider": provider, "file": rel, "latestRev": digest})
+        index_entry = {"id": model_id, "provider": provider, "file": rel, "latestRev": digest}
+        if aliases:
+            index_entry["aliases"] = aliases
+        index_models.append(index_entry)
 
         for variation, ivs in variations.items():
             # "current" means there is an OPEN interval (to is None). A model whose every interval has

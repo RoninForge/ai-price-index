@@ -33,6 +33,11 @@ const warnings = [];
 const err = (file, where, msg) => errors.push(`${file} ${where}: ${msg}`);
 const warn = (file, where, msg) => warnings.push(`${file} ${where}: ${msg}`);
 
+// cross-file alias bookkeeping, populated by validateRecord and checked after the loop
+const canonicalModelIds = new Set();
+const aliasToModel = new Map();
+const aliasClashes = [];
+
 const isDate = (s) => typeof s === 'string' && DATE_RE.test(s) && !Number.isNaN(Date.parse(s));
 
 function listJson(dir) {
@@ -94,17 +99,53 @@ function validateRecord(file, i, r) {
 	if (r.source_snapshot_ts !== undefined && !/^\d{8,14}$/.test(r.source_snapshot_ts))
 		err(file, at, `source_snapshot_ts must be 8-14 digits, got "${r.source_snapshot_ts}"`);
 
+	if (r.aliases !== undefined) {
+		if (!Array.isArray(r.aliases)) err(file, at, 'aliases must be an array of strings');
+		else {
+			const seen = new Set();
+			for (const a of r.aliases) {
+				if (typeof a !== 'string' || !a) err(file, at, `aliases entries must be non-empty strings, got ${JSON.stringify(a)}`);
+				else if (seen.has(a)) err(file, at, `duplicate alias "${a}"`);
+				else seen.add(a);
+			}
+		}
+	}
+
 	const allowed = new Set([
 		'provider', 'model_id', 'variation', 'unit', 'price_usd', 'effective_from', 'effective_to',
-		'last_validated_at', 'source_url', 'source_kind', 'source_snapshot_ts', 'confidence', 'notes'
+		'last_validated_at', 'source_url', 'source_kind', 'source_snapshot_ts', 'confidence', 'notes', 'aliases'
 	]);
 	for (const k of Object.keys(r)) if (!allowed.has(k)) err(file, at, `unknown field "${k}"`);
+
+	// collect aliases for the cross-file uniqueness check (run after the record loop)
+	if (typeof r.model_id === 'string' && r.model_id) {
+		canonicalModelIds.add(r.model_id);
+		if (Array.isArray(r.aliases)) {
+			for (const a of r.aliases) {
+				if (typeof a !== 'string' || !a) continue;
+				const prev = aliasToModel.get(a);
+				if (prev === undefined) aliasToModel.set(a, r.model_id);
+				else if (prev !== r.model_id) aliasClashes.push({ file, alias: a, a: prev, b: r.model_id });
+			}
+		}
+	}
 }
 
 function validateSeries(file, s) {
 	if (typeof s !== 'object' || s === null) return err(file, '(root)', 'not an object');
 	if (typeof s.model !== 'string' || !s.model) err(file, '(root)', 'model required');
 	if (!PROVIDER_RE.test(s.provider || '')) err(file, '(root)', `bad provider "${s.provider}"`);
+	if (s.aliases !== undefined) {
+		if (!Array.isArray(s.aliases)) err(file, '(root)', 'aliases must be an array of strings');
+		else {
+			const seen = new Set();
+			for (const a of s.aliases) {
+				if (typeof a !== 'string' || !a) err(file, '(root)', `aliases entries must be non-empty strings, got ${JSON.stringify(a)}`);
+				else if (seen.has(a)) err(file, '(root)', `duplicate alias "${a}"`);
+				else seen.add(a);
+			}
+		}
+	}
 	if (typeof s.variations !== 'object' || s.variations === null || !Object.keys(s.variations).length)
 		return err(file, '(root)', 'variations object required with at least one variation');
 	for (const [v, arr] of Object.entries(s.variations)) {
@@ -141,6 +182,49 @@ for (const dir of ['examples/series', 'data/series', 'data/ai-price-index/models
 		seriesCount++;
 		validateSeries(file, data);
 	}
+}
+
+// Cross-file alias integrity: an alias must not equal any canonical model_id, and two different
+// models must not claim the same alias.
+for (const [alias, model] of aliasToModel) {
+	if (canonicalModelIds.has(alias))
+		err('(cross-file)', 'aliases', `alias "${alias}" (claimed by "${model}") collides with a canonical model_id`);
+}
+for (const c of aliasClashes) {
+	err(c.file, 'aliases', `alias "${c.alias}" claimed by two models: "${c.a}" and "${c.b}"`);
+}
+
+// Light validation of the shared cross-engine golden-vector fixture (if present). Cheap by design:
+// confirm structure + that each vector carries the fields the engines reproduce. Pricing math is
+// reproduced by the engines' own tests, not here.
+function validateVectorsFixture(file, fx) {
+	if (typeof fx !== 'object' || fx === null) return err(file, '(root)', 'not an object');
+	if (typeof fx.schemaVersion !== 'string' || !fx.schemaVersion) err(file, '(root)', 'schemaVersion required');
+	if (typeof fx.cache_multipliers !== 'object' || fx.cache_multipliers === null)
+		err(file, '(root)', 'cache_multipliers object required');
+	if (!Array.isArray(fx.vectors) || !fx.vectors.length) return err(file, '(root)', 'vectors must be a non-empty array');
+	fx.vectors.forEach((v, i) => {
+		const at = `vectors[${i}]`;
+		if (typeof v !== 'object' || v === null) return err(file, at, 'not an object');
+		if (typeof v.name !== 'string' || !v.name) err(file, at, 'name required');
+		if (typeof v.model !== 'string' || !v.model) err(file, at, 'model must be a string');
+		if (!isDate(v.at)) err(file, at, `at not an ISO date: "${v.at}"`);
+		if (typeof v.usage !== 'object' || v.usage === null) err(file, at, 'usage object required');
+		else for (const [k, n] of Object.entries(v.usage))
+			if (typeof n !== 'number' || Number.isNaN(n)) err(file, at, `usage.${k} must be a number`);
+		const hasExpectedUsd = typeof v.expected_usd === 'number' && !Number.isNaN(v.expected_usd);
+		const hasExpectedTag = v.expected === 'unknown_model';
+		if (!hasExpectedUsd && !hasExpectedTag)
+			err(file, at, 'each vector needs a numeric expected_usd OR expected:"unknown_model"');
+		if (v.resolves_to !== undefined && (typeof v.resolves_to !== 'string' || !v.resolves_to))
+			err(file, at, 'resolves_to must be a non-empty string when present');
+	});
+}
+
+const fixturePath = join('examples', 'pricing-vectors.json');
+if (existsSync(fixturePath)) {
+	const fx = parse(fixturePath);
+	if (fx !== undefined) validateVectorsFixture(fixturePath, fx);
 }
 
 for (const w of warnings) console.warn(`WARN  ${w}`);

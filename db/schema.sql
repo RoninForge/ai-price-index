@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS price_records (
   source_kind        TEXT NOT NULL,           -- 'provider_live'|'wayback'|'changelog'|'aggregator'|'manual'
   source_snapshot_ts TEXT,                    -- Wayback capture stamp, else NULL
   confidence         TEXT NOT NULL,           -- 'verified'|'archived'|'inferred'|'estimated'
+  aliases            TEXT,                    -- JSON-encoded array of alternate model ids, else NULL (series metadata)
 
   -- correction audit trail
   supersedes_id      TEXT REFERENCES price_records(record_id),

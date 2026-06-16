@@ -38,6 +38,7 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
+    "aliases": ["claude-opus-4-5"],
     "notes": "Opus 4.5 cut the Opus flagship input price from 15 to 5 per Mtok."
   },
   {
@@ -51,7 +52,8 @@
     "last_validated_at": "2026-06-12",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "aliases": ["claude-opus-4-5"]
   },
   {
     "provider": "anthropic",
@@ -64,7 +66,8 @@
     "last_validated_at": "2026-06-12",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "aliases": ["claude-sonnet-4-5"]
   },
   {
     "provider": "anthropic",
@@ -77,7 +80,8 @@
     "last_validated_at": "2026-06-12",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "aliases": ["claude-sonnet-4-5"]
   },
   {
     "provider": "anthropic",
@@ -308,5 +312,177 @@
     "confidence": "verified",
     "variation": "output",
     "price_usd": 50
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-6",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-02-05",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-6",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4.6 at the post-4.5 lower tier ($5/$25 standard). Short undated id is what Claude Code emits; no dated form in the wild, so short id is canonical."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-6",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-02-05",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-6",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4.6 at the post-4.5 lower tier ($5/$25 standard). Short undated id is what Claude Code emits; no dated form in the wild, so short id is canonical."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-7",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-04-16",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-7",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4.7 standard $5/$25. New tokenizer may consume more tokens per task but per-token price unchanged."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-7",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-04-16",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-7",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Opus 4.7 standard $5/$25. New tokenizer may consume more tokens per task but per-token price unchanged."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-8",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-05-28",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-8",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Current Claude Code Opus flagship, standard $5/$25."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-8",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-05-28",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-8",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Current Claude Code Opus flagship, standard $5/$25."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-6",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 3,
+    "effective_from": "2026-02-17",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-sonnet-4-6",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Sonnet holds the $3/$15 tier. Short undated id is what Claude Code emits; canonical."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-4-6",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2026-02-17",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-sonnet-4-6",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Sonnet holds the $3/$15 tier. Short undated id is what Claude Code emits; canonical."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-haiku-4-5-20251001",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 1,
+    "effective_from": "2025-10-15",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-haiku-4-5",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": ["claude-haiku-4-5"],
+    "notes": "Haiku 4.5 at $1/$5 (NOT the older 3.5-Haiku $0.80/$4). GA/announcement 2025-10-15; the snapshot id encodes 2025-10-01. Both dated and short forms emitted; dated is canonical, short is an alias."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-haiku-4-5-20251001",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2025-10-15",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-haiku-4-5",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": ["claude-haiku-4-5"],
+    "notes": "Haiku 4.5 at $1/$5 (NOT the older 3.5-Haiku $0.80/$4). GA/announcement 2025-10-15; the snapshot id encodes 2025-10-01. Both dated and short forms emitted; dated is canonical, short is an alias."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-1-20250805",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2025-08-05",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-1",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": ["claude-opus-4-1"],
+    "notes": "Opus 4.1 at the original $15/$75 Opus tier. Deprecated 2026-06-05 with scheduled retirement 2026-08-05 (per the model-deprecations page); retirement is in the FUTURE so effective_to stays null (model still current) per the locked modeling rule."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-4-1-20250805",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 75,
+    "effective_from": "2025-08-05",
+    "effective_to": null,
+    "last_validated_at": "2026-06-16",
+    "source_url": "https://www.anthropic.com/news/claude-opus-4-1",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": ["claude-opus-4-1"],
+    "notes": "Opus 4.1 at the original $15/$75 Opus tier. Deprecated 2026-06-05 with scheduled retirement 2026-08-05 (per the model-deprecations page); retirement is in the FUTURE so effective_to stays null (model still current) per the locked modeling rule."
   }
 ]
