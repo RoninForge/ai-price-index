@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-06-15",
+  "dataModified": "2026-06-16",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -46,6 +46,24 @@
       "latestRev": "c100e363"
     },
     {
+      "id": "claude-haiku-4-5-20251001",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-haiku-4-5-20251001.vb1dd84cd.json",
+      "latestRev": "b1dd84cd",
+      "aliases": [
+        "claude-haiku-4-5"
+      ]
+    },
+    {
+      "id": "claude-opus-4-1-20250805",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-1-20250805.v5117b274.json",
+      "latestRev": "5117b274",
+      "aliases": [
+        "claude-opus-4-1"
+      ]
+    },
+    {
       "id": "claude-opus-4-20250514",
       "provider": "anthropic",
       "file": "models/anthropic/claude-opus-4-20250514.v860719f7.json",
@@ -54,14 +72,44 @@
     {
       "id": "claude-opus-4-5-20251101",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-5-20251101.v12f2b73d.json",
-      "latestRev": "12f2b73d"
+      "file": "models/anthropic/claude-opus-4-5-20251101.v084ac979.json",
+      "latestRev": "084ac979",
+      "aliases": [
+        "claude-opus-4-5"
+      ]
+    },
+    {
+      "id": "claude-opus-4-6",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-6.v9046843a.json",
+      "latestRev": "9046843a"
+    },
+    {
+      "id": "claude-opus-4-7",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-7.vde94a932.json",
+      "latestRev": "de94a932"
+    },
+    {
+      "id": "claude-opus-4-8",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-opus-4-8.v1b09627d.json",
+      "latestRev": "1b09627d"
     },
     {
       "id": "claude-sonnet-4-5-20250929",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-sonnet-4-5-20250929.vc41a8475.json",
-      "latestRev": "c41a8475"
+      "file": "models/anthropic/claude-sonnet-4-5-20250929.v9aeb5571.json",
+      "latestRev": "9aeb5571",
+      "aliases": [
+        "claude-sonnet-4-5"
+      ]
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-sonnet-4-6.v7b912906.json",
+      "latestRev": "7b912906"
     },
     {
       "id": "deepseek-v4-flash",

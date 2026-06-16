@@ -1,4 +1,7 @@
 {
+  "aliases": [
+    "claude-sonnet-4-5"
+  ],
   "model": "claude-sonnet-4-5-20250929",
   "provider": "anthropic",
   "variations": {
