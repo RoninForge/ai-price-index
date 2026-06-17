@@ -1,0 +1,28 @@
+{
+  "model": "jamba-mini",
+  "provider": "ai21",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-01-01",
+        "last_validated": "2026-06-17",
+        "price_usd": 0.2,
+        "src": "https://www.ai21.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-01-01",
+        "last_validated": "2026-06-17",
+        "price_usd": 0.4,
+        "src": "https://www.ai21.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

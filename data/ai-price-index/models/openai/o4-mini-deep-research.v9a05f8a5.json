@@ -1,0 +1,28 @@
+{
+  "model": "o4-mini-deep-research",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-06-26",
+        "last_validated": "2026-06-17",
+        "price_usd": 2,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-06-26",
+        "last_validated": "2026-06-17",
+        "price_usd": 8,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

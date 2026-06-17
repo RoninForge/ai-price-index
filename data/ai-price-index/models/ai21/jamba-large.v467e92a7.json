@@ -1,0 +1,28 @@
+{
+  "model": "jamba-large",
+  "provider": "ai21",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-07-03",
+        "last_validated": "2026-06-17",
+        "price_usd": 2,
+        "src": "https://www.ai21.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-07-03",
+        "last_validated": "2026-06-17",
+        "price_usd": 8,
+        "src": "https://www.ai21.com/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

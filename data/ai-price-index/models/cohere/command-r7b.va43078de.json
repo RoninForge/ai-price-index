@@ -1,0 +1,28 @@
+{
+  "model": "command-r7b",
+  "provider": "cohere",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2024-12-13",
+        "last_validated": "2026-06-17",
+        "price_usd": 0.0375,
+        "src": "https://cohere.com/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2024-12-13",
+        "last_validated": "2026-06-17",
+        "price_usd": 0.15,
+        "src": "https://cohere.com/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

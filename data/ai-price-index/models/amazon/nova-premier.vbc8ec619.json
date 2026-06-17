@@ -1,0 +1,28 @@
+{
+  "model": "nova-premier",
+  "provider": "amazon",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-04-30",
+        "last_validated": "2026-06-17",
+        "price_usd": 2.5,
+        "src": "https://aws.amazon.com/nova/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-04-30",
+        "last_validated": "2026-06-17",
+        "price_usd": 12.5,
+        "src": "https://aws.amazon.com/nova/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

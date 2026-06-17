@@ -1,8 +1,98 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-06-16",
+  "dataModified": "2026-06-17",
   "license": "CC-BY-4.0",
   "models": [
+    {
+      "id": "jamba-large",
+      "provider": "ai21",
+      "file": "models/ai21/jamba-large.v467e92a7.json",
+      "latestRev": "467e92a7"
+    },
+    {
+      "id": "jamba-mini",
+      "provider": "ai21",
+      "file": "models/ai21/jamba-mini.vefba1809.json",
+      "latestRev": "efba1809"
+    },
+    {
+      "id": "qwen-flash",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen-flash.v617dbacb.json",
+      "latestRev": "617dbacb"
+    },
+    {
+      "id": "qwen-max",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen-max.v45c87ea3.json",
+      "latestRev": "45c87ea3"
+    },
+    {
+      "id": "qwen-plus",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen-plus.v79970484.json",
+      "latestRev": "79970484"
+    },
+    {
+      "id": "qwen-turbo",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen-turbo.v640da853.json",
+      "latestRev": "640da853"
+    },
+    {
+      "id": "qwen3-coder-plus",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3-coder-plus.v453e128a.json",
+      "latestRev": "453e128a"
+    },
+    {
+      "id": "qwen3-max",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3-max.v070c616b.json",
+      "latestRev": "070c616b"
+    },
+    {
+      "id": "qwen3.5-flash",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3.5-flash.vd6e08778.json",
+      "latestRev": "d6e08778"
+    },
+    {
+      "id": "qwen3.5-plus",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3.5-plus.vc18720f4.json",
+      "latestRev": "c18720f4"
+    },
+    {
+      "id": "nova-2-lite",
+      "provider": "amazon",
+      "file": "models/amazon/nova-2-lite.v93a1c586.json",
+      "latestRev": "93a1c586"
+    },
+    {
+      "id": "nova-lite",
+      "provider": "amazon",
+      "file": "models/amazon/nova-lite.vcaf40631.json",
+      "latestRev": "caf40631"
+    },
+    {
+      "id": "nova-micro",
+      "provider": "amazon",
+      "file": "models/amazon/nova-micro.vb3f3b7a6.json",
+      "latestRev": "b3f3b7a6"
+    },
+    {
+      "id": "nova-premier",
+      "provider": "amazon",
+      "file": "models/amazon/nova-premier.vbc8ec619.json",
+      "latestRev": "bc8ec619"
+    },
+    {
+      "id": "nova-pro",
+      "provider": "amazon",
+      "file": "models/amazon/nova-pro.vedd18c83.json",
+      "latestRev": "edd18c83"
+    },
     {
       "id": "claude-3-5-haiku-20241022",
       "provider": "anthropic",
@@ -116,6 +206,30 @@
       "provider": "anthropic",
       "file": "models/anthropic/claude-sonnet-4-6.v7b912906.json",
       "latestRev": "7b912906"
+    },
+    {
+      "id": "command-a-plus",
+      "provider": "cohere",
+      "file": "models/cohere/command-a-plus.v90f1fbf4.json",
+      "latestRev": "90f1fbf4"
+    },
+    {
+      "id": "command-r",
+      "provider": "cohere",
+      "file": "models/cohere/command-r.v7b972e92.json",
+      "latestRev": "7b972e92"
+    },
+    {
+      "id": "command-r-plus",
+      "provider": "cohere",
+      "file": "models/cohere/command-r-plus.vbd80fc92.json",
+      "latestRev": "bd80fc92"
+    },
+    {
+      "id": "command-r7b",
+      "provider": "cohere",
+      "file": "models/cohere/command-r7b.va43078de.json",
+      "latestRev": "a43078de"
     },
     {
       "id": "deepseek-v4-flash",
@@ -292,6 +406,24 @@
       "latestRev": "6938aea6"
     },
     {
+      "id": "gpt-5.1",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.1.v844dedbc.json",
+      "latestRev": "844dedbc"
+    },
+    {
+      "id": "gpt-5.2",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.2.v3c1a6a12.json",
+      "latestRev": "3c1a6a12"
+    },
+    {
+      "id": "gpt-5.2-pro",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.2-pro.v05fa6a87.json",
+      "latestRev": "05fa6a87"
+    },
+    {
       "id": "gpt-5.4",
       "provider": "openai",
       "file": "models/openai/gpt-5.4.v42a17bf3.json",
@@ -326,6 +458,60 @@
       "provider": "openai",
       "file": "models/openai/gpt-5.5-pro.v57c3d834.json",
       "latestRev": "57c3d834"
+    },
+    {
+      "id": "o1",
+      "provider": "openai",
+      "file": "models/openai/o1.va77b3f00.json",
+      "latestRev": "a77b3f00"
+    },
+    {
+      "id": "o1-mini",
+      "provider": "openai",
+      "file": "models/openai/o1-mini.vbe8651d2.json",
+      "latestRev": "be8651d2"
+    },
+    {
+      "id": "o1-pro",
+      "provider": "openai",
+      "file": "models/openai/o1-pro.vcc5a338d.json",
+      "latestRev": "cc5a338d"
+    },
+    {
+      "id": "o3",
+      "provider": "openai",
+      "file": "models/openai/o3.v9949aed2.json",
+      "latestRev": "9949aed2"
+    },
+    {
+      "id": "o3-deep-research",
+      "provider": "openai",
+      "file": "models/openai/o3-deep-research.v93e8708f.json",
+      "latestRev": "93e8708f"
+    },
+    {
+      "id": "o3-mini",
+      "provider": "openai",
+      "file": "models/openai/o3-mini.v45ea93ba.json",
+      "latestRev": "45ea93ba"
+    },
+    {
+      "id": "o3-pro",
+      "provider": "openai",
+      "file": "models/openai/o3-pro.v5502a8fb.json",
+      "latestRev": "5502a8fb"
+    },
+    {
+      "id": "o4-mini",
+      "provider": "openai",
+      "file": "models/openai/o4-mini.vc87eb470.json",
+      "latestRev": "c87eb470"
+    },
+    {
+      "id": "o4-mini-deep-research",
+      "provider": "openai",
+      "file": "models/openai/o4-mini-deep-research.v9a05f8a5.json",
+      "latestRev": "9a05f8a5"
     },
     {
       "id": "grok-4.20-0309-reasoning",

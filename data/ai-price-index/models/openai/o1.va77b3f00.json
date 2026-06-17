@@ -1,0 +1,28 @@
+{
+  "model": "o1",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2024-12-17",
+        "last_validated": "2026-06-17",
+        "price_usd": 15,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2024-12-17",
+        "last_validated": "2026-06-17",
+        "price_usd": 60,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

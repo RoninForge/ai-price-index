@@ -1,0 +1,28 @@
+{
+  "model": "o3-pro",
+  "provider": "openai",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2025-06-10",
+        "last_validated": "2026-06-17",
+        "price_usd": 20,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2025-06-10",
+        "last_validated": "2026-06-17",
+        "price_usd": 80,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

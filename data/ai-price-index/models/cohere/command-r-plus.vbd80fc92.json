@@ -1,0 +1,28 @@
+{
+  "model": "command-r-plus",
+  "provider": "cohere",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2024-08-30",
+        "last_validated": "2026-06-17",
+        "price_usd": 2.5,
+        "src": "https://docs.cohere.com/docs/command-r-plus",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2024-08-30",
+        "last_validated": "2026-06-17",
+        "price_usd": 10,
+        "src": "https://docs.cohere.com/docs/command-r-plus",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
