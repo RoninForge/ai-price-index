@@ -516,20 +516,20 @@
     {
       "id": "grok-4.20-0309-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-reasoning.v929de0b7.json",
-      "latestRev": "929de0b7"
+      "file": "models/xai/grok-4.20-0309-reasoning.ve015cd5b.json",
+      "latestRev": "e015cd5b"
     },
     {
       "id": "grok-4.3",
       "provider": "xai",
-      "file": "models/xai/grok-4.3.v00d3b1d2.json",
-      "latestRev": "00d3b1d2"
+      "file": "models/xai/grok-4.3.vf42b27c5.json",
+      "latestRev": "f42b27c5"
     },
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v03fa9e7c.json",
-      "latestRev": "03fa9e7c"
+      "file": "models/xai/grok-build-0.1.vef61c7d2.json",
+      "latestRev": "ef61c7d2"
     }
   ]
 }

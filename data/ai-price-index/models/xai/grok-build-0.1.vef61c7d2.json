@@ -6,7 +6,7 @@
       {
         "confidence": "inferred",
         "from": "2026-06-01",
-        "last_validated": "2026-06-15",
+        "last_validated": "2026-06-17",
         "price_usd": 1,
         "src": "https://docs.x.ai/docs/models/grok-build-0.1",
         "to": null,
@@ -17,7 +17,7 @@
       {
         "confidence": "inferred",
         "from": "2026-06-01",
-        "last_validated": "2026-06-15",
+        "last_validated": "2026-06-17",
         "price_usd": 2,
         "src": "https://docs.x.ai/docs/models/grok-build-0.1",
         "to": null,
