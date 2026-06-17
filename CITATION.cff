@@ -1,0 +1,30 @@
+# Machine-readable citation metadata. GitHub renders a "Cite this repository" button from this file.
+# After enabling the Zenodo GitHub integration and cutting a release, add the minted DOI below
+# (uncomment `doi:` and the `identifiers:` block) so every versioned snapshot is citeable.
+cff-version: 1.2.0
+title: "AI Price Index"
+message: "If you use this dataset, please cite it using the metadata in this file."
+type: dataset
+authors:
+  - name: "RoninForge"
+    website: "https://roninforge.org"
+abstract: >-
+  An open, dated, first-party-sourced record of AI model API prices over time.
+  Every price carries a verifiable first-party source and the date it was last
+  validated, including historical prices, so past token costs can be valued
+  point-in-time. Maintained with automated daily checks and human review of
+  every price change.
+url: "https://roninforge.org/data/ai-price-index/"
+repository-code: "https://github.com/RoninForge/ai-price-index"
+license: CC-BY-4.0
+keywords:
+  - AI model pricing
+  - LLM API prices
+  - token pricing
+  - price history
+  - point-in-time pricing
+# doi: 10.5281/zenodo.XXXXXXX        # concept DOI (all versions) - add after Zenodo setup
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: The concept DOI for all versions of the AI Price Index dataset.

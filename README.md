@@ -1,5 +1,10 @@
 # AI Price Index
 
+[![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational)](DATA-LICENSE.md)
+[![Tooling: MIT](https://img.shields.io/badge/tooling-MIT-informational)](LICENSE)
+[![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
+<!-- After Zenodo setup, add the DOI badge here: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) -->
+
 An open, dated, first-party-sourced record of AI model API prices over time.
 
 Most price lists tell you what a model costs **today**. This one tells you what it cost **on a
@@ -59,6 +64,30 @@ node tools/validate.mjs        # validate everything locally
 
 When you publish anything derived from this data, attribute it: **"AI Price Index by RoninForge, CC
 BY 4.0"** with a link to this repository and the validation date of the values you used.
+
+## How to cite
+
+Prices change and corrections supersede without deleting history, so cite a **dated release** to keep
+your snapshot reproducible. Machine-readable citation metadata is in [`CITATION.cff`](CITATION.cff)
+(GitHub renders a "Cite this repository" button from it).
+
+Plain:
+
+> AI Price Index by RoninForge (https://roninforge.org/data/ai-price-index/), CC BY 4.0. Release `<tag>`, accessed `<date>`.
+
+BibTeX:
+
+```bibtex
+@misc{roninforge_ai_price_index,
+  author       = {{RoninForge}},
+  title        = {{AI Price Index: dated, first-party AI model API prices over time}},
+  howpublished = {\url{https://roninforge.org/data/ai-price-index/}},
+  note         = {Release <tag>. Data licensed CC BY 4.0. Accessed <date>.}
+}
+```
+
+For academic reuse, mint a DOI via the Zenodo GitHub integration (see the maintainer runbook); each
+release then gets its own version DOI, with a concept DOI that always resolves to the latest.
 
 ## Roadmap
 
