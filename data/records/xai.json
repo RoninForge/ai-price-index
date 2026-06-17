@@ -7,7 +7,7 @@
     "price_usd": 1.25,
     "effective_from": "2026-05-05",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-4.3",
     "source_kind": "provider_live",
     "confidence": "verified",
@@ -21,7 +21,7 @@
     "price_usd": 2.5,
     "effective_from": "2026-05-05",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-4.3",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -34,11 +34,11 @@
     "price_usd": 1.25,
     "effective_from": "2026-03-09",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "Grok 4.20 reasoning variant. Price from docs.x.ai. Date inferred from the March 2026 release notes plus the -0309 build slug. The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are not separately recorded."
+    "confidence": "verified",
+    "notes": "Grok 4.20 reasoning variant. Price + current lineup confirmed first-party on the x.ai pricing page (2026-06-17); date from the -0309 build slug (2026-03-09). The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are not separately recorded. (LiteLLM lists $2/$6 for this model, which is wrong; see IGNORE_RATE_DIFFS in pricing-audit.yml.)"
   },
   {
     "provider": "xai",
@@ -48,10 +48,10 @@
     "price_usd": 2.5,
     "effective_from": "2026-03-09",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
     "source_kind": "provider_live",
-    "confidence": "inferred"
+    "confidence": "verified"
   },
   {
     "provider": "xai",
@@ -61,7 +61,7 @@
     "price_usd": 1,
     "effective_from": "2026-06-01",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-build-0.1",
     "source_kind": "provider_live",
     "confidence": "inferred",
@@ -75,7 +75,7 @@
     "price_usd": 2,
     "effective_from": "2026-06-01",
     "effective_to": null,
-    "last_validated_at": "2026-06-15",
+    "last_validated_at": "2026-06-17",
     "source_url": "https://docs.x.ai/docs/models/grok-build-0.1",
     "source_kind": "provider_live",
     "confidence": "inferred"
