@@ -9,3 +9,6 @@ node_modules/
 db/*.db
 db/*.db-wal
 db/*.db-shm
+
+# derived export artifacts (regenerable via tools/hf-export.mjs)
+dist/
