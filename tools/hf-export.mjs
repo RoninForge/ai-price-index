@@ -58,6 +58,16 @@ writeFileSync(join(outDir, 'ai_price_index.json'), JSON.stringify(rows, null, 2)
 
 const providers = new Set(rows.map((r) => r.provider));
 const models = new Set(rows.map((r) => r.provider + '/' + r.model_id));
+
+// Render the dataset card from the committed template, injecting live counts so the
+// card never goes stale as the dataset grows. dist/ is gitignored and fully
+// regenerable from tools/hf/dataset-card.md + data/records/*.json.
+const card = readFileSync(join(root, 'tools', 'hf', 'dataset-card.md'), 'utf8')
+	.replaceAll('{{RECORDS}}', String(rows.length))
+	.replaceAll('{{MODELS}}', String(models.size))
+	.replaceAll('{{PROVIDERS}}', String(providers.size));
+writeFileSync(join(outDir, 'README.md'), card);
+
 console.log(
-	`rows=${rows.length}  providers=${providers.size}  models=${models.size}  -> dist/hf/`
+	`rows=${rows.length}  providers=${providers.size}  models=${models.size}  -> dist/hf/ (csv, json, README.md)`
 );

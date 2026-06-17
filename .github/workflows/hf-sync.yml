@@ -1,0 +1,54 @@
+name: hf-sync
+
+# Mirrors the dataset to the Hugging Face Hub (RoninForge/ai-price-index, a dataset
+# repo) whenever the curated price records change.
+#
+# Trigger parity with publish-on-merge.yml: a human merging an approved price record
+# is a push to main touching data/records/**. tools/hf-export.mjs reads straight from
+# data/records/*.json, so re-exporting here captures exactly the merged state.
+# huggingface_hub.upload_folder skips the commit when nothing changed, so a no-op
+# merge produces no Hugging Face commit. dist/ is gitignored and fully regenerable
+# from data/records/*.json + tools/hf/dataset-card.md.
+#
+# Requires secret:
+#   HF_TOKEN   Hugging Face token with WRITE access to the RoninForge/ai-price-index
+#              dataset repo (a fine-grained token scoped to that one repo is enough).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/records/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hf-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Build the Hugging Face dataset export
+        run: node tools/hf-export.mjs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install huggingface_hub
+        run: pip install --quiet "huggingface_hub>=0.34"
+
+      - name: Push dist/hf to the Hugging Face dataset
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tools/hf-push.py
