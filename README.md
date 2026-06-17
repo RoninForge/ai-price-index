@@ -3,7 +3,7 @@
 [![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational)](DATA-LICENSE.md)
 [![Tooling: MIT](https://img.shields.io/badge/tooling-MIT-informational)](LICENSE)
 [![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
-<!-- After Zenodo setup, add the DOI badge here: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX) -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20730241.svg)](https://doi.org/10.5281/zenodo.20730241)
 
 An open, dated, first-party-sourced record of AI model API prices over time.
 
@@ -86,8 +86,9 @@ BibTeX:
 }
 ```
 
-For academic reuse, mint a DOI via the Zenodo GitHub integration (see the maintainer runbook); each
-release then gets its own version DOI, with a concept DOI that always resolves to the latest.
+For academic reuse, cite the DOI (Zenodo): **[10.5281/zenodo.20730241](https://doi.org/10.5281/zenodo.20730241)**.
+This is the concept DOI and always resolves to the latest version; each release also gets its own
+version DOI for an exact, reproducible snapshot.
 
 ## Roadmap
 

@@ -23,8 +23,8 @@ keywords:
   - token pricing
   - price history
   - point-in-time pricing
-# doi: 10.5281/zenodo.XXXXXXX        # concept DOI (all versions) - add after Zenodo setup
-# identifiers:
-#   - type: doi
-#     value: 10.5281/zenodo.XXXXXXX
-#     description: The concept DOI for all versions of the AI Price Index dataset.
+doi: 10.5281/zenodo.20730241
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20730241
+    description: The concept DOI for all versions of the AI Price Index dataset.
