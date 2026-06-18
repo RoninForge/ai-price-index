@@ -1,12 +1,63 @@
 {
   "name": "ai-price-index",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Open, dated, first-party-sourced AI model API prices over time. Data CC BY 4.0, tooling MIT.",
+  "version": "1.0.0",
+  "description": "Open, dated, first-party-sourced AI model API prices over time. Look up what any model cost on any date, with the source. Data CC BY 4.0, tooling MIT.",
   "license": "MIT",
   "type": "module",
-  "homepage": "https://github.com/RoninForge/ai-price-index",
+  "author": "RoninForge (https://roninforge.org)",
+  "homepage": "https://roninforge.org/data/ai-price-index/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoninForge/ai-price-index.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RoninForge/ai-price-index/issues"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "pricing",
+    "price",
+    "cost",
+    "tokens",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "gemini",
+    "api",
+    "dataset",
+    "open-data",
+    "point-in-time"
+  ],
+  "main": "./lib/index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./lib/index.js"
+    },
+    "./bundle": "./lib/data.json",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "ai-price-index": "./bin/cli.js"
+  },
+  "files": [
+    "lib/",
+    "bin/",
+    "index.d.ts",
+    "README.md",
+    "LICENSE",
+    "DATA-LICENSE.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "validate": "node tools/validate.mjs"
+    "build": "node tools/build-npm.mjs",
+    "validate": "node tools/validate.mjs",
+    "test": "node tools/test-npm.mjs",
+    "prepare": "node tools/build-npm.mjs"
   }
 }

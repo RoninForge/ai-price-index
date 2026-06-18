@@ -1,5 +1,6 @@
 # AI Price Index
 
+[![npm](https://img.shields.io/npm/v/ai-price-index?color=informational)](https://www.npmjs.com/package/ai-price-index)
 [![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational)](DATA-LICENSE.md)
 [![Tooling: MIT](https://img.shields.io/badge/tooling-MIT-informational)](LICENSE)
 [![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
@@ -56,6 +57,62 @@ The published, served form is one file per model (`schema/model-series.schema.js
 `index.json` (`schema/index.schema.json`); a client binary-searches a model's interval array by date.
 
 ## Use the data
+
+Three ways, depending on what you are building.
+
+### npm package (point-in-time lookups, no network)
+
+```bash
+npm install ai-price-index
+```
+
+The dataset ships **bundled inside the package** (no runtime network call), so a lookup is
+deterministic and reproducible against the version you installed.
+
+```js
+import { current, priceOn, rate, meta } from 'ai-price-index';
+
+current('claude-opus-4-8');        // today's input/output rate + the source that proves it
+priceOn('gpt-4', '2024-01-01');    // the rate that was IN EFFECT on that date ($30 / $60 per Mtok)
+rate('gpt-4', '2024-01-01');       // -> { provider, model, date, inputPerM: 30, outputPerM: 60 }
+meta.dataModified;                 // the dataset date this install pins to
+```
+
+Short ids and a trailing `[1m]` display suffix resolve to the dated series (e.g. `claude-opus-4-5`
+-> `claude-opus-4-5-20251101`); pass `{ provider }` to disambiguate a bare model id. `usdForRollup`
+values a token rollup at a point in time with the shared cache multipliers (read 0.1x, write 1.25x /
+2x). The package reproduces the same [golden vectors](examples/pricing-vectors.json) as the other
+RoninForge pricing engines.
+
+CLI (no install needed):
+
+```bash
+npx ai-price-index claude-opus-4-8                 # today's rate
+npx ai-price-index gpt-4 --on 2024-01-01           # a past date
+npx ai-price-index list --provider openai          # known models
+npx ai-price-index claude-opus-4-8 --json          # machine-readable
+```
+
+### JSON API (fetch the current snapshot)
+
+The current prices are served as JSON with permissive CORS, so you can fetch them from a browser or
+a script. These are **stable URLs** (safe to depend on):
+
+```
+https://roninforge.org/data/ai-price-index/current.json   # current price of every model
+https://roninforge.org/data/ai-price-index/index.json     # model list + per-model series file map
+```
+
+```js
+const { prices } = await (await fetch('https://roninforge.org/data/ai-price-index/current.json')).json();
+const opus = prices.find((p) => p.model === 'claude-opus-4-8' && p.variation === 'input');
+console.log(opus.price_usd, opus.src);  // 5  https://www.anthropic.com/news/claude-opus-4-8
+```
+
+For full price **history** (every dated interval, not just current), use the npm package or clone the
+repo. Per-model series filenames under `models/` are content-hashed and not stable; do not hardcode them.
+
+### Clone the raw dataset
 
 ```bash
 git clone https://github.com/RoninForge/ai-price-index

@@ -12,3 +12,6 @@ db/*.db-shm
 
 # derived export artifacts (regenerable via tools/hf-export.mjs)
 dist/
+
+# the npm package's inline data bundle (regenerable via tools/build-npm.mjs, built on prepare/prepack)
+lib/data.json

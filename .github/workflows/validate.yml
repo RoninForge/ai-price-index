@@ -23,3 +23,5 @@ jobs:
           node-version: 24
       - name: Validate records and series
         run: node tools/validate.mjs
+      - name: Test the npm package (lib + CLI + golden vectors)
+        run: node tools/test-npm.mjs

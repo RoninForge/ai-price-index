@@ -6,6 +6,15 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## Tooling: npm package + documented JSON API - 2026-06-18
+
+- Published the **`ai-price-index` npm package** (lib + CLI): point-in-time `priceOn` / `current` /
+  `rate` lookups with the dataset bundled inline (no runtime network), reproducing the shared
+  golden vectors. Built from the committed `data/ai-price-index/` artifacts via `tools/build-npm.mjs`;
+  auto-published on each dataset release. MIT tooling, CC BY 4.0 data, provenance preserved per record.
+- Documented the stable JSON endpoint (`current.json` / `index.json`) with permissive CORS for
+  browser + script use. See the README "Use the data" section.
+
 ## v2026.06.15-f72ebe9 - 2026-06-15
 
 - Widened coverage to 6 providers / 48 models (was 3 / 22). 52 new dated, first-party-sourced records.

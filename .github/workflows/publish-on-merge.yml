@@ -43,6 +43,9 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.publish.outputs.published }}
+      tag: ${{ steps.publish.outputs.tag }}
     steps:
       - name: Run export-and-publish.sh on the VPS
         id: publish
@@ -162,3 +165,66 @@ jobs:
               --title "Refresh Kaggle mirror for $TAG" \
               --label kaggle-refresh --body-file -
           fi
+
+  # Auto-publish the npm package on every real dataset release. Independent of the consumer dispatch:
+  # if this fails, the dataset release + the dispatches already succeeded (visible as a partial run).
+  # Each dataset release => one npm PATCH bump (version is registry-driven, not committed in-repo).
+  #
+  # Requires secret:
+  #   NPM_TOKEN   an npm "Automation" access token for the `ai-price-index` package (bypasses 2FA).
+  publish-npm:
+    needs: publish
+    if: needs.publish.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance via OIDC
+    env:
+      TAG: ${{ needs.publish.outputs.tag }}
+    steps:
+      - name: Validate the release tag format
+        # $TAG is a machine-generated v<date>-<sha> tag from our own VPS, but validate before it ever
+        # reaches a checkout ref. Fail the job (so the later checkout never runs) on anything unexpected.
+        run: |
+          set -eu
+          case "$TAG" in
+            v[0-9]*) echo "Release tag: $TAG" ;;
+            *) echo "::error::Unexpected release tag format: $TAG"; exit 1 ;;
+          esac
+
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.publish.outputs.tag }}
+          fetch-depth: 0 # tags + history, so build-npm.mjs can stamp the bundle provenance
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Build the inline bundle and publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -eu
+
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN secret is not set; cannot publish."
+            exit 1
+          fi
+
+          node tools/build-npm.mjs
+
+          # Registry-driven version: bump the patch of the currently-published version, or fall back to
+          # the package.json floor on the very first publish. Keeps versions monotonic without committing
+          # a bump back to the repo (the VPS export already pushed the data commit for this release).
+          published="$(npm view ai-price-index version 2>/dev/null || true)"
+          if [ -n "$published" ]; then
+            next="$(node -e 'const v=process.argv[1].split("."); v[2]=String((+v[2]||0)+1); console.log(v.join("."))' "$published")"
+          else
+            next="$(node -p "require('./package.json').version")"
+          fi
+
+          echo "Publishing ai-price-index@$next (dataset $TAG, was ${published:-unpublished})"
+          npm version "$next" --no-git-tag-version --allow-same-version
+          npm publish --provenance --access public
