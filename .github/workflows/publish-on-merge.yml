@@ -34,6 +34,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: publish-on-merge
@@ -117,3 +118,47 @@ jobs:
             fi
             echo "Dispatch to $repo accepted (HTTP 204)."
           done
+
+      - name: Remind to refresh the Kaggle mirror
+        # Kaggle has no repository_dispatch hook, so the mirror is refreshed by a human
+        # with Kaggle credentials. Leave a visible, tracked reminder so it never goes stale.
+        # Runs even if the consumer dispatch failed - Kaggle is independent of those repos.
+        if: ${{ always() && steps.publish.outputs.published == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.publish.outputs.tag }}
+        run: |
+          set -eu
+
+          # $TAG is a machine-generated v<date>-<sha> tag; only ever used quoted.
+          body=$(printf '%s\n' \
+            "Release \`$TAG\` was published. The Kaggle mirror does not auto-update." \
+            "" \
+            "Refresh from the repo root, then upload \`dist/kaggle/\` as a NEW VERSION:" \
+            "" \
+            '```sh' \
+            'node tools/hf-export.mjs && node tools/kaggle-pack.mjs && node tools/kaggle/build-notebook.mjs' \
+            '# upload:   kaggle datasets version -p dist/kaggle -m "<tag>"' \
+            '#   or web:  kaggle.com/datasets/roninforge/ai-price-index -> New Version (drag the 2 data files)' \
+            '# notebook: open the kernel -> Save & Run All ("How AI API prices fanned out")' \
+            '```')
+
+          # Always-visible summary on this workflow run.
+          printf '## Kaggle mirror needs a new version\n\n%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
+
+          # One rolling, tracked reminder issue (commented on if one is already open).
+          gh label create kaggle-refresh --color FBCA04 \
+            --description "Kaggle dataset mirror needs a new version" --force >/dev/null 2>&1 || true
+
+          existing=$(gh issue list --label kaggle-refresh --state open \
+            --json number --jq '.[0].number // empty' || true)
+
+          if [ -n "${existing:-}" ]; then
+            printf '%s\n' "$body" | gh issue comment "$existing" --body-file -
+          else
+            printf '%s\n' "$body" | gh issue create \
+              --title "Refresh Kaggle mirror for $TAG" \
+              --label kaggle-refresh --body-file -
+          fi

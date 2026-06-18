@@ -40,10 +40,11 @@ copyFileSync(csv, join(outDir, 'ai_price_index.csv'));
 copyFileSync(json, join(outDir, 'ai_price_index.json'));
 writeFileSync(join(outDir, 'description.md'), description);
 
-// Kaggle CLI metadata. `id` must be <kaggle-username>/<slug>; left as a placeholder to fill in.
+// Kaggle CLI metadata. `id` is <kaggle-username>/<slug>; the live dataset is roninforge/ai-price-index,
+// so `kaggle datasets version -p dist/kaggle` targets the existing dataset with no manual edit.
 const metadata = {
 	title: 'AI Price Index',
-	id: 'INSERT_KAGGLE_USERNAME/ai-price-index',
+	id: 'roninforge/ai-price-index',
 	subtitle: 'Dated, first-party-sourced AI model API prices over time',
 	description,
 	licenses: [{ name: 'CC-BY-4.0' }],
@@ -67,5 +68,5 @@ writeFileSync(join(outDir, 'dataset-metadata.json'), JSON.stringify(metadata, nu
 
 console.log(`Packed dist/kaggle/  (${records} records, ${models} models, ${providers} providers)`);
 console.log('Files: ai_price_index.csv, ai_price_index.json, description.md, dataset-metadata.json');
-console.log('Web UI: kaggle.com/datasets -> New Dataset -> upload the two data files, paste description.md, license CC BY 4.0.');
-console.log('CLI (optional): set the id in dataset-metadata.json, then `kaggle datasets create -p dist/kaggle`.');
+console.log('Web UI: kaggle.com/datasets/roninforge/ai-price-index -> New Version -> drag the two data files.');
+console.log('CLI (optional): `kaggle datasets version -p dist/kaggle -m "<tag>"` (id already set to roninforge/ai-price-index).');
