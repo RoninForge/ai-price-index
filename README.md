@@ -4,7 +4,7 @@
 [![Data: CC BY 4.0](https://img.shields.io/badge/data-CC%20BY%204.0-informational)](DATA-LICENSE.md)
 [![Tooling: MIT](https://img.shields.io/badge/tooling-MIT-informational)](LICENSE)
 [![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20730241.svg)](https://doi.org/10.5281/zenodo.20730241)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20730241-informational)](https://doi.org/10.5281/zenodo.20730241)
 
 An open, dated, first-party-sourced record of AI model API prices over time.
 
