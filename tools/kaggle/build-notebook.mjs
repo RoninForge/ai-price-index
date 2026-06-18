@@ -27,7 +27,10 @@ import pandas as pd
 path = glob.glob("/kaggle/input/**/ai_price_index.csv", recursive=True)[0]
 df = pd.read_csv(path)
 print(df.shape[0], "price records,", df["model_id"].nunique(), "models,", df["provider"].nunique(), "providers")
-df.head()`],
+
+# Empty cells read as NaN: an empty effective_to means the price is still current, and an empty
+# aliases means the model has no alternate ids. Shown blank below just for readability.
+df.head().fillna("")`],
 
 	['md', `## 1. There is no single "price of AI"
 
