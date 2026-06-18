@@ -41,7 +41,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "ai-price-index": "./bin/cli.js"
+    "ai-price-index": "bin/cli.js"
   },
   "files": [
     "lib/",
