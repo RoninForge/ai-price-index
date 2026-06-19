@@ -170,8 +170,9 @@ jobs:
   # if this fails, the dataset release + the dispatches already succeeded (visible as a partial run).
   # Each dataset release => one npm PATCH bump (version is registry-driven, not committed in-repo).
   #
-  # Requires secret:
-  #   NPM_TOKEN   an npm "Automation" access token for the `ai-price-index` package (bypasses 2FA).
+  # Auth: npm Trusted Publishing (GitHub OIDC), no stored token. Configure a Trusted Publisher for the
+  # `ai-price-index` package on npmjs.com pointing at RoninForge/ai-price-index and this workflow file
+  # (publish-on-merge.yml). The job already requests id-token: write and upgrades npm for OIDC publishing.
   publish-npm:
     needs: publish
     if: needs.publish.outputs.published == 'true'
@@ -202,16 +203,12 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      # Trusted Publishing (OIDC) requires npm >= 11.5.1; the bundled npm may be older.
+      - run: npm install -g npm@latest
+
       - name: Build the inline bundle and publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -eu
-
-          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "::error::NPM_TOKEN secret is not set; cannot publish."
-            exit 1
-          fi
 
           node tools/build-npm.mjs
 
