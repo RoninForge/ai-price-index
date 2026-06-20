@@ -31,6 +31,29 @@ export function isIsoDate(s) {
 	return typeof s === 'string' && DATE_RE.test(s) && !Number.isNaN(Date.parse(s));
 }
 
+/**
+ * Resolve effective_from for a freshly-discovered NEW model.
+ *   * If `createdDate` is a valid ISO date (e.g. converted from the tripwire's OpenRouter `created`
+ *     unix timestamp), use it as the model's launch date - it is the closest real signal we have.
+ *   * A future created-date is CLAMPED to today (makeRecord would otherwise reject it, and we never
+ *     publish a future effective_from for an already-live price).
+ *   * If `createdDate` is absent or malformed, fall back to today(): we do not invent a precise launch
+ *     date for a model we just saw; a human/backfill can correct it with a dated snapshot.
+ * Returns a YYYY-MM-DD string, never in the future.
+ */
+export function effectiveFromForNew(createdDate, todayStr = today()) {
+	if (isIsoDate(createdDate)) {
+		return createdDate > todayStr ? todayStr : createdDate;
+	}
+	return todayStr;
+}
+
+/** Convert a unix timestamp in SECONDS to a YYYY-MM-DD ISO date, or null if not finite. */
+export function unixSecToIsoDate(sec) {
+	if (typeof sec !== 'number' || !Number.isFinite(sec)) return null;
+	return new Date(sec * 1000).toISOString().slice(0, 10);
+}
+
 // ---------------------------------------------------------------------------
 // fetch with timeout + retries
 // ---------------------------------------------------------------------------

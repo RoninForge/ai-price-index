@@ -1,9 +1,11 @@
-# Price Sentinel (Round 1 PoC)
+# Price Sentinel
 
 A zero-dependency, keyless watcher that tells us when a mainstream model is **new** or its price
 **moved**, and drafts contribution-form records for the new ones. It never publishes prices on its
-own: the default mode is dry-run and writes nothing. A human (or the orchestrator's CI step) reviews
-the drafts and validates them with `tools/validate.mjs` before anything lands in `data/records/`.
+own: the default mode is dry-run and writes nothing. `--apply` appends drafted NEW-model records into
+`data/records/<provider>.json` and writes a human-readable `sentinel-report.md`, but it never
+auto-edits an existing model's price. A human (or the CI workflow) reviews the drafts and validates
+them with `tools/validate.mjs` before anything lands.
 
 It exists so the dataset stops drifting silently between manual sweeps.
 
@@ -12,27 +14,39 @@ It exists so the dataset stops drifting silently between manual sweeps.
 ```bash
 node tools/sentinel/run.mjs            # dry-run report (default; writes NOTHING)
 node tools/sentinel/run.mjs --dry-run  # explicit, identical to the default
-node tools/sentinel/run.mjs --json     # the same report as one compact JSON line
+node tools/sentinel/run.mjs --json     # the same report as one compact JSON line (still dry-run)
+node tools/sentinel/run.mjs --apply    # APPEND drafted NEW-model records into data/records/<provider>.json
+                                       #   + write sentinel-report.md (new models, suggested CHANGED edits, errors)
 
 # individual pieces, standalone (each prints JSON):
 node tools/sentinel/tripwire.mjs
 node tools/sentinel/collectors/anthropic.mjs
 node tools/sentinel/collectors/llama.mjs
+node tools/sentinel/collectors/amazon.mjs
+node tools/sentinel/collectors/mistral.mjs
+node tools/sentinel/collectors/deepseek.mjs
+node tools/sentinel/collectors/google.mjs
+node tools/sentinel/collectors/alibaba.mjs
+XAI_API_KEY=... node tools/sentinel/collectors/xai.mjs   # xai needs a free key; BLOCKED without one
 ```
 
 Deterministic "today" for tests/CI: `AIPI_TODAY=2026-06-20 node tools/sentinel/run.mjs` (same env var
 the validator honors).
 
+The xAI collector requires `XAI_API_KEY` (free key from https://console.x.ai). Without it the collector
+THROWS a clear `xai BLOCKED: ...` error that `run.mjs` records in `report.errors[]` - a loud, visible
+BLOCKED state, never a silent skip and never a crash of the run.
+
 ## The report
 
-`run.mjs` prints:
+`run.mjs` prints (dry-run / `--json`):
 
 ```jsonc
 {
   "generated_at": "YYYY-MM-DD",
   "mode": "dry-run",
   "tripwire_candidates": [ /* advisory NEW/CHANGED from OpenRouter + HuggingFace */ ],
-  "new_models":  [ /* models a first-party collector saw that are not in our index */ ],
+  "new_models":  [ /* models a first-party collector saw that are not in our index (carry effective_from) */ ],
   "price_changes": [ /* known models whose first-party price differs from current.json (LISTED only) */ ],
   "drafted_records": [ /* full, valid contribution-form records for the NEW models */ ],
   "errors": [ /* per-stage / per-collector failures; one dead source never kills the run */ ]
@@ -41,20 +55,50 @@ the validator honors).
 
 `drafted_records` are built through `makeRecord()`, which throws on any missing field, bad enum,
 out-of-bounds price, or future date - so an invalid draft surfaces as an error rather than being
-emitted. Round 1 does **not** auto-write bitemporal edits for `price_changes`; they are reported for a
-human to action.
+emitted. The sentinel does **not** auto-write bitemporal edits for `price_changes`; they are reported
+for a human to action (and, under `--apply`, listed in `sentinel-report.md` as suggested edits).
+
+### `effective_from` for new models
+
+For a NEW model, `effective_from` is taken from the tripwire's OpenRouter `created` timestamp (the model
+launch date, converted to `YYYY-MM-DD`) when a matching tripwire candidate exists for that model id or
+alias; otherwise it falls back to `today()`. A future date is clamped to today, and `last_validated_at`
+is always today. The policy lives in `lib.mjs::effectiveFromForNew`.
+
+### `--apply` mode
+
+`--apply` is the mode the CI workflow runs. It:
+
+- APPENDS the drafted NEW-model records into the matching `data/records/<provider>.json`, creating the
+  file as a JSON array if it does not exist, preserving 2-space indentation + a single trailing newline
+  (exactly like `pricing-audit.yml`'s append);
+- writes a human-readable `sentinel-report.md` (new models drafted, CHANGED prices as suggested edits,
+  errors / BLOCKED providers, advisory tripwire candidates) for use as the PR body; and
+- prints a one-line summary of what it wrote.
+
+It does **not** auto-edit existing records for CHANGED prices.
 
 ## Per-provider source map
 
-| Provider | Round 1 source | Kind | Notes |
+| Provider | Source | Kind | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift. |
-| `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." All Llama models are NEW (no `meta-llama` in the index yet). |
-| OpenRouter | `openrouter.ai/api/v1/models` | **tripwire only** | Keyless. Reseller per-token prices, used solely as a new/changed signal + sanity cross-check, never published. |
+| `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." |
+| `amazon` | AWS Bedrock Price List API | first-party (`provider_live`, `verified`) | Machine-readable bulk JSON, no auth. Nova text models; per-1K -> per-MTok. **Throws** on usagetype-scheme drift. |
+| `mistral` | first-party Mistral pricing | first-party | See `collectors/mistral.mjs`. |
+| `deepseek` | first-party DeepSeek pricing | first-party | See `collectors/deepseek.mjs`. |
+| `google` | first-party Gemini pricing | first-party | See `collectors/google.mjs`. May intermittently drift; lands in `errors[]`, never crashes the run. |
+| `alibaba` | first-party Qwen pricing | first-party | See `collectors/alibaba.mjs`. |
+| `xai` | `api.x.ai/v1/language-models` | first-party (`provider_live`) | **Requires `XAI_API_KEY`** (free). Without it: a loud `xai BLOCKED: ...` error in `errors[]`, never a crash. |
+| OpenRouter | `openrouter.ai/api/v1/models` | **tripwire only** | Keyless. Reseller per-token prices, used as a new/changed signal + the `effective_from` launch-date source, never published. |
 | HuggingFace | `huggingface.co/api/models?author=<org>` | **tripwire only** | Keyless. Flags freshly-published open weights from meta-llama / mistralai / deepseek-ai / Qwen. No price implied. |
 | `openai`, `cohere` | (deferred) | — | Pricing pages need headless rendering. **Phase 2.** |
-| `xai` | (deferred) | — | First-party price needs a free API key. **Round 2.** |
-| `google`, `mistral`, `deepseek`, `amazon`, `alibaba`, `ai21` | (deferred) | — | Add as `collectors/<provider>.mjs` and one line in the `COLLECTORS` registry in `run.mjs`. |
+| `ai21` | (deferred) | — | Add as `collectors/<provider>.mjs` and one line in the `COLLECTORS` registry in `run.mjs`. |
+
+Adding a provider: write `collectors/<provider>.mjs` exporting `async function collect()` (return per-model
+`{ provider, model_id, prices, unit, source_url, source_kind, confidence, aliases? }`), then add one line
+to the `COLLECTORS` array in `run.mjs`. The provider slug must match both what the collector emits and the
+`data/records/<provider>.json` file name.
 
 ## Design constraints
 
@@ -71,15 +115,24 @@ human to action.
 
 - `lib.mjs` - shared helpers: `fetchText` / `fetchJson` (descriptive UA, ~15s timeout, retries),
   `today()`, `loadCurrent()` (alias-aware view of current.json + index.json), price normalization,
-  `classify()` (NEW / CHANGED / UNCHANGED), and `makeRecord()` (throws on anything invalid).
+  `classify()` (NEW / CHANGED / UNCHANGED), `effectiveFromForNew()` / `unixSecToIsoDate()` (launch-date
+  policy for new models), and `makeRecord()` (throws on anything invalid).
 - `tripwire.mjs` - `findCandidates()` over OpenRouter + the 4 HF orgs, mapped to our provider slugs.
-- `collectors/anthropic.mjs` - first-party Claude prices from `pricing.md`.
-- `collectors/llama.mjs` - Together-reference Llama prices, clearly labelled.
-- `run.mjs` - the orchestrator CLI (default dry-run).
+- `collectors/*.mjs` - first-party collectors: `anthropic`, `llama` (Together reference), `amazon`,
+  `mistral`, `deepseek`, `google`, `alibaba`, `xai`.
+- `run.mjs` - the orchestrator CLI (default dry-run; `--apply` to draft + write the report).
+
+## CI workflow
+
+`.github/workflows/price-sentinel.yml` is the next-gen multi-provider FIRST-PARTY sentinel
+(OpenRouter/HF tripwire -> first-party collectors). It is **`workflow_dispatch` only** (no cron) so it
+does not collide with the daily `pricing-audit.yml` while both exist; it is intended to eventually
+supersede `pricing-audit.yml`. On dispatch it runs `node tools/sentinel/run.mjs --apply`, opens a DRAFT
+PR on branch `sentinel/<UTC-date>` (skipping if that branch or an open PR already exists) with
+`sentinel-report.md` as the body, base `main`. `XAI_API_KEY` is an optional repo secret; without it the
+xAI collector reports BLOCKED and every other provider still runs. `validate.yml` gates the PR.
 
 ## Where this is going
 
-The orchestrator wires `run.mjs` into a scheduled CI workflow (daily). The job posts the report and,
-for clean `drafted_records`, opens a PR that adds them to `data/records/<provider>.json` for human
-review + the existing `tools/validate.mjs` gate. Round 2 adds the xAI collector (free key) and more
-provider collectors; Phase 2 adds the headless-rendered pages (OpenAI, Cohere).
+The sentinel will graduate from manual dispatch to scheduled once it has supplanted `pricing-audit.yml`.
+Phase 2 adds the headless-rendered pages (OpenAI, Cohere) and `ai21`.

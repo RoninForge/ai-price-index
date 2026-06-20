@@ -1,0 +1,119 @@
+name: price-sentinel
+
+# Next-gen multi-provider FIRST-PARTY price sentinel.
+#
+# This is the successor to pricing-audit.yml. Where pricing-audit.yml is Anthropic-only (it diffs
+# Anthropic's /v1/models + BerriAI/litellm against current.json), this sentinel runs the keyless
+# OpenRouter + HuggingFace TRIPWIRE to spot where to look, then the FIRST-PARTY collectors
+# (tools/sentinel/collectors/*) to read each provider's own pricing surface and draft contribution-form
+# records for genuinely new models. Providers covered: anthropic, meta-llama (Together reference),
+# amazon (Bedrock Nova), mistral, deepseek, google, alibaba, xai.
+#
+# Intended to EVENTUALLY SUPERSEDE pricing-audit.yml. It is MANUAL-DISPATCH ONLY for now (NO cron) so it
+# never collides with the daily pricing-audit run while both exist. The PR mechanics + idempotency mirror
+# pricing-audit.yml: a per-UTC-date branch, skip if the branch or an open PR already exists, a DRAFT PR
+# with the sentinel-report.md as the body, base main. validate.yml gates the PR (expected red until a
+# human verifies the drafted first-party fields).
+#
+# Secrets: XAI_API_KEY (optional). Without it the xAI collector reports a BLOCKED state in the report and
+# never crashes the run; every other provider still runs.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: price-sentinel
+  cancel-in-progress: false
+
+jobs:
+  sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run the sentinel (--apply)
+        id: run
+        env:
+          # Optional: without it the xAI collector is BLOCKED (surfaced in the report), never a crash.
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          TODAY="$(date -u +%Y-%m-%d)"
+          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
+
+          # --apply appends drafted NEW-model records into data/records/<provider>.json and writes
+          # sentinel-report.md. Per-collector failures are caught into the report, so this exits 0
+          # even when (e.g.) xAI is BLOCKED or one source drifts.
+          node tools/sentinel/run.mjs --apply
+
+          if [ ! -f sentinel-report.md ]; then
+            echo "::error::sentinel-report.md was not produced."
+            exit 1
+          fi
+
+          # Did the run draft any new records into data/records?
+          if [ -n "$(git status --porcelain -- data/records)" ]; then
+            echo "has_data_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_data_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+          git status --porcelain -- data/records || true
+
+      - name: Idempotency check
+        id: idem
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODAY: ${{ steps.run.outputs.today }}
+        run: |
+          branch="sentinel/${TODAY}"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+          # Skip if a branch of this name already exists on the remote, or an open PR from such a branch
+          # already exists. Either means today's sentinel already ran.
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo "Branch $branch already exists on origin; skipping (already ran today)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          existing=$(gh pr list --state open --head "$branch" --json number --jq '. | length')
+          if [ "$existing" -gt 0 ]; then
+            echo "Open PR from $branch already exists; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Open draft PR
+        if: steps.idem.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.idem.outputs.branch }}
+          TODAY: ${{ steps.run.outputs.today }}
+          HAS_DATA_CHANGES: ${{ steps.run.outputs.has_data_changes }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+
+          if [ "$HAS_DATA_CHANGES" = "true" ]; then
+            git add data/records
+            git commit -m "sentinel: draft new-model record(s) from multi-provider sentinel"
+          else
+            # CHANGED/errors-only run: no JSON edit, so make an empty commit to anchor the PR branch.
+            git commit --allow-empty -m "sentinel: report (see PR body for suggested edits / BLOCKED providers)"
+          fi
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --draft \
+            --base main \
+            --head "$BRANCH" \
+            --title "sentinel: price sweep $TODAY" \
+            --body-file sentinel-report.md
