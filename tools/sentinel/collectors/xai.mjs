@@ -1,47 +1,76 @@
 // tools/sentinel/collectors/xai.mjs  (MIT)
-// First-party xAI (Grok) price collector.
+// First-party xAI (Grok) price collector - DUAL-MODE.
 //
-// KEY REQUIREMENT (LOUD, NOT OPTIONAL):
-//   xAI publishes prices ONLY from the authenticated endpoint below. There is no key-free public
-//   price feed we trust. Therefore this collector REQUIRES process.env.XAI_API_KEY. If it is
-//   missing/empty we THROW a clear, specific "xai BLOCKED: ..." error rather than silently skipping.
-//   The orchestrator (run.mjs) catches per-collector throws into report.errors[], which is surfaced
-//   prominently - so a missing key shows up as a LOUD, visible BLOCKED state (the desired behavior),
-//   not a quiet skip and not a crash of the whole run.
-//   Create a key at https://console.x.ai and set XAI_API_KEY locally / add it as the XAI_API_KEY
-//   repo secret in CI.
+// WHY DUAL-MODE (read this before "fixing" it): the authenticated xAI API
+// (GET https://api.x.ai/v1/language-models) is the long-term source of truth - it is clean,
+// machine-readable, and impossible to mis-scrape. It REQUIRES an API key, and at the moment we
+// cannot obtain one (xAI's payment processor rejects the card). So this collector runs in TWO modes
+// and auto-upgrades the day a key appears, with ZERO future code change:
 //
-// Source: GET https://api.x.ai/v1/language-models  with  Authorization: Bearer $XAI_API_KEY
-// Response shape:
-//   { models: [ {
-//       id, aliases?,
-//       prompt_text_token_price, cached_prompt_text_token_price, completion_text_token_price,
-//       long_context_threshold,
-//       prompt_text_token_price_long_context, completion_text_token_price_long_context,
-//   } ] }
+//   * XAI_API_KEY set + non-empty  -> AUTHENTICATED API path (the robust, primary source).
+//       GET https://api.x.ai/v1/language-models with Authorization: Bearer $XAI_API_KEY, apply the
+//       /10000 integer-scale unit conversion, and assert the pin (grok-4.3 / grok-4.20-0309-reasoning
+//       = $1.25 in / $2.50 out). If the API call FAILS while a key is set, we THROW - the key should
+//       work, so a failure must surface, not silently fall back.
+//   * no XAI_API_KEY                -> KEYLESS HTML FALLBACK (this interim path). Scrape xAI's
+//       first-party docs page https://docs.x.ai/docs/models. A missing key is NO LONGER an error
+//       (the old "xai BLOCKED" throw is gone): no key just means "use HTML". We only throw if the
+//       chosen path genuinely fails.
 //
-// UNIT (TRICKY, verified 2026): the *_token_price fields are an INTEGER scale, NOT USD-per-token.
-// The correct conversion is  usd_per_mtok = price_field / 10000  (e.g. grok-4.3 reads
-// prompt=12500 / completion=25000  ->  $1.25 in / $2.50 out). We PIN this with an assertion below:
-// after converting we require a known model (grok-4.3, else grok-4.20-0309-reasoning) to come out to
-// exactly $1.25 input / $2.50 output (within a tiny epsilon), and THROW if it does not - that guards
-// against an upstream unit change silently rescaling every price.
+// THE HTML FALLBACK IS THE FALLBACK, NOT THE PRIMARY, AND IS EXPECTED TO NEED MAINTENANCE. Set
+// XAI_API_KEY (create one at https://console.x.ai, add it as the XAI_API_KEY repo secret in CI) to
+// switch automatically onto the robust machine-readable API. Treat any HTML-parse drift as a signal
+// to get a key, not just to patch the scraper.
 //
-// Mapping: prompt_text_token_price          -> input
-//          completion_text_token_price      -> output
-//          cached_prompt_text_token_price   -> cache_read
-//          *_token_price_long_context       -> tier2_input / tier2_output
+// HOW THE HTML PATH WORKS (verified 2026-06-20): https://docs.x.ai/docs/models is a Next.js app. It
+// has NO <table>; instead the full model list is embedded in the page's Next.js RSC payload
+// (`self.__next_f.push(...)` <script> blocks) as `auth_mgmt.LanguageModel` objects whose price fields
+// are the SAME shape and SAME integer scale as the authenticated API:
+//   {"$typeName":"auth_mgmt.LanguageModel","name":"grok-4.3",...,
+//    "promptTextTokenPrice":"$n12500","completionTextTokenPrice":"$n25000",
+//    "cachedPromptTokenPrice":"$n2000","promptTextTokenPriceLongContext":"$n25000",
+//    "completionTokenPriceLongContext":"$n50000","aliases":[...]}
+// (The visible Input/Output price <span>s only render for ~2 models; the embedded payload is the only
+// complete + reliable source on the page, and it mirrors the API field-for-field, so the SAME /10000
+// conversion and the SAME pin apply.) Because the payload lives inside a JS string, the JSON quotes
+// are backslash-escaped, sometimes multiply - the parser below is tolerant of any run of backslashes
+// before quotes. We anchor on English price content via Accept-Language: en-US,en;q=0.9 (docs sites
+// content-negotiate locale, like ai.google.dev did) and retry, mirroring collectors/google.mjs.
 //
-// Fail loud only on real structure drift (response missing models / zero priced rows / the unit pin
-// fails) and on a missing key (BLOCKED). Never emit a guessed number.
+// UNIT (shared by both paths): the *_token_price fields are an INTEGER scale, NOT USD-per-token. The
+// correct conversion is  usd_per_mtok = price_field / 10000  (grok-4.3: 12500 -> $1.25 in, 25000 ->
+// $2.50 out). The post-build PIN asserts a known model (grok-4.3, else grok-4.20-0309-reasoning) comes
+// out to exactly $1.25 / $2.50; a live disagreement THROWS so a real change escalates to a human
+// rather than silently flipping data.
 //
-// lib.fetchJson cannot carry an Authorization header, so this collector owns a small keyed fetch
-// (global fetch + a timeout, matching lib's UA/timeout conventions, zero new deps).
+// Mapping (both paths):
+//   prompt_text_token_price / promptTextTokenPrice                  -> input
+//   completion_text_token_price / completionTextTokenPrice          -> output
+//   cached_prompt_text_token_price / cachedPromptTokenPrice         -> cache_read
+//   *_token_price_long_context / *TokenPriceLongContext             -> tier2_input / tier2_output
+//
+// Contract (same as the other collectors): an array of
+//   { provider:"xai", model_id, display_name, aliases?,
+//     prices:{ input, output, cache_read?, tier2_input?, tier2_output? } (usd_per_mtok),
+//     unit:"usd_per_mtok", source_url, source_kind:"provider_live", confidence:"verified",
+//     known_mapping }
+// Fail loud on real structure/unit drift (no parseable English price content / no models / unit pin
+// fails / API error when keyed). Never emit a guessed number.
+//
+// Zero new npm deps. lib.fetchJson cannot carry an Authorization header (API path) and lib.fetchText
+// sends no Accept-Language (HTML path), so this collector owns small self-contained fetches that match
+// lib's UA/timeout conventions.
 
 export const PROVIDER = 'xai';
-const SOURCE_URL = 'https://api.x.ai/v1/language-models';
+const API_URL = 'https://api.x.ai/v1/language-models';
+const HTML_URL = 'https://docs.x.ai/docs/models';
 
-// Integer-scale price field -> usd_per_mtok. The pinned conversion.
+// Mirrors lib.mjs's fetch knobs so behavior matches the rest of the sentinel.
+const USER_AGENT = 'ai-price-index price-sentinel (+https://roninforge.org)';
+const FETCH_TIMEOUT_MS = 15000;
+const MAX_FETCH_ATTEMPTS = 4; // tolerate transient socket closes + locale-negotiation misses
+
+// Integer-scale price field -> usd_per_mtok. The pinned conversion, shared by both paths.
 const SCALE = 10000;
 function toMtok(field) {
 	if (field == null) return null;
@@ -58,37 +87,39 @@ function nearly(a, b) {
 }
 
 /**
- * Collect first-party Grok prices from the xAI API.
+ * Collect first-party Grok prices.
+ *   * XAI_API_KEY present -> authenticated API path (robust, primary). Throws if the API fails.
+ *   * no key             -> keyless HTML fallback (interim). Throws only on real parse/unit drift.
  * Returns an array of:
  *   { provider, model_id, display_name, aliases?,
- *     prices: { input?, output?, cache_read?, tier2_input?, tier2_output? } (usd_per_mtok),
- *     unit, source_url, source_kind, confidence }
- * THROWS a clear "xai BLOCKED: ..." error when XAI_API_KEY is unset/empty (run.mjs records that in
- * report.errors[] as a prominent BLOCKED state, never a silent skip and never a crash of the run).
- * Throws on real structure drift / unit drift otherwise.
+ *     prices: { input, output, cache_read?, tier2_input?, tier2_output? } (usd_per_mtok),
+ *     unit, source_url, source_kind, confidence, known_mapping }
  */
 export async function collect() {
 	const key = process.env.XAI_API_KEY;
-	if (!key) {
-		throw new Error(
-			'xai BLOCKED: XAI_API_KEY required - create a key at https://console.x.ai and set XAI_API_KEY ' +
-				'(locally) / add it as the XAI_API_KEY repo secret (CI). xAI prices come only from the ' +
-				'authenticated /v1/language-models endpoint.'
-		);
+	if (key && key.trim()) {
+		// AUTHENTICATED API PATH (primary). A key is set, so any failure here MUST surface.
+		const data = await keyedFetchJson(API_URL, key.trim());
+		return parseApiModels(data);
 	}
-	const data = await keyedFetchJson(SOURCE_URL, key);
-	return parseModels(data);
+	// KEYLESS HTML FALLBACK (interim). No key is not an error - just use the docs page.
+	const html = await fetchEnglishModelsHtml();
+	return parseHtmlModels(html);
 }
 
-// lib.fetchJson cannot carry an Authorization header, so this collector owns its keyed fetch. It still
-// uses the global fetch + a timeout, matching lib's conventions, with zero new deps.
+// ---------------------------------------------------------------------------
+// AUTHENTICATED API PATH
+// ---------------------------------------------------------------------------
+
+// lib.fetchJson cannot carry an Authorization header, so this owns a small keyed fetch. Still uses the
+// global fetch + a timeout, matching lib's conventions, with zero new deps.
 async function keyedFetchJson(url, key) {
 	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), 15000);
+	const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 	try {
 		const res = await fetch(url, {
 			headers: {
-				'user-agent': 'ai-price-index price-sentinel (+https://roninforge.org)',
+				'user-agent': USER_AGENT,
 				accept: 'application/json',
 				authorization: `Bearer ${key}`,
 			},
@@ -107,76 +138,229 @@ async function keyedFetchJson(url, key) {
 	}
 }
 
-function parseModels(data) {
+function parseApiModels(data) {
 	const models = data && Array.isArray(data.models) ? data.models : null;
-	if (!models) throw new Error('xai collector: response has no "models" array - structure drift.');
+	if (!models) throw new Error('xai collector (API): response has no "models" array - structure drift.');
 
-	const results = [];
-	const byId = new Map(); // model_id -> built prices, for the post-build unit assertion
+	const byId = new Map();
+	const rows = [];
 	for (const m of models) {
 		const id = m && m.id;
 		if (typeof id !== 'string' || !id) continue;
+		const prices = buildPrices({
+			input: m.prompt_text_token_price,
+			output: m.completion_text_token_price,
+			cache_read: m.cached_prompt_text_token_price,
+			tier2_input: m.prompt_text_token_price_long_context,
+			tier2_output: m.completion_text_token_price_long_context,
+		});
+		if (!prices) continue; // needs at least input + output
+		const aliases =
+			Array.isArray(m.aliases) && m.aliases.length
+				? m.aliases.filter((a) => typeof a === 'string' && a && a !== id)
+				: undefined;
+		byId.set(id, prices);
+		rows.push(makeRow(id, prices, aliases, API_URL));
+	}
 
-		const prices = {};
-		const input = toMtok(m.prompt_text_token_price);
-		const output = toMtok(m.completion_text_token_price);
-		const cacheRead = toMtok(m.cached_prompt_text_token_price);
-		const t2in = toMtok(m.prompt_text_token_price_long_context);
-		const t2out = toMtok(m.completion_text_token_price_long_context);
-		if (input !== null) prices.input = input;
-		if (output !== null) prices.output = output;
-		if (cacheRead !== null) prices.cache_read = cacheRead;
-		if (t2in !== null) prices.tier2_input = t2in;
-		if (t2out !== null) prices.tier2_output = t2out;
+	if (!rows.length)
+		throw new Error('xai collector (API): response parsed but extracted zero priced models - structure drift.');
+	assertPin(byId, 'API');
+	return rows;
+}
 
-		// Only emit models that have at least input + output.
-		if (typeof prices.input !== 'number' || typeof prices.output !== 'number') continue;
+// ---------------------------------------------------------------------------
+// KEYLESS HTML FALLBACK PATH
+// ---------------------------------------------------------------------------
+
+/** True when a fetched body carries the embedded model payload we anchor the parser on. */
+function looksLikeModelsPayload(html) {
+	return (
+		html.includes('auth_mgmt.LanguageModel') &&
+		/promptTextTokenPrice/.test(html) &&
+		/completionTextTokenPrice/.test(html)
+	);
+}
+
+/**
+ * Fetch the docs/models page with an English Accept-Language and a retry loop. Docs sites can
+ * locale-negotiate (ai.google.dev did), and Next.js docs occasionally close the socket mid-stream;
+ * both are cheap to absorb with retries. Throws only if every attempt fails to yield a body that
+ * contains the embedded model payload (a true JS-only / drift signal).
+ */
+async function fetchEnglishModelsHtml() {
+	let lastHtml = '';
+	let lastErr = null;
+	for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
+		const controller = new AbortController();
+		const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+		try {
+			const res = await fetch(HTML_URL, {
+				headers: {
+					'user-agent': USER_AGENT,
+					'accept-language': 'en-US,en;q=0.9',
+				},
+				signal: controller.signal,
+				redirect: 'follow',
+			});
+			if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+			const html = await res.text();
+			lastHtml = html;
+			if (looksLikeModelsPayload(html)) return html;
+		} catch (e) {
+			lastErr = e;
+		} finally {
+			clearTimeout(timer);
+		}
+		if (attempt < MAX_FETCH_ATTEMPTS) await new Promise((r) => setTimeout(r, 400 * attempt));
+	}
+	if (!lastHtml && lastErr)
+		throw new Error(`xai collector (HTML): fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr.message}`);
+	// Got a body but it never carried the payload: surface the precise drift error after parsing.
+	return lastHtml;
+}
+
+// In the embedded RSC payload, integer-scale prices are encoded as the string "$nNNNN" (the "$n"
+// is a Next.js Flight number marker). Pull the numeric tail.
+function flightNum(raw) {
+	if (typeof raw !== 'string') return null;
+	const m = raw.match(/^\$n([0-9.]+)$/);
+	return m ? parseFloat(m[1]) : null;
+}
+
+/**
+ * Parse the embedded `auth_mgmt.LanguageModel` objects out of the docs/models RSC payload. The JSON
+ * lives inside a JS string, so quotes are backslash-escaped (sometimes multiply); every pattern below
+ * tolerates an arbitrary run of backslashes before a quote via the `[\\"]*` fragments. Each model's
+ * fields appear in a fixed window after its name, so we slice a generous window per model and read the
+ * price fields by name (order-independent, like the other collectors). Returns array of rows. Throws
+ * on structure/unit drift.
+ */
+function parseHtmlModels(html) {
+	if (!looksLikeModelsPayload(html))
+		throw new Error(
+			'xai collector (HTML): docs/models page has no embedded LanguageModel price payload ' +
+				'(promptTextTokenPrice/completionTextTokenPrice) - page is JS-only or drifted. ' +
+				'Refusing to guess; set XAI_API_KEY to use the authenticated API instead.'
+		);
+
+	// Locate each model: the marker `auth_mgmt.LanguageModel`, then a `name`:"<id>" field.
+	const nameRe = /auth_mgmt\.LanguageModel[\\"]*,[\\"]*name[\\"]*:[\\"]*([a-zA-Z0-9.\-]+)[\\"]/g;
+	const byId = new Map(); // model_id -> built prices, for the post-build unit assertion
+	const aliasesById = new Map();
+	const seen = new Set();
+	let m;
+	while ((m = nameRe.exec(html))) {
+		const id = m[1];
+		if (seen.has(id)) continue; // 3 copies of the list are embedded; take the first of each
+		seen.add(id);
+
+		// A single model's serialized object is short; a 1600-char window comfortably contains its
+		// price fields without leaking into the next model.
+		const blk = html.slice(m.index, m.index + 1600);
+		const grab = (key) => {
+			// key:"$nNNNN" with any run of backslashes before each quote
+			const re = new RegExp(key + '[\\\\"]*:[\\\\"]*(\\$n[0-9.]+)');
+			const mm = blk.match(re);
+			return mm ? flightNum(mm[1]) : null;
+		};
+
+		const prices = buildPrices({
+			input: grab('promptTextTokenPrice'),
+			output: grab('completionTextTokenPrice'),
+			cache_read: grab('cachedPromptTokenPrice'),
+			tier2_input: grab('promptTextTokenPriceLongContext'),
+			tier2_output: grab('completionTokenPriceLongContext'),
+		});
+		if (!prices) continue; // needs at least input + output
 
 		byId.set(id, prices);
-		results.push({
-			provider: PROVIDER,
-			model_id: id,
-			display_name: id,
-			aliases:
-				Array.isArray(m.aliases) && m.aliases.length
-					? m.aliases.filter((a) => typeof a === 'string' && a && a !== id)
-					: undefined,
-			prices,
-			unit: 'usd_per_mtok',
-			source_url: SOURCE_URL,
-			source_kind: 'provider_live',
-			confidence: 'verified',
-			known_mapping: true,
-		});
+		aliasesById.set(id, extractAliases(blk, id));
 	}
 
-	if (!results.length)
-		throw new Error('xai collector: response parsed but extracted zero priced models - structure drift.');
+	if (!byId.size)
+		throw new Error(
+			'xai collector (HTML): found the LanguageModel payload but extracted zero priced models - structure drift.'
+		);
 
-	// UNIT PIN: after building every record, assert a known model resolved to the expected prices.
-	// Guards against an upstream unit-scale change silently rescaling every price. We look for grok-4.3
-	// first, then grok-4.20-0309-reasoning; both are first-party $1.25 in / $2.50 out.
+	assertPin(byId, 'HTML');
+
+	const rows = [];
+	for (const [id, prices] of byId) rows.push(makeRow(id, prices, aliasesById.get(id), HTML_URL));
+	return rows;
+}
+
+/** Pull the (string) aliases array for a model out of its serialized block. Backslash-tolerant. */
+function extractAliases(blk, id) {
+	const am = blk.match(/aliases[\\"]*:[\\"]*\[([^\]]*)\]/);
+	if (!am) return undefined;
+	const list = [...am[1].matchAll(/([a-zA-Z0-9.\-]+)/g)]
+		.map((x) => x[1])
+		.filter((a) => a && a !== id && !/^[0-9]+$/.test(a));
+	const uniq = [...new Set(list)];
+	return uniq.length ? uniq : undefined;
+}
+
+// ---------------------------------------------------------------------------
+// shared helpers
+// ---------------------------------------------------------------------------
+
+/** Build a prices object (usd_per_mtok) from integer-scale fields. Returns null without input+output. */
+function buildPrices({ input, output, cache_read, tier2_input, tier2_output }) {
+	const prices = {};
+	const i = toMtok(input);
+	const o = toMtok(output);
+	const cr = toMtok(cache_read);
+	const t2i = toMtok(tier2_input);
+	const t2o = toMtok(tier2_output);
+	if (i !== null) prices.input = i;
+	if (o !== null) prices.output = o;
+	if (cr !== null) prices.cache_read = cr;
+	if (t2i !== null) prices.tier2_input = t2i;
+	if (t2o !== null) prices.tier2_output = t2o;
+	if (typeof prices.input !== 'number' || typeof prices.output !== 'number') return null;
+	return prices;
+}
+
+function makeRow(model_id, prices, aliases, sourceUrl) {
+	return {
+		provider: PROVIDER,
+		model_id,
+		display_name: model_id,
+		aliases: aliases && aliases.length ? aliases : undefined,
+		prices,
+		unit: 'usd_per_mtok',
+		source_url: sourceUrl,
+		source_kind: 'provider_live',
+		confidence: 'verified',
+		known_mapping: true,
+	};
+}
+
+/**
+ * UNIT PIN: after building every record, assert a known model resolved to the expected prices. Guards
+ * against an upstream unit-scale change silently rescaling every price, and (HTML path) against a
+ * mis-parse of the escaped payload. We look for grok-4.3 first, then grok-4.20-0309-reasoning; both are
+ * first-party $1.25 in / $2.50 out. Throws on mismatch (escalate to a human).
+ */
+function assertPin(byId, pathLabel) {
 	const pinId = PIN_IDS.find((id) => byId.has(id));
-	if (pinId) {
-		const p = byId.get(pinId);
-		if (!nearly(p.input, PIN_EXPECT.input) || !nearly(p.output, PIN_EXPECT.output)) {
-			throw new Error(
-				`xai collector: unit pin FAILED for ${pinId} - got input=${p.input} output=${p.output}, ` +
-					`expected $${PIN_EXPECT.input}/$${PIN_EXPECT.output}. Upstream may have changed the price ` +
-					`scale (usd_per_mtok = price_field / ${SCALE}); refusing to emit.`
-			);
-		}
+	if (!pinId) return; // neither pin model present; the zero-rows guard already ran
+	const p = byId.get(pinId);
+	if (!nearly(p.input, PIN_EXPECT.input) || !nearly(p.output, PIN_EXPECT.output)) {
+		throw new Error(
+			`xai collector (${pathLabel}): unit pin FAILED for ${pinId} - got input=${p.input} output=${p.output}, ` +
+				`expected $${PIN_EXPECT.input}/$${PIN_EXPECT.output}. Upstream may have changed the price scale ` +
+				`(usd_per_mtok = price_field / ${SCALE}) or the page drifted; refusing to emit.`
+		);
 	}
-
-	return results;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
 	collect()
 		.then((r) => console.log(JSON.stringify(r, null, 2)))
 		.catch((e) => {
-			// A missing key is a LOUD BLOCKED state, not a crash: print the clear message and exit non-zero.
-			console.error('xai collector:', e.message);
+			console.error('xai collector failed:', e.message);
 			process.exit(1);
 		});
 }
