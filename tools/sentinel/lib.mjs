@@ -4,7 +4,7 @@
 // Zero npm deps. Node >=18 (uses the built-in global fetch + AbortController/AbortSignal.timeout).
 // Everything here is pure / IO-thin and reused by tripwire.mjs, the collectors, and run.mjs.
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -125,10 +125,47 @@ export function toUsdPerMtok(value, scale = 'per_token') {
 // ---------------------------------------------------------------------------
 
 /**
+ * Read every data/records/<provider>.json and return the CURRENT provenance per
+ * provider+model+variation - i.e. the still-open interval (effective_to === null) that backs the
+ * published price. The records files (contribution form) are the only place that carries BOTH
+ * `confidence` and `source_kind`; current.json carries confidence but not source_kind. We key by the
+ * record's own model_id (the canonical id), variation -> { confidence, source_kind }. If a model has
+ * more than one open interval for a variation (it should not), the LAST one read wins (matches how the
+ * latest appended record would shadow an earlier one in a simple consumer).
+ * Returns Map<"provider/model_id", { [variation]: { confidence, source_kind } }>.
+ */
+function loadRecordsProvenance(root = REPO_ROOT) {
+	const dir = join(root, 'data', 'records');
+	const byProviderModel = new Map();
+	if (!existsSync(dir)) return byProviderModel;
+	for (const file of readdirSync(dir)) {
+		if (!file.endsWith('.json')) continue;
+		let recs;
+		try {
+			recs = JSON.parse(readFileSync(join(dir, file), 'utf8'));
+		} catch {
+			continue; // a malformed records file must not crash loadCurrent
+		}
+		if (!Array.isArray(recs)) continue;
+		for (const r of recs) {
+			if (!r || r.effective_to !== null) continue; // only the open (current) interval
+			if (typeof r.provider !== 'string' || typeof r.model_id !== 'string' || typeof r.variation !== 'string') continue;
+			const key = `${r.provider}/${r.model_id}`;
+			const bucket = byProviderModel.get(key) || {};
+			bucket[r.variation] = { confidence: r.confidence, source_kind: r.source_kind };
+			byProviderModel.set(key, bucket);
+		}
+	}
+	return byProviderModel;
+}
+
+/**
  * Load the published current.json + index.json into an alias-aware view.
  * Returns:
  *   {
- *     byProviderModel: Map<"provider/model", { input?, output?, cache_read?, ... }>,  // canonical-keyed
+ *     byProviderModel: Map<"provider/model", { input?, output?, cache_read?, ... }>,  // canonical-keyed prices
+ *     provenanceByProviderModel: Map<"provider/model", { [variation]: { confidence, source_kind } }>,
+ *     provenanceFor(provider, idOrAlias) -> { [variation]: { confidence, source_kind } } | null,  // alias-aware
  *     resolve(provider, idOrAlias) -> canonical model id | null,                       // alias-aware
  *     known: Set<string>,            // every canonical id + alias seen, bare (no provider prefix)
  *     knownByProvider: Map<provider, Set<string>>,  // ids + aliases scoped per provider
@@ -148,6 +185,9 @@ export function loadCurrent(root = REPO_ROOT) {
 		bucket[p.variation] = p.price_usd;
 		byProviderModel.set(key, bucket);
 	}
+
+	// current/published provenance (confidence + source_kind) from the records files (canonical-keyed)
+	const provenanceByProviderModel = loadRecordsProvenance(root);
 
 	// alias -> canonical, per provider; plus the flat + per-provider known sets
 	const aliasToCanonical = new Map(); // key "provider/alias" -> canonical id
@@ -179,7 +219,22 @@ export function loadCurrent(root = REPO_ROOT) {
 
 	const resolve = (provider, idOrAlias) => aliasToCanonical.get(`${provider}/${idOrAlias}`) || null;
 
-	return { byProviderModel, resolve, known, knownByProvider, providers };
+	// Alias-aware lookup of the current provenance for a provider+model (or alias).
+	const provenanceFor = (provider, idOrAlias) => {
+		const canonical = resolve(provider, idOrAlias);
+		if (!canonical) return null;
+		return provenanceByProviderModel.get(`${provider}/${canonical}`) || null;
+	};
+
+	return {
+		byProviderModel,
+		provenanceByProviderModel,
+		provenanceFor,
+		resolve,
+		known,
+		knownByProvider,
+		providers,
+	};
 }
 
 // ---------------------------------------------------------------------------
@@ -211,6 +266,66 @@ export function classify(provider, model, extracted, current) {
 
 function nearlyEqual(a, b, eps = 1e-9) {
 	return Math.abs(a - b) <= eps + 1e-6 * Math.max(Math.abs(a), Math.abs(b));
+}
+
+// ---------------------------------------------------------------------------
+// provenance + UPGRADE detection (provisional -> verified lifecycle)
+// ---------------------------------------------------------------------------
+
+// "Weak" provenance: the record exists but is not first-party-verified. A model whose CURRENT record
+// has any of these confidences, OR any of these source_kinds, is a candidate for a provenance upgrade
+// when a first-party collector later confirms the SAME price.
+const WEAK_CONFIDENCE = new Set(['inferred', 'estimated']);
+const WEAK_SOURCE_KIND = new Set(['aggregator', 'changelog', 'manual']);
+
+/**
+ * Is `current` ({ confidence, source_kind }) weaker provenance than `incoming`?
+ * Weaker means: current.confidence in {inferred, estimated} OR current.source_kind in
+ * {aggregator, changelog, manual}, while incoming is a genuine first-party upgrade
+ * (confidence verified + source_kind provider_live). Returns false if either side is missing the
+ * fields, or if current is already verified+provider_live (nothing to upgrade).
+ */
+export function isWeakerProvenance(current, incoming) {
+	if (!current || !incoming) return false;
+	const incStrong = incoming.confidence === 'verified' && incoming.source_kind === 'provider_live';
+	if (!incStrong) return false;
+	const curWeak = WEAK_CONFIDENCE.has(current.confidence) || WEAK_SOURCE_KIND.has(current.source_kind);
+	return curWeak;
+}
+
+/**
+ * Classify a first-party-collected model against the published prices + provenance for the
+ * provisional->verified lifecycle. Returns one of:
+ *   'NEW'       - unknown model (delegates to classify()).
+ *   'CHANGED'   - known model whose price differs (delegates to classify()).
+ *   'UPGRADE'   - known model at the SAME price (within epsilon, per overlapping variation) whose
+ *                 CURRENT record is WEAKER provenance than what the collector now supplies
+ *                 (verified + provider_live). Only fires when at least one overlapping, same-price
+ *                 variation is currently weak.
+ *   'UNCHANGED' - known, same price, and provenance is already at least as strong.
+ *
+ *   provider  : our provider slug
+ *   model     : a model id or alias as seen at the source
+ *   extracted : { input?, output?, ... } numbers in usd_per_mtok (the collector's prices)
+ *   incoming  : { confidence, source_kind } the collector's provenance for this model
+ *   current   : the object returned by loadCurrent()
+ */
+export function classifyUpgrade(provider, model, extracted, incoming, current) {
+	const base = classify(provider, model, extracted, current);
+	if (base !== 'UNCHANGED') return base; // NEW / CHANGED keep their existing semantics
+	// Same price. Is our current record weaker provenance than what the collector now confirms?
+	const canonical = current.resolve(provider, model);
+	if (!canonical) return 'UNCHANGED';
+	const have = current.byProviderModel.get(`${provider}/${canonical}`);
+	const prov = current.provenanceByProviderModel.get(`${provider}/${canonical}`);
+	if (!have || !prov) return 'UNCHANGED';
+	for (const [variation, price] of Object.entries(extracted)) {
+		if (typeof price !== 'number') continue;
+		if (!(variation in have)) continue; // only the variations we actually publish
+		if (!nearlyEqual(have[variation], price)) continue; // CHANGED would have caught this; be safe
+		if (isWeakerProvenance(prov[variation], incoming)) return 'UPGRADE';
+	}
+	return 'UNCHANGED';
 }
 
 // ---------------------------------------------------------------------------

@@ -30,9 +30,9 @@
 
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { today, loadCurrent, classify, makeRecord, effectiveFromForNew, REPO_ROOT } from './lib.mjs';
+import { today, loadCurrent, classify, classifyUpgrade, makeRecord, effectiveFromForNew, REPO_ROOT } from './lib.mjs';
 import { findCandidates } from './tripwire.mjs';
-import { crossCheck, buildOpenRouterLookup } from './crosscheck.mjs';
+import { crossCheck, buildOpenRouterLookup, normalizeModelKey } from './crosscheck.mjs';
 import * as anthropic from './collectors/anthropic.mjs';
 import * as llama from './collectors/llama.mjs';
 import * as amazon from './collectors/amazon.mjs';
@@ -186,7 +186,8 @@ function renderReportMd(report, written) {
 	L.push('');
 	L.push(
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
-			`${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
+			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
+			`first-party price, ${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
 	);
 	L.push('');
 
@@ -263,6 +264,56 @@ function renderReportMd(report, written) {
 	} else {
 		L.push('## New models drafted');
 		L.push('');
+		L.push('None.');
+		L.push('');
+	}
+
+	// Provenance upgrades (now first-party-confirmed) - drafted as verified records to supersede
+	// the prior weaker (inferred/estimated, or aggregator/changelog/manual) record at the SAME price.
+	L.push('## Provenance upgrades (now first-party-confirmed)');
+	L.push('');
+	if (report.upgrades.length) {
+		L.push(
+			'A first-party collector confirmed the published price for a model we held at WEAKER provenance. ' +
+				'A stronger `verified` / `provider_live` record has been drafted to SUPERSEDE the prior record ' +
+				'(same price, better provenance). Close the prior open interval per CONTRIBUTING when merging.'
+		);
+		L.push('');
+		L.push('| Provider | Model | From | To | Cross-check |');
+		L.push('|---|---|---|---|---|');
+		for (const u of report.upgrades) {
+			const from = `${u.from.confidence || '-'} / ${u.from.source_kind || '-'}`;
+			const to = `${u.to.confidence || '-'} / ${u.to.source_kind || '-'}`;
+			const cc = u.crosscheck && u.crosscheck.verdict === 'needs_review' ? 'needs review' : 'verified';
+			L.push(`| \`${u.provider}\` | \`${u.model_id}\` | ${from} | ${to} | ${cc} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
+	// Detected, awaiting first-party price (Part B). NOT published - first-party-pure.
+	L.push('## Detected, awaiting first-party price (not published)');
+	L.push('');
+	if (report.pending_first_party.length) {
+		L.push(
+			'A tripwire (OpenRouter / HuggingFace) detected a mainstream NEW model that NO first-party collector ' +
+				'surfaced this run - announced but not yet on the provider\'s own pricing page. We do NOT draft a ' +
+				'price (a reseller number would break the first-party pledge). The OpenRouter price is a HINT for ' +
+				'the human only and is NOT written to the dataset.'
+		);
+		L.push('');
+		L.push('| Provider | Model | Detected | Source | OpenRouter price HINT (not published) |');
+		L.push('|---|---|---|---|---|');
+		for (const p of report.pending_first_party) {
+			const hint = p.openrouter_price_hint
+				? `in $${p.openrouter_price_hint.input ?? '-'}, out $${p.openrouter_price_hint.output ?? '-'}`
+				: 'none';
+			L.push(`| \`${p.provider}\` | \`${p.model_id}\` | ${p.detected_date || '-'} | ${p.source} | ${hint} |`);
+		}
+		L.push('');
+	} else {
 		L.push('None.');
 		L.push('');
 	}
@@ -351,6 +402,8 @@ async function main() {
 		tripwire_candidates: [],
 		new_models: [],
 		price_changes: [],
+		upgrades: [],
+		pending_first_party: [],
 		drafted_records: [],
 		crosscheck: { auto_verified: 0, needs_review: 0, items: [] },
 		errors: [],
@@ -398,6 +451,16 @@ async function main() {
 		return result;
 	};
 
+	// Every normalized id form a first-party collector surfaced this run, scoped by provider, so Part B
+	// can tell which tripwire NEW models are "announced but NOT yet on the provider's own pricing page".
+	const collectorSeenKeys = new Set();
+	const markCollectorSeen = (provider, ...ids) => {
+		for (const id of ids) {
+			const k = normalizeModelKey(id);
+			if (k) collectorSeenKeys.add(`${provider}/${k}`);
+		}
+	};
+
 	// 2 + 3. collectors + diff. Per-collector try/catch: one failing collector (xai BLOCKED with no key,
 	// google drift, ...) lands in report.errors[] and never kills the run.
 	for (const c of COLLECTORS) {
@@ -409,13 +472,19 @@ async function main() {
 			continue;
 		}
 		for (const item of items) {
+			// A model the first-party collector returned at all is "on the provider's own page"; record
+			// every id form (model_id + aliases) so Part B excludes it from pending_first_party.
+			markCollectorSeen(item.provider, item.model_id, ...(Array.isArray(item.aliases) ? item.aliases : []));
+
+			// the collector's own provenance for this model, used by the UPGRADE check
+			const incomingProvenance = { confidence: item.confidence, source_kind: item.source_kind };
 			let status;
 			try {
-				status = classify(item.provider, item.model_id, item.prices, current);
+				status = classifyUpgrade(item.provider, item.model_id, item.prices, incomingProvenance, current);
 				// also test aliases so a known alias maps correctly even if model_id differs
 				if (status === 'NEW' && Array.isArray(item.aliases)) {
 					for (const a of item.aliases) {
-						const s = classify(item.provider, a, item.prices, current);
+						const s = classifyUpgrade(item.provider, a, item.prices, incomingProvenance, current);
 						if (s !== 'NEW') { status = s; break; }
 					}
 				}
@@ -492,9 +561,97 @@ async function main() {
 					changes: diffs,
 					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
 				});
+			} else if (status === 'UPGRADE') {
+				// Same price, but the collector now confirms a model we hold at WEAKER provenance
+				// (inferred/estimated, or aggregator/changelog/manual). Draft the stronger verified record
+				// to SUPERSEDE the weaker one. These are first-party verified, so they flow into --apply.
+				const canonical = current.resolve(item.provider, item.model_id) || item.model_id;
+				const fromProv = current.provenanceFor(item.provider, item.model_id) || {};
+				// pick a representative current {confidence, source_kind} (the first weak variation, else any)
+				const variations = Object.keys(fromProv);
+				const weakVar =
+					variations.find((v) => fromProv[v] && (fromProv[v].confidence !== 'verified' || fromProv[v].source_kind !== 'provider_live')) ||
+					variations[0];
+				const from = weakVar
+					? { confidence: fromProv[weakVar].confidence, source_kind: fromProv[weakVar].source_kind }
+					: { confidence: null, source_kind: null };
+				const to = { confidence: item.confidence, source_kind: item.source_kind };
+
+				// Cross-check the upgrade too (fail-safe): a verified first-party record should pass, but a
+				// flagged one is drafted as `inferred` + needs_review like any other suspicious row.
+				const createdDate = tripwireCreatedDate(item, tripwireDates);
+				const drafted = { ...item, model_id: canonical, createdDate };
+				const gate = runGate({
+					provider: item.provider,
+					model_id: canonical,
+					prices: item.prices,
+					aliases: item.aliases,
+					isNew: false,
+					prior: current.byProviderModel.get(`${item.provider}/${canonical}`) || null,
+				});
+				const downgrade = gate.verdict === 'needs_review';
+				const upgradeNote =
+					`[provenance upgrade] first-party collector confirmed the published price; supersedes the ` +
+					`prior ${from.confidence}/${from.source_kind} record.`;
+				const reasonNote = downgrade
+					? `${upgradeNote} [needs_review] cross-check flagged: ${gate.reasons.join('; ')}.`
+					: upgradeNote;
+
+				report.upgrades.push({
+					provider: item.provider,
+					model_id: canonical,
+					from,
+					to: downgrade ? { confidence: 'inferred', source_kind: to.source_kind } : to,
+					prices: item.prices,
+					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
+				});
+				try {
+					report.drafted_records.push(
+						...draftRecordsFor(
+							drafted,
+							downgrade
+								? { confidenceOverride: 'inferred', notesPrefix: reasonNote }
+								: { notesPrefix: reasonNote }
+						)
+					);
+				} catch (e) {
+					report.errors.push({ stage: 'draft', provider: item.provider, model: canonical, error: e.message });
+				}
 			}
 			// UNCHANGED: nothing to report
 		}
+	}
+
+	// 3b. PENDING first-party surfacing (Part B). A tripwire-detected NEW model for a mainstream
+	// provider that NO first-party collector surfaced this run is "announced but not yet on the
+	// provider's own pricing page". We do NOT draft a price (an aggregator/reseller number would break
+	// our first-party pledge) - we only LIST it for day-0 human awareness, with the reseller price
+	// clearly labeled a HINT (never written to the dataset).
+	const pendingSeen = new Set(); // dedupe per provider+normalized id
+	for (const c of report.tripwire_candidates) {
+		if (!c || c.status !== 'NEW' || typeof c.provider !== 'string') continue;
+		const ids = [c.bare_id, c.source_id].filter((x) => typeof x === 'string');
+		// surfaced by a first-party collector this run? then it is already in new_models - skip.
+		const surfaced = ids.some((id) => collectorSeenKeys.has(`${c.provider}/${normalizeModelKey(id)}`));
+		if (surfaced) continue;
+		const normKey = normalizeModelKey(c.bare_id || c.source_id || '');
+		const dedupeKey = `${c.provider}/${normKey}`;
+		if (!normKey || pendingSeen.has(dedupeKey)) continue;
+		pendingSeen.add(dedupeKey);
+
+		// reseller hint (OpenRouter only); HuggingFace heads-ups carry no price.
+		const inHint = typeof c.reseller_input_usd_per_mtok === 'number' ? c.reseller_input_usd_per_mtok : null;
+		const outHint = typeof c.reseller_output_usd_per_mtok === 'number' ? c.reseller_output_usd_per_mtok : null;
+		report.pending_first_party.push({
+			provider: c.provider,
+			model_id: c.bare_id || c.source_id,
+			detected_date: c.created || null,
+			source: c.source,
+			openrouter_price_hint:
+				inHint === null && outHint === null
+					? null
+					: { input: inHint, output: outHint, note: 'HINT ONLY - OpenRouter reseller price, NOT first-party, NOT written to the dataset.' },
+		});
 	}
 
 	// 4. emit
@@ -510,9 +667,11 @@ async function main() {
 		// summary of what was written
 		const addedTotal = written.reduce((n, w) => n + w.added, 0);
 		console.error(
-			`sentinel apply: ${report.new_models.length} new model(s) -> ${addedTotal} record(s) appended` +
+			`sentinel apply: ${report.new_models.length} new model(s) + ${report.upgrades.length} provenance upgrade(s) ` +
+				`-> ${addedTotal} record(s) appended` +
 				(written.length ? ` (${written.map((w) => `${w.file} +${w.added}`).join(', ')})` : ' (no JSON changes)') +
 				`; ${report.price_changes.length} suggested CHANGED edit(s); ` +
+				`${report.pending_first_party.length} detected awaiting first-party price; ` +
 				`cross-check: ${report.crosscheck.auto_verified} auto-verified, ${report.crosscheck.needs_review} need review; ` +
 				`${report.errors.length} error(s). Wrote sentinel-report.md.`
 		);
@@ -529,6 +688,7 @@ async function main() {
 	console.error(
 		`\nsentinel ${report.mode}: ${report.tripwire_candidates.length} tripwire candidate(s), ` +
 			`${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
+			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} pending first-party, ` +
 			`${report.drafted_records.length} drafted record(s), ` +
 			`cross-check: ${report.crosscheck.auto_verified} auto-verified / ${report.crosscheck.needs_review} need review, ` +
 			`${report.errors.length} error(s). No files written.`
