@@ -1,7 +1,7 @@
 {
   "name": "ai-price-index",
   "version": "1.0.0",
-  "description": "Open, dated, first-party-sourced AI model API prices over time. Look up what any model cost on any date, with the source. Data CC BY 4.0, tooling MIT.",
+  "description": "AI model API prices for when quality matters: first-party-sourced, dated, point-in-time, and human-verified. Automation keeps it current; a human signs off before anything ships. CC BY 4.0.",
   "license": "MIT",
   "type": "module",
   "author": "RoninForge (https://roninforge.org)",

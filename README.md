@@ -6,12 +6,18 @@
 [![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20730241-informational)](https://doi.org/10.5281/zenodo.20730241)
 
-An open, dated, first-party-sourced record of AI model API prices over time.
+**When AI price-data quality actually matters.** An open, dated, first-party-sourced record of AI model API prices over time.
 
 Most price lists tell you what a model costs **today**. This one tells you what it cost **on a
 given date**, **when that price was last confirmed**, and **links the first-party source that proves
 it**. That provenance is the point: every value carries a verifiable source and a `last_validated_at`
 date, including historical ones.
+
+**Why this index**
+
+- **Quality over coverage.** We curate the models that matter and get them right, instead of chasing a long tail of variants and open-weight forks. Less noise, more signal.
+- **Verifiable, not scraped.** Every price links to the provider's own pricing page, with the date it was confirmed and a confidence rating, and you can look up what any model cost on any past date.
+- **Automated freshness, human QA.** Automation watches first-party sources for new models and price changes and cross-checks every number; a human signs off before anything is published.
 
 - **Data license:** CC BY 4.0 (see [DATA-LICENSE.md](DATA-LICENSE.md)). Use it anywhere, just attribute.
 - **Tooling license:** MIT (see [LICENSE](LICENSE)).
