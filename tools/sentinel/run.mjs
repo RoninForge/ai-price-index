@@ -32,6 +32,7 @@ import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { today, loadCurrent, classify, makeRecord, effectiveFromForNew, REPO_ROOT } from './lib.mjs';
 import { findCandidates } from './tripwire.mjs';
+import { crossCheck, buildOpenRouterLookup } from './crosscheck.mjs';
 import * as anthropic from './collectors/anthropic.mjs';
 import * as llama from './collectors/llama.mjs';
 import * as amazon from './collectors/amazon.mjs';
@@ -70,10 +71,18 @@ function effectiveFromFor(item) {
 	return effectiveFromForNew(item.createdDate, today());
 }
 
-/** Turn one collected model into 1..N contribution-form records (NEW models only). */
-function draftRecordsFor(item) {
+/**
+ * Turn one collected model into 1..N contribution-form records (NEW models only).
+ * `confidenceOverride` (optional) replaces item.confidence when the cross-check gate downgraded the
+ * model to needs_review (e.g. 'inferred'); `notesPrefix` (optional) is prepended to notes so the
+ * reasons travel with the drafted record into the PR.
+ */
+function draftRecordsFor(item, { confidenceOverride, notesPrefix } = {}) {
 	const recs = [];
 	const effective_from = effectiveFromFor(item);
+	const confidence = confidenceOverride || item.confidence;
+	let notes = item.notes;
+	if (notesPrefix) notes = notes ? `${notesPrefix} ${notes}` : notesPrefix;
 	for (const variation of RECORD_VARIATIONS) {
 		const price = item.prices[variation];
 		if (typeof price !== 'number') continue;
@@ -89,9 +98,9 @@ function draftRecordsFor(item) {
 				last_validated_at: today(),
 				source_url: item.source_url,
 				source_kind: item.source_kind,
-				confidence: item.confidence,
+				confidence,
 				aliases: item.aliases,
-				notes: item.notes,
+				notes,
 			})
 		);
 	}
@@ -180,6 +189,55 @@ function renderReportMd(report, written) {
 			`${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
 	);
 	L.push('');
+
+	// Cross-check gate: the correctness differentiator. Auto-verified items are safe to merge with a
+	// glance; needs-review items are downgraded to `inferred` and listed with the reasons a human
+	// should resolve before flipping them back to verified.
+	const cc = report.crosscheck || { auto_verified: 0, needs_review: 0, items: [] };
+	L.push('## Cross-check gate');
+	L.push('');
+	L.push(
+		`The correctness gate ran on every NEW model and CHANGED price: ` +
+			`${cc.auto_verified} auto-verified, ${cc.needs_review} need review.`
+	);
+	L.push('');
+	const verifiedItems = cc.items.filter((i) => i.verdict === 'verified');
+	const reviewItems = cc.items.filter((i) => i.verdict !== 'verified');
+
+	L.push('### Auto-verified (safe to merge)');
+	L.push('');
+	if (verifiedItems.length) {
+		L.push('Passed structural, change-magnitude, and aggregator cross-reference checks.');
+		L.push('');
+		L.push('| Provider | Model | Kind |');
+		L.push('|---|---|---|');
+		for (const i of verifiedItems) L.push(`| \`${i.provider}\` | \`${i.model_id}\` | ${i.kind} |`);
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
+	L.push('### Needs review (reasons)');
+	L.push('');
+	if (reviewItems.length) {
+		L.push(
+			'Downgraded to `inferred` until a human resolves each reason and (where correct) flips it back ' +
+				'to `verified`. NEW models here were drafted into JSON as `inferred`; CHANGED prices are ' +
+				'suggested-only.'
+		);
+		L.push('');
+		L.push('| Provider | Model | Kind | Reasons |');
+		L.push('|---|---|---|---|');
+		for (const i of reviewItems) {
+			const reasons = (i.reasons || []).join('; ').replace(/\|/g, '\\|');
+			L.push(`| \`${i.provider}\` | \`${i.model_id}\` | ${i.kind} | ${reasons} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
 
 	// New models (drafted into JSON in this PR)
 	if (report.new_models.length) {
@@ -294,6 +352,7 @@ async function main() {
 		new_models: [],
 		price_changes: [],
 		drafted_records: [],
+		crosscheck: { auto_verified: 0, needs_review: 0, items: [] },
 		errors: [],
 	};
 
@@ -306,6 +365,38 @@ async function main() {
 		report.errors.push({ stage: 'tripwire', error: e.message });
 	}
 	const tripwireDates = indexTripwireDates(report.tripwire_candidates);
+
+	// Build the OpenRouter (reseller) price lookup from the tripwire data we ALREADY fetched above.
+	// Do NOT re-fetch. crossCheck uses this as best-effort independent corroboration.
+	const openrouter = buildOpenRouterLookup(report.tripwire_candidates);
+
+	/**
+	 * Run the cross-check gate for one candidate, fail-safe: any throw defaults the item to
+	 * needs_review (we never publish-as-verified something the gate could not evaluate). The thrown
+	 * message is surfaced as a reason + into report.errors. Records the verdict in report.crosscheck.
+	 */
+	const runGate = (candidate) => {
+		let result;
+		try {
+			result = crossCheck(candidate, { openrouter });
+			if (!result || (result.verdict !== 'verified' && result.verdict !== 'needs_review')) {
+				throw new Error('crossCheck returned an invalid verdict');
+			}
+		} catch (e) {
+			report.errors.push({ stage: 'crosscheck', provider: candidate.provider, model: candidate.model_id, error: e.message });
+			result = { verdict: 'needs_review', reasons: [`cross-check threw, defaulting to needs_review: ${e.message}`] };
+		}
+		report.crosscheck.items.push({
+			provider: candidate.provider,
+			model_id: candidate.model_id,
+			kind: candidate.isNew ? 'new' : 'changed',
+			verdict: result.verdict,
+			reasons: result.reasons,
+		});
+		if (result.verdict === 'verified') report.crosscheck.auto_verified++;
+		else report.crosscheck.needs_review++;
+		return result;
+	};
 
 	// 2 + 3. collectors + diff. Per-collector try/catch: one failing collector (xai BLOCKED with no key,
 	// google drift, ...) lands in report.errors[] and never kills the run.
@@ -337,17 +428,37 @@ async function main() {
 				// Thread the tripwire's discovery date (if any) into the drafting path for effective_from.
 				const createdDate = tripwireCreatedDate(item, tripwireDates);
 				const drafted = { ...item, createdDate };
+
+				// Cross-check gate: a suspicious NEW model is drafted as `inferred` + needs_review so a
+				// human only reviews the genuinely-uncertain ones. A clean, corroborated one stays as the
+				// collector set it (typically verified).
+				const gate = runGate({
+					provider: item.provider,
+					model_id: item.model_id,
+					prices: item.prices,
+					aliases: item.aliases,
+					isNew: true,
+					prior: null,
+				});
+				const downgrade = gate.verdict === 'needs_review';
+				const reasonNote = downgrade
+					? `[needs_review] cross-check flagged: ${gate.reasons.join('; ')}.`
+					: undefined;
+
 				report.new_models.push({
 					provider: item.provider,
 					model_id: item.model_id,
 					display_name: item.display_name || null,
 					prices: item.prices,
-					confidence: item.confidence,
+					confidence: downgrade ? 'inferred' : item.confidence,
 					source_kind: item.source_kind,
 					effective_from: effectiveFromFor(drafted),
+					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
 				});
 				try {
-					report.drafted_records.push(...draftRecordsFor(drafted));
+					report.drafted_records.push(
+						...draftRecordsFor(drafted, downgrade ? { confidenceOverride: 'inferred', notesPrefix: reasonNote } : undefined)
+					);
 				} catch (e) {
 					// fail loud per-model: a bad draft is a bug, surface it but keep the run alive
 					report.errors.push({ stage: 'draft', provider: item.provider, model: item.model_id, error: e.message });
@@ -359,12 +470,27 @@ async function main() {
 				for (const [v, p] of Object.entries(item.prices)) {
 					if (typeof p === 'number' && v in have && have[v] !== p) diffs[v] = { from: have[v], to: p };
 				}
+
+				// Cross-check gate on the CHANGED price: flags the parse-error / transposition / suspicious-
+				// magnitude class (the DeepSeek-false-positive class). `prior` is the published price.
+				const gate = runGate({
+					provider: item.provider,
+					model_id: canonical,
+					prices: item.prices,
+					aliases: item.aliases,
+					isNew: false,
+					prior: have,
+				});
+
 				report.price_changes.push({
 					provider: item.provider,
 					model_id: canonical,
-					confidence: item.confidence,
+					// CHANGED prices are SUGGESTED edits, never auto-written; mirror the verdict so the
+					// report can group them. Downgrade the advisory confidence label on a flag.
+					confidence: gate.verdict === 'needs_review' ? 'inferred' : item.confidence,
 					source_kind: item.source_kind,
 					changes: diffs,
+					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
 				});
 			}
 			// UNCHANGED: nothing to report
@@ -386,8 +512,9 @@ async function main() {
 		console.error(
 			`sentinel apply: ${report.new_models.length} new model(s) -> ${addedTotal} record(s) appended` +
 				(written.length ? ` (${written.map((w) => `${w.file} +${w.added}`).join(', ')})` : ' (no JSON changes)') +
-				`; ${report.price_changes.length} suggested CHANGED edit(s); ${report.errors.length} error(s). ` +
-				`Wrote sentinel-report.md.`
+				`; ${report.price_changes.length} suggested CHANGED edit(s); ` +
+				`cross-check: ${report.crosscheck.auto_verified} auto-verified, ${report.crosscheck.needs_review} need review; ` +
+				`${report.errors.length} error(s). Wrote sentinel-report.md.`
 		);
 		return;
 	}
@@ -402,8 +529,9 @@ async function main() {
 	console.error(
 		`\nsentinel ${report.mode}: ${report.tripwire_candidates.length} tripwire candidate(s), ` +
 			`${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
-			`${report.drafted_records.length} drafted record(s), ${report.errors.length} error(s). ` +
-			'No files written.'
+			`${report.drafted_records.length} drafted record(s), ` +
+			`cross-check: ${report.crosscheck.auto_verified} auto-verified / ${report.crosscheck.needs_review} need review, ` +
+			`${report.errors.length} error(s). No files written.`
 	);
 }
 
