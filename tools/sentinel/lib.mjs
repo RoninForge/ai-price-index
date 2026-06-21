@@ -7,6 +7,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { normalizeModelKey } from './crosscheck.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // repo root = two levels up from tools/sentinel/
@@ -326,6 +327,208 @@ export function classifyUpgrade(provider, model, extracted, incoming, current) {
 		if (isWeakerProvenance(prov[variation], incoming)) return 'UPGRADE';
 	}
 	return 'UNCHANGED';
+}
+
+// ---------------------------------------------------------------------------
+// "new family" filter for pending_first_party
+// ---------------------------------------------------------------------------
+//
+// report.pending_first_party should surface ONLY a genuinely-new model FAMILY from a core lab that we
+// do not track at all (the rare "a claude-5 / gemini-4 / gpt-6 line appeared" signal worth a human's
+// attention) - NOT the long tail of open-weight size variants (qwen3-14b, qwen3-235b-a22b-2507),
+// quantized builds (...-fp8, ...-NVFP4), or dated/variant snapshots of families we already track
+// (gpt-5.1-codex, gpt-5.3-chat, command-r-08-2024, claude-opus-4.8-fast).
+//
+// The filter below is intentionally heuristic and tuned against the real live tripwire output. It runs
+// on the NORMALIZED key (see normalizeModelKey), which flattens dots to hyphens, so e.g. gpt-5.1 ->
+// "gpt-5-1", qwen3.5 -> "qwen3-5", deepseek-v3.2 -> "deepseek-v3-2".
+
+// A single hyphen-separated token that denotes a model SIZE: 7b/72b/405b/17b, a MoE active-param tag
+// a22b/a3b/a17b, an 8x22b mixture, an expert-count 128e/16e, or a Gemma-style e4b "effective" size.
+const SIZE_TOKEN_RE = /^\d+(?:\.\d+)?b$|^a\d+b$|^\d+x\d+b$|^\d+e$|^e\d+b$|^\d+x\d+$/;
+// A single token denoting a quantization / inference build of an open-weight checkpoint.
+const QUANT_TOKEN_RE = /^(?:fp8|fp4|nvfp4|gptq|awq|int4|int8|bf16|w8a8)$/;
+
+/** True if any hyphen token of the normalized key is a size/MoE/expert-count tag. */
+function hasSizeTag(normKey) {
+	return normKey.split('-').some((t) => SIZE_TOKEN_RE.test(t));
+}
+/** True if any hyphen token of the normalized key is a quantization tag. */
+function hasQuantTag(normKey) {
+	return normKey.split('-').some((t) => QUANT_TOKEN_RE.test(t));
+}
+
+// Trailing tokens that mark a variant/snapshot rather than a distinct family. Generic tier words
+// (max/plus/pro/...) are included so a tier sibling of a tracked family does not read as a new family.
+const VARIANT_TOKENS = new Set([
+	'codex', 'chat', 'instruct', 'base', 'vision', 'audio', 'mini', 'nano', 'fast', 'lite',
+	'reasoning', 'thinking', 'search', 'realtime', 'tts', 'image', 'embed', 'rerank', 'guard',
+	'preview', 'beta', 'latest', 'distill', 'it', 'exp', 'speciale', 'terminus', 'original',
+	'eagle', 'onnx', 'online',
+	'max', 'plus', 'pro', 'flash', 'turbo', 'high', 'low', 'medium', 'small', 'large', 'next',
+]);
+
+/**
+ * Strip trailing variant/snapshot/size/quant tokens off a normalized key so the remainder is the
+ * stable family stem. Strips dated snapshots (-YYYYMMDD, the flattened -YYYY-MM-DD/-MM-DD digit
+ * groups, 4-digit MMYY/version stamps like -2507/-0309/-2512), -vN, -16k context tags, size/quant
+ * tags, and the variant suffixes above - repeatedly, from the right.
+ */
+function stripTrailingVariants(normKey) {
+	const p = normKey.split('-');
+	let changed = true;
+	while (changed && p.length > 1) {
+		changed = false;
+		const last = p[p.length - 1];
+		if (/^\d{8}$/.test(last)) { p.pop(); changed = true; continue; }      // -YYYYMMDD
+		if (/^\d{4}$/.test(last)) { p.pop(); changed = true; continue; }      // -2507 / -0309 / -2512 stamp
+		if (/^\d{2}$/.test(last)) { p.pop(); changed = true; continue; }      // -02 / -23 (flattened date group)
+		if (/^v\d+$/.test(last)) { p.pop(); changed = true; continue; }       // -v1
+		if (/^\d+k$/.test(last)) { p.pop(); changed = true; continue; }       // -16k context tag
+		if (SIZE_TOKEN_RE.test(last) || QUANT_TOKEN_RE.test(last)) { p.pop(); changed = true; continue; }
+		if (VARIANT_TOKENS.has(last)) { p.pop(); changed = true; continue; }
+	}
+	return p.join('-');
+}
+
+// A family root that is just a bare vendor word means stripping removed every distinguishing token -
+// i.e. it is a pure variant of an existing family (e.g. gpt-audio -> "gpt"), so treat it as tracked.
+const BARE_VENDOR_ROOTS = new Set([
+	'gpt', 'claude', 'gemini', 'gemma', 'qwen', 'nova', 'command', 'llama', 'mistral', 'deepseek',
+	'grok', 'jamba', 'janus', 'ministral', 'mixtral', 'codestral', 'devstral', 'magistral', 'voxtral',
+	'leanstral',
+]);
+
+/**
+ * Derive a COARSE family root from a normalized model key: vendor + line + MAJOR version, dropping
+ * tier words, snapshots, and (for most labs) the minor version, so that a candidate and the tracked
+ * ids of the same family collapse to the same root. Examples (normalized -> root):
+ *   gpt-5-1-codex   -> gpt-5        gpt-4o          -> gpt-4
+ *   claude-opus-4-8 -> claude-opus-4   gemini-3-pro -> gemini-3   gemini-2-5-pro -> gemini-2-5
+ *   qwen3-14b       -> qwen3        qwen-2-5-7b     -> qwen-2-5    deepseek-v3-2  -> deepseek-v3
+ *   llama-4-scout   -> llama-4      mistral-large-3 -> mistral-large   grok-5      -> grok-5
+ * Used both to build the tracked-family set (from loadCurrent ids+aliases) and to classify candidates.
+ */
+export function familyRoot(normKey) {
+	const key = stripTrailingVariants(normKey);
+	const p = key.split('-');
+
+	// OpenAI gpt-N(.m): collapse to gpt-<major>; gpt-4o -> gpt-4.
+	if (p[0] === 'gpt') {
+		if (/^\d+$/.test(p[1] || '')) return `gpt-${p[1]}`;
+		const mo = (p[1] || '').match(/^(\d+)o$/);
+		if (mo) return `gpt-${mo[1]}`;
+		return p[1] ? `gpt-${p[1]}` : 'gpt'; // gpt-oss, or bare gpt (variant collapsed)
+	}
+	// OpenAI o-series: o1/o3/o4 are roots already.
+	if (/^o\d+$/.test(p[0])) return p[0];
+	// Anthropic: claude-<tier>-<major>, or claude-<major>(-minor)-<tier>.
+	if (p[0] === 'claude') {
+		if (['opus', 'sonnet', 'haiku'].includes(p[1]) && /^\d+$/.test(p[2] || '')) {
+			return `claude-${p[1]}-${p[2]}`;
+		}
+		if (/^\d+$/.test(p[1] || '')) {
+			const tierIdx = p.findIndex((t) => ['opus', 'sonnet', 'haiku'].includes(t));
+			if (tierIdx > 0) return `claude-${p[1]}-${p[tierIdx]}`; // claude-3-5-haiku -> claude-3-haiku
+			return key;
+		}
+		if (p[1] === 'fable') return 'claude-fable';
+		return key;
+	}
+	// Google gemini / gemma: keep major(-minor), drop tier; gemma-3n -> gemma-3.
+	if (p[0] === 'gemini' || p[0] === 'gemma') {
+		const major = (p[1] || '').replace(/n$/, '');
+		if (/^\d+$/.test(major)) {
+			if (/^\d+$/.test(p[2] || '')) return `${p[0]}-${major}-${p[2]}`;
+			return `${p[0]}-${major}`;
+		}
+		return p[1] ? `${p[0]}-${p[1]}` : p[0];
+	}
+	// Alibaba qwen: version may be baked into p[0] (qwen3, qwen3-5) or split (qwen-2-5).
+	if (p[0].startsWith('qwen')) {
+		if (p[0] === 'qwen' && /^\d+$/.test(p[1] || '')) {
+			return /^\d+$/.test(p[2] || '') ? `qwen-${p[1]}-${p[2]}` : `qwen-${p[1]}`;
+		}
+		if (p[0] === 'qwen2') return /^\d+$/.test(p[1] || '') ? `qwen-2-${p[1]}` : 'qwen-2';
+		if (/^qwen\d+$/.test(p[0]) && /^\d+$/.test(p[1] || '')) return `${p[0]}-${p[1]}`; // qwen3-5
+		return p[0];
+	}
+	// Amazon nova: nova / nova-2.
+	if (p[0] === 'nova') return /^\d+$/.test(p[1] || '') ? `nova-${p[1]}` : 'nova';
+	// Cohere command-<series>: command-r / command-a (trailing digits already stripped).
+	if (p[0] === 'command') return p[1] ? `command-${p[1].replace(/\d.*$/, '')}` : 'command';
+	// Meta llama-<major>.
+	if (p[0] === 'llama') {
+		const m = (p[1] || '').match(/^(\d+)/);
+		return m ? `llama-${m[1]}` : 'llama';
+	}
+	// Mistral families: drop the generation integer so a generation gap reads as the same family.
+	if (['mistral', 'ministral', 'codestral', 'devstral', 'magistral', 'mixtral', 'voxtral', 'leanstral'].includes(p[0])) {
+		if (p[0] === 'mistral' && p[1]) return `mistral-${p[1]}`; // mistral-large / -medium / -small / -nemo / -saba
+		return p[0];
+	}
+	// DeepSeek lines: v3/v4 (incl. the deepseek-chat-vN alias), r1, math/prover/coder/vl; Janus.
+	if (p[0] === 'deepseek' || p[0] === 'janus') {
+		if (p[0] === 'janus') return 'janus';
+		let m = key.match(/deepseek-(?:chat-)?v(\d+)/);
+		if (m) return `deepseek-v${m[1]}`;
+		m = key.match(/deepseek-(r\d+)/);
+		if (m) return `deepseek-${m[1]}`;
+		m = key.match(/deepseek-(math|prover|coder|vl)/);
+		if (m) return `deepseek-${m[1]}`;
+		return 'deepseek';
+	}
+	// xAI grok-<major>.
+	if (p[0] === 'grok') {
+		const m = (p[1] || '').match(/^(\d+)/);
+		return m ? `grok-${m[1]}` : 'grok';
+	}
+	if (p[0] === 'jamba') return 'jamba';
+	return key;
+}
+
+/**
+ * Build the set of family roots we already track, scoped per provider, from loadCurrent()'s tracked
+ * ids + aliases. Returns Set<"provider/familyRoot">.
+ */
+export function buildTrackedFamilyRoots(current) {
+	const roots = new Set();
+	if (!current || !current.knownByProvider) return roots;
+	for (const [provider, ids] of current.knownByProvider) {
+		for (const id of ids) {
+			const root = familyRoot(normalizeModelKey(id));
+			if (root) roots.add(`${provider}/${root}`);
+		}
+	}
+	return roots;
+}
+
+/**
+ * Decide whether a pending tripwire candidate is a GENUINELY-NEW model FAMILY worth surfacing, or
+ * long-tail noise to drop. Returns { keep: boolean, reason: string|null } where reason is one of
+ * 'size-tag' | 'quant' | 'variant-of-tracked' | 'known-family' when dropped, null when kept.
+ *
+ * Drops if ANY hold:
+ *   1. size/MoE/expert-count SKU tag,
+ *   2. quantization SKU tag,
+ *   3. the stripped stem resolves to a tracked canonical id (alias-aware), OR the family root collapses
+ *      to a bare vendor word (a pure variant of an existing family),
+ *   4. the family root is already represented in the tracked-family set.
+ * Provider coverage is assumed (the tripwire only emits our covered mainstream providers).
+ */
+export function classifyPendingCandidate({ provider, modelId }, { trackedFamilyRoots, current }) {
+	const key = normalizeModelKey(modelId);
+	if (!key) return { keep: false, reason: 'unparseable' };
+	if (hasSizeTag(key)) return { keep: false, reason: 'size-tag' };
+	if (hasQuantTag(key)) return { keep: false, reason: 'quant' };
+
+	const stem = stripTrailingVariants(key);
+	const resolvesToTracked = current && current.resolve && (current.resolve(provider, stem) || current.resolve(provider, key));
+	const root = familyRoot(key);
+	if (resolvesToTracked || BARE_VENDOR_ROOTS.has(root)) return { keep: false, reason: 'variant-of-tracked' };
+	if (trackedFamilyRoots && trackedFamilyRoots.has(`${provider}/${root}`)) return { keep: false, reason: 'known-family' };
+
+	return { keep: true, reason: null };
 }
 
 // ---------------------------------------------------------------------------

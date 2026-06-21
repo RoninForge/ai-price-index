@@ -30,7 +30,17 @@
 
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { today, loadCurrent, classify, classifyUpgrade, makeRecord, effectiveFromForNew, REPO_ROOT } from './lib.mjs';
+import {
+	today,
+	loadCurrent,
+	classify,
+	classifyUpgrade,
+	makeRecord,
+	effectiveFromForNew,
+	REPO_ROOT,
+	buildTrackedFamilyRoots,
+	classifyPendingCandidate,
+} from './lib.mjs';
 import { findCandidates } from './tripwire.mjs';
 import { crossCheck, buildOpenRouterLookup, normalizeModelKey } from './crosscheck.mjs';
 import * as anthropic from './collectors/anthropic.mjs';
@@ -187,7 +197,8 @@ function renderReportMd(report, written) {
 	L.push(
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
-			`first-party price, ${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
+			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
+			`${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
 	);
 	L.push('');
 
@@ -294,27 +305,36 @@ function renderReportMd(report, written) {
 	}
 
 	// Detected, awaiting first-party price (Part B). NOT published - first-party-pure.
+	// Scoped to GENUINELY-NEW model families: the long tail of open-weight size/quant SKUs and
+	// dated/variant snapshots of tracked families is filtered out (report.pending_filtered_out).
 	L.push('## Detected, awaiting first-party price (not published)');
 	L.push('');
+	const filteredOut = report.pending_filtered_out || 0;
+	const filteredNote = filteredOut ? ` (${filteredOut} variant/open-weight SKUs filtered out)` : '';
 	if (report.pending_first_party.length) {
 		L.push(
-			'A tripwire (OpenRouter / HuggingFace) detected a mainstream NEW model that NO first-party collector ' +
-				'surfaced this run - announced but not yet on the provider\'s own pricing page. We do NOT draft a ' +
-				'price (a reseller number would break the first-party pledge). The OpenRouter price is a HINT for ' +
-				'the human only and is NOT written to the dataset.'
+			'A tripwire (OpenRouter / HuggingFace) detected a GENUINELY-NEW model family from a core lab that NO ' +
+				'first-party collector surfaced this run - announced but not yet on the provider\'s own pricing page. ' +
+				'We do NOT draft a price (a reseller number would break the first-party pledge). The OpenRouter price ' +
+				'is a HINT for the human only and is NOT written to the dataset. Long-tail size/quant variants and ' +
+				`snapshots of families we already track are filtered out${filteredNote}.`
 		);
 		L.push('');
 		L.push('| Provider | Model | Detected | Source | OpenRouter price HINT (not published) |');
 		L.push('|---|---|---|---|---|');
-		for (const p of report.pending_first_party) {
+		const PENDING_RENDER_CAP = 25;
+		const shown = report.pending_first_party.slice(0, PENDING_RENDER_CAP);
+		for (const p of shown) {
 			const hint = p.openrouter_price_hint
 				? `in $${p.openrouter_price_hint.input ?? '-'}, out $${p.openrouter_price_hint.output ?? '-'}`
 				: 'none';
 			L.push(`| \`${p.provider}\` | \`${p.model_id}\` | ${p.detected_date || '-'} | ${p.source} | ${hint} |`);
 		}
+		const remaining = report.pending_first_party.length - shown.length;
+		if (remaining > 0) L.push(`| | +${remaining} more | | | |`);
 		L.push('');
 	} else {
-		L.push('None.');
+		L.push(`None${filteredNote}.`);
 		L.push('');
 	}
 
@@ -404,6 +424,7 @@ async function main() {
 		price_changes: [],
 		upgrades: [],
 		pending_first_party: [],
+		pending_filtered_out: 0,
 		drafted_records: [],
 		crosscheck: { auto_verified: 0, needs_review: 0, items: [] },
 		errors: [],
@@ -627,6 +648,12 @@ async function main() {
 	// provider's own pricing page". We do NOT draft a price (an aggregator/reseller number would break
 	// our first-party pledge) - we only LIST it for day-0 human awareness, with the reseller price
 	// clearly labeled a HINT (never written to the dataset).
+	//
+	// "NEW FAMILY" filter: the tripwire surfaces ~150 NEW candidates, but almost all are long-tail noise
+	// (open-weight size/quant SKUs and dated/variant snapshots of families we already track). We keep
+	// ONLY a genuinely-new model FAMILY from a core lab that we do not track at all - the rare signal
+	// worth a human's attention - and count the rest in report.pending_filtered_out for transparency.
+	const trackedFamilyRoots = buildTrackedFamilyRoots(current);
 	const pendingSeen = new Set(); // dedupe per provider+normalized id
 	for (const c of report.tripwire_candidates) {
 		if (!c || c.status !== 'NEW' || typeof c.provider !== 'string') continue;
@@ -638,6 +665,16 @@ async function main() {
 		const dedupeKey = `${c.provider}/${normKey}`;
 		if (!normKey || pendingSeen.has(dedupeKey)) continue;
 		pendingSeen.add(dedupeKey);
+
+		// Drop long-tail size/quant/variant/known-family SKUs; keep only genuinely-new families.
+		const verdict = classifyPendingCandidate(
+			{ provider: c.provider, modelId: c.bare_id || c.source_id },
+			{ trackedFamilyRoots, current }
+		);
+		if (!verdict.keep) {
+			report.pending_filtered_out++;
+			continue;
+		}
 
 		// reseller hint (OpenRouter only); HuggingFace heads-ups carry no price.
 		const inHint = typeof c.reseller_input_usd_per_mtok === 'number' ? c.reseller_input_usd_per_mtok : null;
@@ -671,7 +708,8 @@ async function main() {
 				`-> ${addedTotal} record(s) appended` +
 				(written.length ? ` (${written.map((w) => `${w.file} +${w.added}`).join(', ')})` : ' (no JSON changes)') +
 				`; ${report.price_changes.length} suggested CHANGED edit(s); ` +
-				`${report.pending_first_party.length} detected awaiting first-party price; ` +
+				`${report.pending_first_party.length} detected awaiting first-party price ` +
+				`(${report.pending_filtered_out} variant/open-weight SKUs filtered out); ` +
 				`cross-check: ${report.crosscheck.auto_verified} auto-verified, ${report.crosscheck.needs_review} need review; ` +
 				`${report.errors.length} error(s). Wrote sentinel-report.md.`
 		);
@@ -688,7 +726,8 @@ async function main() {
 	console.error(
 		`\nsentinel ${report.mode}: ${report.tripwire_candidates.length} tripwire candidate(s), ` +
 			`${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
-			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} pending first-party, ` +
+			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} pending first-party ` +
+			`(${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
 			`${report.drafted_records.length} drafted record(s), ` +
 			`cross-check: ${report.crosscheck.auto_verified} auto-verified / ${report.crosscheck.needs_review} need review, ` +
 			`${report.errors.length} error(s). No files written.`
