@@ -10,10 +10,27 @@ name: price-sentinel
 # amazon (Bedrock Nova), mistral, deepseek, google, alibaba, xai.
 #
 # Intended to EVENTUALLY SUPERSEDE pricing-audit.yml. It is MANUAL-DISPATCH ONLY for now (NO cron) so it
-# never collides with the daily pricing-audit run while both exist. The PR mechanics + idempotency mirror
-# pricing-audit.yml: a per-UTC-date branch, skip if the branch or an open PR already exists, a DRAFT PR
-# with the sentinel-report.md as the body, base main. validate.yml gates the PR (expected red until a
-# human verifies the drafted first-party fields).
+# never collides with the daily pricing-audit run while both exist.
+#
+# ROLLING-PR IDEMPOTENCY (replaces the old per-UTC-date branch model).
+# `node tools/sentinel/run.mjs --apply` on a FRESH checkout of main regenerates the WHOLE current set of
+# pending drafts deterministically, so this job keeps ONE rolling PR that always reflects the current
+# pending findings, instead of opening a near-duplicate draft PR every day the backlog goes un-acted-on:
+#
+#   * NOTHING to report (no data/records changes AND the report shows no findings)  -> do nothing.
+#       No branch, no commit, no PR. Logs "sentinel clean: nothing to report" and ends green.
+#   * FINDINGS, no open rolling PR  -> create the single rolling branch `sentinel/pending` at main + the
+#       drafts commit, and open ONE draft PR (base main, body = sentinel-report.md).
+#   * FINDINGS, an open rolling PR already exists  -> UPDATE it in place: force-push the regenerated
+#       `sentinel/pending` branch and refresh the PR body. Never opens a second PR.
+#   * FINDINGS unchanged vs the existing remote `sentinel/pending`  -> skip: no force-push, no body churn.
+#       Logs "findings unchanged" and ends green.
+#
+# Because the branch is rebuilt from `main` each run, its content == main + one drafts commit, so a
+# content comparison against origin/sentinel/pending is deterministic. sentinel-report.md is the PR BODY
+# only; like pricing-audit.yml we `git add data/records` exclusively, so the report file is never
+# committed to the tree. validate.yml gates the PR (expected red until a human verifies the drafted
+# first-party fields).
 #
 # Secrets: XAI_API_KEY (optional). Without it the xAI collector reports a BLOCKED state in the report and
 # never crashes the run; every other provider still runs.
@@ -34,6 +51,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Full history so origin/sentinel/pending can be fetched + diffed for the unchanged check.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -58,62 +78,130 @@ jobs:
             exit 1
           fi
 
-          # Did the run draft any new records into data/records?
+          # DETECT findings two ways:
+          #   1. data/records changed (NEW-model drafts were appended), OR
+          #   2. the report indicates findings even without a JSON write (suggested CHANGED price edits,
+          #      or new-model rows). The report's Summary line carries the counts; we treat a non-zero
+          #      "new model(s)" or "price change(s)" as findings. (Errors / BLOCKED providers alone are
+          #      NOT findings - they would otherwise open a PR every run a key is missing.)
           if [ -n "$(git status --porcelain -- data/records)" ]; then
-            echo "has_data_changes=true" >> "$GITHUB_OUTPUT"
+            has_data_changes=true
           else
-            echo "has_data_changes=false" >> "$GITHUB_OUTPUT"
+            has_data_changes=false
           fi
+          echo "has_data_changes=$has_data_changes" >> "$GITHUB_OUTPUT"
           git status --porcelain -- data/records || true
 
-      - name: Idempotency check
-        id: idem
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TODAY: ${{ steps.run.outputs.today }}
-        run: |
-          branch="sentinel/${TODAY}"
-          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          # Parse the Summary line, e.g.:
+          #   "Summary: 2 new model(s), 1 price change(s), 5 tripwire candidate(s), 3 error(s)."
+          summary="$(grep -m1 '^Summary:' sentinel-report.md || true)"
+          new_models="$(printf '%s' "$summary" | sed -n 's/.*Summary: \([0-9]\{1,\}\) new model(s).*/\1/p')"
+          price_changes="$(printf '%s' "$summary" | sed -n 's/.* \([0-9]\{1,\}\) price change(s).*/\1/p')"
+          new_models="${new_models:-0}"
+          price_changes="${price_changes:-0}"
+          echo "new_models=$new_models"   >> "$GITHUB_OUTPUT"
+          echo "price_changes=$price_changes" >> "$GITHUB_OUTPUT"
 
-          # Skip if a branch of this name already exists on the remote, or an open PR from such a branch
-          # already exists. Either means today's sentinel already ran.
-          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-            echo "Branch $branch already exists on origin; skipping (already ran today)."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ "$has_data_changes" = "true" ] || [ "$new_models" -gt 0 ] || [ "$price_changes" -gt 0 ]; then
+            echo "has_findings=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_findings=false" >> "$GITHUB_OUTPUT"
           fi
-          existing=$(gh pr list --state open --head "$branch" --json number --jq '. | length')
-          if [ "$existing" -gt 0 ]; then
-            echo "Open PR from $branch already exists; skipping."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "skip=false" >> "$GITHUB_OUTPUT"
 
-      - name: Open draft PR
-        if: steps.idem.outputs.skip == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ steps.idem.outputs.branch }}
-          TODAY: ${{ steps.run.outputs.today }}
-          HAS_DATA_CHANGES: ${{ steps.run.outputs.has_data_changes }}
+      # CASE 1 - nothing to report: stop here, green, no branch/commit/PR.
+      - name: Sentinel clean (no findings)
+        if: steps.run.outputs.has_findings == 'false'
         run: |
+          echo "sentinel clean: nothing to report"
+
+      # Build the rolling branch content in the working tree (commit on top of the current main checkout),
+      # then compare it to the existing remote rolling branch to decide create / update / skip-unchanged.
+      - name: Stage rolling branch + decide create/update/skip
+        id: roll
+        if: steps.run.outputs.has_findings == 'true'
+        run: |
+          set -euo pipefail
+          BRANCH="sentinel/pending"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
 
-          if [ "$HAS_DATA_CHANGES" = "true" ]; then
+          # Commit the regenerated drafts on top of the current main checkout. sentinel-report.md is the
+          # PR body only, so it is intentionally NOT added (stays untracked, never committed) - matches
+          # pricing-audit.yml which only `git add data/records`.
+          if [ -n "$(git status --porcelain -- data/records)" ]; then
             git add data/records
             git commit -m "sentinel: draft new-model record(s) from multi-provider sentinel"
           else
-            # CHANGED/errors-only run: no JSON edit, so make an empty commit to anchor the PR branch.
+            # CHANGED-prices-only run: no JSON edit, so anchor the rolling branch with an empty commit.
             git commit --allow-empty -m "sentinel: report (see PR body for suggested edits / BLOCKED providers)"
           fi
-          git push origin "$BRANCH"
+          NEW_TREE="$(git rev-parse HEAD^{tree})"
 
-          gh pr create \
-            --draft \
-            --base main \
-            --head "$BRANCH" \
-            --title "sentinel: price sweep $TODAY" \
-            --body-file sentinel-report.md
+          # Does the rolling branch already exist on the remote?
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch --no-tags origin "$BRANCH":"refs/remotes/origin/$BRANCH"
+            OLD_TREE="$(git rev-parse "refs/remotes/origin/$BRANCH^{tree}")"
+            if [ "$NEW_TREE" = "$OLD_TREE" ]; then
+              # SKIP-IF-UNCHANGED: regenerated drafts are identical to what is already on the branch.
+              echo "findings unchanged: regenerated sentinel/pending tree matches origin/$BRANCH; nothing to push."
+              echo "action=skip" >> "$GITHUB_OUTPUT"
+            else
+              echo "rolling branch exists and findings changed; will force-push + refresh the PR body."
+              echo "action=update" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "no rolling branch on origin; will create it + open one draft PR."
+            echo "action=create" >> "$GITHUB_OUTPUT"
+          fi
+
+      # CASE 3 (unchanged): explicit log step so the run reads clearly. No push, no PR edit.
+      - name: Findings unchanged
+        if: steps.run.outputs.has_findings == 'true' && steps.roll.outputs.action == 'skip'
+        run: |
+          echo "findings unchanged: rolling PR already reflects the current pending findings; skipping."
+
+      # Push the rolling branch. create -> normal push; update -> force-push (history is rebuilt from main).
+      - name: Push rolling branch
+        if: steps.run.outputs.has_findings == 'true' && (steps.roll.outputs.action == 'create' || steps.roll.outputs.action == 'update')
+        env:
+          BRANCH: ${{ steps.roll.outputs.branch }}
+          ACTION: ${{ steps.roll.outputs.action }}
+        run: |
+          set -euo pipefail
+          if [ "$ACTION" = "create" ]; then
+            git push origin "HEAD:refs/heads/$BRANCH"
+          else
+            # update: the rolling branch is deterministically rebuilt from main each run, so force-push.
+            git push --force origin "HEAD:refs/heads/$BRANCH"
+          fi
+
+      # CASE 2a - no open rolling PR yet: open exactly one DRAFT PR, body = sentinel-report.md.
+      # CASE 2b - an open rolling PR exists: refresh its body in place (the branch was just force-pushed).
+      - name: Open or update the rolling draft PR
+        if: steps.run.outputs.has_findings == 'true' && (steps.roll.outputs.action == 'create' || steps.roll.outputs.action == 'update')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.roll.outputs.branch }}
+          TODAY: ${{ steps.run.outputs.today }}
+        run: |
+          set -euo pipefail
+          # Is there already an open PR from the rolling branch? (Decoupled from create/update: a force-push
+          # on `update` keeps the PR open, and a `create` could still race an already-open PR.)
+          existing="$(gh pr list --state open --head "$BRANCH" --json number --jq '.[0].number // empty')"
+
+          if [ -n "$existing" ]; then
+            echo "Open rolling PR #$existing exists; refreshing its body in place (no new PR)."
+            gh pr edit "$existing" \
+              --title "sentinel: pending price findings (refreshed $TODAY)" \
+              --body-file sentinel-report.md
+          else
+            echo "No open rolling PR; opening one draft PR."
+            gh pr create \
+              --draft \
+              --base main \
+              --head "$BRANCH" \
+              --title "sentinel: pending price findings" \
+              --body-file sentinel-report.md
+          fi
