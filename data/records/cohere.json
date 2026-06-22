@@ -10,8 +10,8 @@
     "last_validated_at": "2026-06-17",
     "source_url": "https://docs.cohere.com/docs/command-a",
     "source_kind": "provider_live",
-    "confidence": "verified",
-    "notes": "Hosted API price for command-a-plus-05-2026 (current flagship). Open weights are also self-hostable free."
+    "confidence": "archived",
+    "notes": "Archived 2026-06-21: Cohere moved command-a to an open-weights/free tier on cohere.com/pricing and no longer publishes a first-party per-token API price. Last verified price (2026-06-17) retained."
   },
   {
     "provider": "cohere",
@@ -24,7 +24,7 @@
     "last_validated_at": "2026-06-17",
     "source_url": "https://docs.cohere.com/docs/command-a",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "archived"
   },
   {
     "provider": "cohere",
@@ -37,8 +37,8 @@
     "last_validated_at": "2026-06-17",
     "source_url": "https://docs.cohere.com/docs/command-r-plus",
     "source_kind": "provider_live",
-    "confidence": "verified",
-    "notes": "command-r-plus-08-2024."
+    "confidence": "archived",
+    "notes": "Archived 2026-06-21: removed from Cohere's live pricing payload on cohere.com/pricing; no first-party per-token API price published. Last verified price (2026-06-17) retained."
   },
   {
     "provider": "cohere",
@@ -51,7 +51,7 @@
     "last_validated_at": "2026-06-17",
     "source_url": "https://docs.cohere.com/docs/command-r-plus",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "archived"
   },
   {
     "provider": "cohere",
