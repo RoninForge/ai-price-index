@@ -133,5 +133,33 @@
     "source_url": "https://aws.amazon.com/nova/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "amazon",
+    "model_id": "nova-2-pro",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.25,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://aws.amazon.com/bedrock/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). Nova 2.0 Pro. us-east-1, on-demand (cross-region-global profile where AWS publishes one). From the AWS Bedrock Price List API."
+  },
+  {
+    "provider": "amazon",
+    "model_id": "nova-2-pro",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://aws.amazon.com/bedrock/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). Nova 2.0 Pro. us-east-1, on-demand (cross-region-global profile where AWS publishes one). From the AWS Bedrock Price List API."
   }
 ]

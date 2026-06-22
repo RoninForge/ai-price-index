@@ -295,5 +295,33 @@
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "mistral",
+    "model_id": "mistral-medium-3.5",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://mistral.ai/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "mistral",
+    "model_id": "mistral-medium-3.5",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 7.5,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://mistral.ai/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
   }
 ]
