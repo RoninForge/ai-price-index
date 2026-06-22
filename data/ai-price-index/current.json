@@ -325,56 +325,6 @@
     },
     {
       "provider": "anthropic",
-      "model": "claude-3-5-haiku-20241022",
-      "variation": "cache_read",
-      "price_usd": 0.08,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-22",
-      "confidence": "inferred",
-      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
-    },
-    {
-      "provider": "anthropic",
-      "model": "claude-3-5-haiku-20241022",
-      "variation": "cache_write_1h",
-      "price_usd": 1.6,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-22",
-      "confidence": "inferred",
-      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
-    },
-    {
-      "provider": "anthropic",
-      "model": "claude-3-5-haiku-20241022",
-      "variation": "cache_write_5m",
-      "price_usd": 1,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-22",
-      "confidence": "inferred",
-      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
-    },
-    {
-      "provider": "anthropic",
-      "model": "claude-3-5-haiku-20241022",
-      "variation": "input",
-      "price_usd": 0.8,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-22",
-      "confidence": "inferred",
-      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
-    },
-    {
-      "provider": "anthropic",
-      "model": "claude-3-5-haiku-20241022",
-      "variation": "output",
-      "price_usd": 4,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-22",
-      "confidence": "inferred",
-      "src": "https://docs.claude.com/en/docs/about-claude/pricing"
-    },
-    {
-      "provider": "anthropic",
       "model": "claude-fable-5",
       "variation": "input",
       "price_usd": 10,

@@ -102,8 +102,8 @@
     {
       "id": "claude-3-5-haiku-20241022",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-3-5-haiku-20241022.v3b9229c2.json",
-      "latestRev": "3b9229c2"
+      "file": "models/anthropic/claude-3-5-haiku-20241022.vdcd25c2f.json",
+      "latestRev": "dcd25c2f"
     },
     {
       "id": "claude-3-5-sonnet-20240620",
