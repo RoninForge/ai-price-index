@@ -70,6 +70,34 @@ jobs:
             > litellm.json
           echo "LiteLLM JSON fetched ($(wc -c < litellm.json) bytes)."
 
+      - name: Update aggregator-accuracy ledger
+        # Records where LiteLLM disagrees with OUR high-confidence (first-party-validated) prices and
+        # how long each disagreement stands, into data/aggregator-accuracy/litellm.json. Strategic
+        # data only - this step opens NO PRs and proposes NO changes upstream. It is fully
+        # independent of the correction-PR flow below: it commits ONLY the ledger file, straight to
+        # main, and only when the ledger actually changed (the export-style no-op-when-unchanged
+        # pattern keeps it from committing every day). UTC date keeps the compare deterministic.
+        run: |
+          TODAY="$(date -u +%Y-%m-%d)"
+          python3 tools/audit/litellm-ledger.py "$TODAY" litellm.json
+
+          if [ -z "$(git status --porcelain -- data/aggregator-accuracy/litellm.json)" ]; then
+            echo "Ledger unchanged; nothing to commit."
+          else
+            # Commit + push ONLY the ledger file, straight to main, then reset local HEAD back so the
+            # commit never leaks into the correction-PR branch created later in this same run. The
+            # working tree is restored to the checkout commit (the ledger update is safely on remote
+            # main). This keeps the ledger flow fully independent of the correction-PR flow.
+            START_SHA="$(git rev-parse HEAD)"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/aggregator-accuracy/litellm.json
+            git commit -m "data(aggregator-accuracy): update LiteLLM accuracy ledger ${TODAY}"
+            git push origin HEAD:main
+            git reset --hard "$START_SHA"
+            echo "Ledger changed; committed to main and local HEAD reset to ${START_SHA}."
+          fi
+
       - name: Combined audit
         id: audit
         env:

@@ -1,0 +1,47 @@
+{
+  "_comment": "Aggregator-accuracy ledger: where BerriAI/litellm disagrees with our high-confidence (first-party-validated) prices, and how long each disagreement stands. Recorder only - opens no PRs and proposes no changes upstream. Maintained by tools/audit/litellm-ledger.py.",
+  "aggregator": "litellm",
+  "entries": [
+    {
+      "confirmed_litellm_wrong": true,
+      "first_detected": "2026-06-22",
+      "last_seen": "2026-06-22",
+      "litellm_usd_per_mtok": 2.0,
+      "model": "grok-4.20-0309-reasoning",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-06-17",
+      "our_source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
+      "our_usd_per_mtok": 1.25,
+      "provider": "xai",
+      "resolved": null,
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": true,
+      "first_detected": "2026-06-22",
+      "last_seen": "2026-06-22",
+      "litellm_usd_per_mtok": 6.0,
+      "model": "grok-4.20-0309-reasoning",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-06-17",
+      "our_source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
+      "our_usd_per_mtok": 2.5,
+      "provider": "xai",
+      "resolved": null,
+      "variation": "output"
+    }
+  ],
+  "summary": {
+    "confirmed_open_count": 2,
+    "generated": "2026-06-22",
+    "oldest_open": {
+      "first_detected": "2026-06-22",
+      "model": "grok-4.20-0309-reasoning",
+      "provider": "xai",
+      "variation": "input"
+    },
+    "oldest_open_days": 0,
+    "open_count": 2,
+    "resolved_count": 0
+  }
+}
