@@ -9,8 +9,10 @@ name: price-sentinel
 # records for genuinely new models. Providers covered: anthropic, meta-llama (Together reference),
 # amazon (Bedrock Nova), mistral, deepseek, google, alibaba, xai.
 #
-# Intended to EVENTUALLY SUPERSEDE pricing-audit.yml. It is MANUAL-DISPATCH ONLY for now (NO cron) so it
-# never collides with the daily pricing-audit run while both exist.
+# Intended to EVENTUALLY SUPERSEDE pricing-audit.yml. It runs twice daily (01:00 + 13:00 UTC = 08:00 +
+# 20:00 Asia/Bangkok), STAGGERED away from pricing-audit.yml's 14:00 UTC daily run so the two never
+# collide while both exist; it is also available via manual dispatch. The rolling-PR idempotency below
+# means a twice-daily cadence never spams: it keeps refreshing the single rolling PR, not opening new ones.
 #
 # ROLLING-PR IDEMPOTENCY (replaces the old per-UTC-date branch model).
 # `node tools/sentinel/run.mjs --apply` on a FRESH checkout of main regenerates the WHOLE current set of
@@ -37,6 +39,10 @@ name: price-sentinel
 
 on:
   workflow_dispatch:
+  schedule:
+    # 08:00 and 20:00 Asia/Bangkok (UTC+7) = 01:00 and 13:00 UTC. Staggered away from pricing-audit.yml
+    # (14:00 UTC) so the two never overlap while both exist.
+    - cron: '0 1,13 * * *'
 
 permissions:
   contents: write

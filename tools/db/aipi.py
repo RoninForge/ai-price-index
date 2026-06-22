@@ -7,7 +7,8 @@ the export writes the static, served artifacts.
 
 Commands:
   init     apply the bitemporal schema (idempotent; sets WAL).
-  seed     load data/records/*.json into price_records (insert new, supersede on a changed value).
+  seed     load data/records/*.json into price_records (insert new, supersede on a changed value,
+           and supersede records removed from the source so deletions/corrections propagate).
   export   write the published artifacts (index.json, current.json, per-model series files).
   stats    print row counts (a quick health check).
 
@@ -155,9 +156,31 @@ def cmd_seed(args):
                 r["source_kind"], r.get("source_snapshot_ts"), r["confidence"], aliases_json, supersedes_id, change_reason, args.recorded_by,
             ),
         )
+    # Reconcile DELETIONS: data/records is the FULL source of truth, so any CURRENT (superseded_at IS
+    # NULL) record whose identity is no longer present in the records is treated as removed-at-source and
+    # superseded (bitemporal: marked removed at recorded_at, never hard-deleted), which drops it from the
+    # export. This is what lets a record removal/correction propagate through publish WITHOUT a manual DB
+    # rebuild. Identity is the same tuple the insert/supersede path matches on.
+    json_keys = {
+        (r["provider"], r["model_id"], r["variation"], r["effective_from"])
+        for _path, _i, r in records
+    }
+    removed = 0
+    for row in con.execute(
+        "SELECT record_id, provider, model_id, variation, effective_from "
+        "FROM price_records WHERE superseded_at IS NULL"
+    ).fetchall():
+        ident = (row["provider"], row["model_id"], row["variation"], row["effective_from"])
+        if ident not in json_keys:
+            con.execute(
+                "UPDATE price_records SET superseded_at=? WHERE record_id=?",
+                (recorded_at, row["record_id"]),
+            )
+            removed += 1
     con.commit()
     con.close()
-    print("seed ok: %d inserted, %d superseded (corrections), %d unchanged" % (inserted, superseded, unchanged))
+    print("seed ok: %d inserted, %d superseded (corrections), %d unchanged, %d removed" % (
+        inserted, superseded, unchanged, removed))
 
 
 def cmd_export(args):
