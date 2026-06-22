@@ -29,6 +29,21 @@
 // We can't change lib.mjs's fetchText to pass the header, so we fetch here with the header AND retry
 // up to MAX_FETCH_ATTEMPTS, accepting only an English-price variant; we throw the drift error only
 // if EVERY attempt fails to yield English price content (a true JS-only/drift signal).
+//
+// DEPRECATION SKIP (2026-06-22): a retired model must NOT be drafted as a NEW current price. The page
+// flags a deprecated model with an `<aside class="warning">` placed BETWEEN the model's heading-group
+// and its first pricing table, e.g. for gemini-2.0-flash / gemini-2.0-flash-lite (shut down June 1,
+// 2026):
+//   <div class="heading-group"><h2 ...>Gemini 2.0 Flash</h2><em><code>gemini-2.0-flash</code></em></div>
+//   <aside class="warning"><b>Warning:</b> Gemini 2.0 Flash is
+//     <a href="/gemini-api/docs/deprecations">deprecated</a> and has been shut down June 1, 2026. ...</aside>
+//   <table class="pricing-table"> ... </table>
+// We key off that aside (a warning aside whose body says deprecated/discontinued/retired/shut(-)down/
+// sunset OR links to /docs/deprecations) sitting in [modelHeading, firstTable). We do NOT name-blocklist
+// gemini-2.0-* - the marker generalizes to any future retirement. Current models (gemini-3.x,
+// gemini-2.5-x) carry no such aside and are kept. Fail loud: if the page text says "deprecat" anywhere
+// but we detect ZERO deprecation asides, the marker drifted - THROW rather than silently re-emit a
+// retired model as a NEW current price.
 
 export const PROVIDER = 'google';
 const SOURCE_URL = 'https://ai.google.dev/gemini-api/docs/pricing';
@@ -95,6 +110,19 @@ const NAME_TO_CANONICAL = {
 	'gemini 1.5 flash': 'gemini-1.5-flash',
 };
 
+// A deprecation/retirement warning aside on this page. Google wraps each retired model's notice in an
+// `<aside class="warning">...</aside>` placed right after the model heading-group. We treat such an
+// aside as a deprecation marker when its body carries an explicit retirement word OR links to the
+// deprecations doc. Matched on the RAW aside HTML (links/words are inside <a>/<b> tags).
+const WARNING_ASIDE_RE = /<aside\b[^>]*\bclass="[^"]*\bwarning\b[^"]*"[^>]*>([\s\S]*?)<\/aside>/gi;
+const DEPRECATION_WORDS_RE = /(deprecat|discontinu|retir|shut[\s-]*down|sunset)/i;
+const DEPRECATION_LINK_RE = /\/gemini-api\/docs\/deprecations/i;
+
+/** True if an aside's inner HTML reads as a deprecation/retirement notice for a model. */
+function isDeprecationAside(innerHtml) {
+	return DEPRECATION_WORDS_RE.test(innerHtml) || DEPRECATION_LINK_RE.test(innerHtml);
+}
+
 // A heading that is a TEXT chat model worth pricing. Excludes image (🍌/Image), video, TTS, Live,
 // Translate, embedding, Audio, Computer Use, Robotics, etc. We keep "Gemini <ver> Pro/Flash[-Lite]".
 const TEXT_MODEL_HEADING_RE = /^Gemini [\d.]+ (?:Pro|Flash)(?:-Lite| Preview| Lite)?$/i;
@@ -158,12 +186,30 @@ export async function collect() {
 	const tables = [...html.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => ({ html: m[0], idx: m.index }));
 	if (!tables.length) throw new Error('google collector: no <table> on the pricing page - structure drift.');
 
+	// Collect deprecation/retirement warning asides + positions (see DEPRECATION SKIP note above).
+	const deprecationAsides = [...html.matchAll(WARNING_ASIDE_RE)]
+		.filter((m) => isDeprecationAside(m[1]))
+		.map((m) => ({ idx: m.index }));
+	// Fail loud on marker drift: the page clearly marks deprecations in prose ("deprecat..." appears),
+	// yet our aside detector found none -> the warning markup changed and we'd silently re-emit retired
+	// models as NEW current prices. Refuse rather than guess.
+	if (/deprecat/i.test(html) && deprecationAsides.length === 0)
+		throw new Error(
+			'google collector: page text mentions deprecation but no deprecation <aside class="warning"> was matched - deprecation marker drifted. Refusing to risk emitting a retired model.'
+		);
+
+	// Is the model at `headingIdx` (whose Standard table starts at `tableIdx`) flagged deprecated?
+	// A deprecation aside sits between the model heading-group and its first pricing table.
+	const isDeprecatedModel = (headingIdx, tableIdx) =>
+		deprecationAsides.some((a) => a.idx > headingIdx && a.idx < tableIdx);
+
 	// For each table, find its nearest preceding MODEL heading (skip Standard/Batch/section headings).
+	// Returns { text, idx } of that heading, or null. idx lets us bound the deprecation-aside check.
 	const nearestModelHeading = (tableIdx) => {
 		let found = null;
 		for (const hd of heads) {
 			if (hd.idx >= tableIdx) break;
-			if (TEXT_MODEL_HEADING_RE.test(hd.text) && !NON_TEXT_RE.test(hd.text)) found = hd.text;
+			if (TEXT_MODEL_HEADING_RE.test(hd.text) && !NON_TEXT_RE.test(hd.text)) found = { text: hd.text, idx: hd.idx };
 			// any media/non-text model heading also "claims" the tables under it, so a following
 			// text-model table is never mis-attributed to it; clear when we pass a non-text model head.
 			else if (/^Gemini /i.test(hd.text) && NON_TEXT_RE.test(hd.text)) found = null;
@@ -175,12 +221,20 @@ export async function collect() {
 	let sawAnyInputRow = false;
 
 	for (const t of tables) {
-		const heading = nearestModelHeading(t.idx);
-		if (!heading) continue; // table does not belong to a tracked text model
+		const head = nearestModelHeading(t.idx);
+		if (!head) continue; // table does not belong to a tracked text model
+		const heading = head.text;
 		const norm = heading.toLowerCase().replace(/\s+/g, ' ').trim();
 		const canonical = NAME_TO_CANONICAL[norm] || slugify(heading);
 		// only take the FIRST (Standard) table per model; skip Batch / later tables
 		if (byModel.has(canonical)) continue;
+		// SKIP retired models: a deprecation aside sits between this model's heading and its first
+		// table (e.g. gemini-2.0-flash / -flash-lite, shut down June 1, 2026). A retired model must not
+		// be drafted as a NEW current price. Record the canonical so a later Batch table can't re-add it.
+		if (isDeprecatedModel(head.idx, t.idx)) {
+			byModel.set(canonical, null);
+			continue;
+		}
 
 		const rows = [...t.html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
 		let input = null,
@@ -222,7 +276,9 @@ export async function collect() {
 		);
 
 	const results = [];
-	for (const [model_id, { display, known, prices }] of byModel) {
+	for (const [model_id, entry] of byModel) {
+		if (!entry) continue; // null = a deprecated/retired model whose slot we claimed but never emit
+		const { display, known, prices } = entry;
 		results.push({
 			provider: PROVIDER,
 			model_id,
