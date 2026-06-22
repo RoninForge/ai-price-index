@@ -210,8 +210,8 @@
     {
       "id": "command-a-plus",
       "provider": "cohere",
-      "file": "models/cohere/command-a-plus.v90f1fbf4.json",
-      "latestRev": "90f1fbf4"
+      "file": "models/cohere/command-a-plus.vb206b35e.json",
+      "latestRev": "b206b35e"
     },
     {
       "id": "command-r",
@@ -222,8 +222,8 @@
     {
       "id": "command-r-plus",
       "provider": "cohere",
-      "file": "models/cohere/command-r-plus.vbd80fc92.json",
-      "latestRev": "bd80fc92"
+      "file": "models/cohere/command-r-plus.vcc4064bf.json",
+      "latestRev": "cc4064bf"
     },
     {
       "id": "command-r7b",

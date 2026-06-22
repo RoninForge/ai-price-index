@@ -4,7 +4,7 @@
   "variations": {
     "input": [
       {
-        "confidence": "verified",
+        "confidence": "archived",
         "from": "2024-08-30",
         "last_validated": "2026-06-17",
         "price_usd": 2.5,
@@ -15,7 +15,7 @@
     ],
     "output": [
       {
-        "confidence": "verified",
+        "confidence": "archived",
         "from": "2024-08-30",
         "last_validated": "2026-06-17",
         "price_usd": 10,
