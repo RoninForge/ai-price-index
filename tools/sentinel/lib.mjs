@@ -161,6 +161,63 @@ function loadRecordsProvenance(root = REPO_ROOT) {
 }
 
 /**
+ * Scan every data/records/<provider>.json and decide, per provider+model_id, whether the model is
+ * ARCHIVED in our records - i.e. we have deliberately retired it. A model is archived when it has
+ * records but NO open/active interval:
+ *   * NO record has effective_to === null (every interval is closed), AND/OR
+ *   * the latest record (max effective_from) is confidence "archived" or source_kind "wayback".
+ * This is keyed off our RECORDS' archived state (not current.json), so it stays correct even when
+ * current.json is stale or out of sync. The result is canonical-model-keyed; loadCurrent() wraps it
+ * with an alias-aware lookup. Returns
+ *   { archived: Set<"provider/model_id">, aliasToCanonical: Map<"provider/alias" -> model_id> }
+ * where aliasToCanonical is built from the records files themselves (so alias resolution works even
+ * for a retired model that is no longer surfaced in index.json/current.json).
+ */
+function loadArchivedModels(root = REPO_ROOT) {
+	const dir = join(root, 'data', 'records');
+	const archived = new Set();
+	const aliasToCanonical = new Map(); // "provider/alias" -> canonical model_id (records-derived)
+	if (!existsSync(dir)) return { archived, aliasToCanonical };
+	// group every record by provider/model_id so we can reason about the whole model's intervals
+	const byModel = new Map(); // "provider/model_id" -> { hasOpen, latest: {from, confidence, source_kind} }
+	for (const file of readdirSync(dir)) {
+		if (!file.endsWith('.json')) continue;
+		let recs;
+		try {
+			recs = JSON.parse(readFileSync(join(dir, file), 'utf8'));
+		} catch {
+			continue; // a malformed records file must not crash loadCurrent
+		}
+		if (!Array.isArray(recs)) continue;
+		for (const r of recs) {
+			if (!r || typeof r.provider !== 'string' || typeof r.model_id !== 'string') continue;
+			const key = `${r.provider}/${r.model_id}`;
+			const agg = byModel.get(key) || { hasOpen: false, latest: null };
+			if (r.effective_to === null || r.effective_to === undefined) agg.hasOpen = true;
+			const from = typeof r.effective_from === 'string' ? r.effective_from : '';
+			if (!agg.latest || from > agg.latest.from) {
+				agg.latest = { from, confidence: r.confidence, source_kind: r.source_kind };
+			}
+			byModel.set(key, agg);
+			// the model id always resolves to itself; aliases resolve to the canonical model_id
+			aliasToCanonical.set(`${r.provider}/${r.model_id}`, r.model_id);
+			if (Array.isArray(r.aliases)) {
+				for (const a of r.aliases) {
+					if (typeof a === 'string' && a) aliasToCanonical.set(`${r.provider}/${a}`, r.model_id);
+				}
+			}
+		}
+	}
+	for (const [key, agg] of byModel) {
+		const latestIsArchival =
+			agg.latest && (agg.latest.confidence === 'archived' || agg.latest.source_kind === 'wayback');
+		// archived = no open interval at all, OR the most recent record is an archival one.
+		if (!agg.hasOpen || latestIsArchival) archived.add(key);
+	}
+	return { archived, aliasToCanonical };
+}
+
+/**
  * Load the published current.json + index.json into an alias-aware view.
  * Returns:
  *   {
@@ -189,6 +246,20 @@ export function loadCurrent(root = REPO_ROOT) {
 
 	// current/published provenance (confidence + source_kind) from the records files (canonical-keyed)
 	const provenanceByProviderModel = loadRecordsProvenance(root);
+
+	// models we have deliberately archived in data/records, computed from the RECORDS' archived state
+	// (not current.json), plus a records-derived alias->canonical map for archived models that may no
+	// longer appear in index.json/current.json.
+	const { archived: archivedByProviderModel, aliasToCanonical: recordsAliasToCanonical } = loadArchivedModels(root);
+	// normalized-key view of the archived set so a date-stripped tripwire id ("claude-3-5-haiku" from
+	// "anthropic/claude-3.5-haiku") still matches its dated canonical record ("claude-3-5-haiku-20241022").
+	const archivedNormKeys = new Set();
+	for (const k of archivedByProviderModel) {
+		const slash = k.indexOf('/');
+		const prov = k.slice(0, slash);
+		const id = k.slice(slash + 1);
+		archivedNormKeys.add(`${prov}/${normalizeModelKey(id)}`);
+	}
 
 	// alias -> canonical, per provider; plus the flat + per-provider known sets
 	const aliasToCanonical = new Map(); // key "provider/alias" -> canonical id
@@ -227,11 +298,26 @@ export function loadCurrent(root = REPO_ROOT) {
 		return provenanceByProviderModel.get(`${provider}/${canonical}`) || null;
 	};
 
+	// Alias-aware: is this provider+model (or alias) ARCHIVED in our data/records? Resolves the id
+	// through (a) the index/current alias map, (b) the records-derived alias map (covers retired models
+	// no longer in index.json), then checks the records-derived archived Set. Falls back to a direct
+	// lookup of the raw id so a candidate's bare id matches even without a resolver hit.
+	const isArchived = (provider, idOrAlias) => {
+		const canonical =
+			resolve(provider, idOrAlias) || recordsAliasToCanonical.get(`${provider}/${idOrAlias}`) || idOrAlias;
+		if (archivedByProviderModel.has(`${provider}/${canonical}`)) return true;
+		// last resort: normalized-key match (handles date-stripped tripwire ids vs dated canonical records)
+		const nk = normalizeModelKey(idOrAlias);
+		return nk ? archivedNormKeys.has(`${provider}/${nk}`) : false;
+	};
+
 	return {
 		byProviderModel,
 		provenanceByProviderModel,
+		archivedByProviderModel,
 		provenanceFor,
 		resolve,
+		isArchived,
 		known,
 		knownByProvider,
 		providers,

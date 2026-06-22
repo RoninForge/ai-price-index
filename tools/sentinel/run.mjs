@@ -198,6 +198,7 @@ function renderReportMd(report, written) {
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
 			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
+			`${report.skipped_archived.length} archived model(s) skipped, ` +
 			`${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
 	);
 	L.push('');
@@ -338,6 +339,27 @@ function renderReportMd(report, written) {
 		L.push('');
 	}
 
+	// Skipped (archived) - a tripwire/collector candidate that maps to a model we DELIBERATELY archived
+	// in data/records (retired/EOL). EOL models linger on provider pricing pages for weeks; we never
+	// re-draft them. Keyed off our RECORDS' archived state, not current.json.
+	L.push('## Skipped (archived in our records)');
+	L.push('');
+	if (report.skipped_archived.length) {
+		L.push(
+			'These candidates map to a model we have DELIBERATELY archived (retired/EOL) in ' +
+				'`data/records`. The provider may still list them, but we do NOT resurrect an archived model. ' +
+				'No record was drafted.'
+		);
+		L.push('');
+		L.push('| Provider | Model |');
+		L.push('|---|---|');
+		for (const s of report.skipped_archived) L.push(`| \`${s.provider}\` | \`${s.model_id}\` |`);
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
 	// Price changes (suggested edits ONLY - never auto-written)
 	L.push('## Price changes (suggested edits, NOT auto-written)');
 	L.push('');
@@ -425,6 +447,7 @@ async function main() {
 		upgrades: [],
 		pending_first_party: [],
 		pending_filtered_out: 0,
+		skipped_archived: [],
 		drafted_records: [],
 		crosscheck: { auto_verified: 0, needs_review: 0, items: [] },
 		errors: [],
@@ -515,6 +538,18 @@ async function main() {
 			}
 
 			if (status === 'NEW') {
+				// Never RESURRECT a model we have deliberately archived in data/records, even if the
+				// provider's page still lists it (EOL models linger on pricing pages for weeks). classify()
+				// reads NEW from current.json, which omits archived models - this archived-in-records check
+				// is the durable guard that keeps the sentinel from re-drafting a retired model.
+				const archivedId = [item.model_id, ...(Array.isArray(item.aliases) ? item.aliases : [])].find((id) =>
+					current.isArchived(item.provider, id)
+				);
+				if (archivedId) {
+					report.skipped_archived.push({ provider: item.provider, model_id: item.model_id });
+					continue;
+				}
+
 				// Thread the tripwire's discovery date (if any) into the drafting path for effective_from.
 				const createdDate = tripwireCreatedDate(item, tripwireDates);
 				const drafted = { ...item, createdDate };
@@ -666,6 +701,14 @@ async function main() {
 		if (!normKey || pendingSeen.has(dedupeKey)) continue;
 		pendingSeen.add(dedupeKey);
 
+		// Never surface (or later resurrect) a model we have deliberately archived in data/records, even
+		// when the tripwire still detects it as NEW. Keyed off our RECORDS' archived state, not current.json.
+		const archivedPendingId = ids.find((id) => current.isArchived(c.provider, id));
+		if (archivedPendingId) {
+			report.skipped_archived.push({ provider: c.provider, model_id: c.bare_id || c.source_id });
+			continue;
+		}
+
 		// Drop long-tail size/quant/variant/known-family SKUs; keep only genuinely-new families.
 		const verdict = classifyPendingCandidate(
 			{ provider: c.provider, modelId: c.bare_id || c.source_id },
@@ -710,6 +753,7 @@ async function main() {
 				`; ${report.price_changes.length} suggested CHANGED edit(s); ` +
 				`${report.pending_first_party.length} detected awaiting first-party price ` +
 				`(${report.pending_filtered_out} variant/open-weight SKUs filtered out); ` +
+				`${report.skipped_archived.length} archived model(s) skipped; ` +
 				`cross-check: ${report.crosscheck.auto_verified} auto-verified, ${report.crosscheck.needs_review} need review; ` +
 				`${report.errors.length} error(s). Wrote sentinel-report.md.`
 		);
@@ -728,6 +772,7 @@ async function main() {
 			`${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} pending first-party ` +
 			`(${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
+			`${report.skipped_archived.length} archived skipped, ` +
 			`${report.drafted_records.length} drafted record(s), ` +
 			`cross-check: ${report.crosscheck.auto_verified} auto-verified / ${report.crosscheck.needs_review} need review, ` +
 			`${report.errors.length} error(s). No files written.`
