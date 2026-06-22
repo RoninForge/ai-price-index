@@ -179,8 +179,11 @@ jobs:
 
       # CASE 2a - no open rolling PR yet: open exactly one DRAFT PR, body = sentinel-report.md.
       # CASE 2b - an open rolling PR exists: refresh its body in place (the branch was just force-pushed).
+      # Always ensure exactly one open rolling PR exists when there are findings - even on `skip`
+      # (branch unchanged), because a previous run may have pushed the branch but failed to open the PR
+      # (e.g. the org setting blocking Actions-created PRs). The body below is edit-or-create + idempotent.
       - name: Open or update the rolling draft PR
-        if: steps.run.outputs.has_findings == 'true' && (steps.roll.outputs.action == 'create' || steps.roll.outputs.action == 'update')
+        if: steps.run.outputs.has_findings == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ steps.roll.outputs.branch }}
