@@ -264,7 +264,7 @@ jobs:
         id: idem
         if: steps.audit.outputs.total != '0'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
           TODAY: ${{ steps.audit.outputs.today }}
         run: |
           branch="pricing/audit-${TODAY}"
@@ -373,7 +373,7 @@ jobs:
       - name: Open draft PR
         if: steps.audit.outputs.total != '0' && steps.idem.outputs.skip == 'false'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
           BRANCH: ${{ steps.idem.outputs.branch }}
           NEW_COUNT: ${{ steps.audit.outputs.new_count }}
           DIFF_COUNT: ${{ steps.audit.outputs.diff_count }}

@@ -185,7 +185,9 @@ jobs:
       - name: Open or update the rolling draft PR
         if: steps.run.outputs.has_findings == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # AUTOMATION_PAT (a user PAT), NOT GITHUB_TOKEN: the org blocks Actions-created PRs, and a
+          # GITHUB_TOKEN-authored PR would not trigger CI. Same pattern the consumer repos use.
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
           BRANCH: ${{ steps.roll.outputs.branch }}
           TODAY: ${{ steps.run.outputs.today }}
         run: |
