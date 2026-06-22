@@ -1,0 +1,28 @@
+{
+  "model": "llama-4-scout",
+  "provider": "meta-llama",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2025-04-05",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.18,
+        "src": "https://www.together.ai/models/llama-4-scout",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2025-04-05",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.59,
+        "src": "https://www.together.ai/models/llama-4-scout",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

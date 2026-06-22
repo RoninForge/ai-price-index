@@ -2,6 +2,39 @@
   "model": "claude-3-5-haiku-20241022",
   "provider": "anthropic",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.08,
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "cache_write_1h": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 1.6,
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "cache_write_5m": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 1,
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "archived",
@@ -21,6 +54,15 @@
         "snapshot": "20241203010242",
         "src": "https://web.archive.org/web/20241203010242/https://www.anthropic.com/pricing",
         "to": "2026-02-19",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.8,
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing",
+        "to": null,
         "unit": "usd_per_mtok"
       }
     ],
@@ -43,6 +85,15 @@
         "snapshot": "20241203010242",
         "src": "https://web.archive.org/web/20241203010242/https://www.anthropic.com/pricing",
         "to": "2026-02-19",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 4,
+        "src": "https://docs.claude.com/en/docs/about-claude/pricing",
+        "to": null,
         "unit": "usd_per_mtok"
       }
     ]

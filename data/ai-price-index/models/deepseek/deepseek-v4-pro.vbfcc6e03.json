@@ -1,0 +1,57 @@
+{
+  "model": "deepseek-v4-pro",
+  "provider": "deepseek",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.003625,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-01",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.435,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.435,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-01",
+        "last_validated": "2026-06-15",
+        "price_usd": 0.87,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.87,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

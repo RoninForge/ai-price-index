@@ -1,0 +1,47 @@
+{
+  "aliases": [
+    "grok-4.20-multi-agent",
+    "grok-4.20-multi-agent-beta-0309",
+    "grok-4.20-multi-agent-beta-latest",
+    "grok-4.20-multi-agent-experimental-beta-0304",
+    "grok-4.20-multi-agent-experimental-beta-latest",
+    "grok-4.20-multi-agent-latest"
+  ],
+  "model": "grok-4.20-multi-agent-0309",
+  "provider": "xai",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-03-31",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.2,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-03-31",
+        "last_validated": "2026-06-22",
+        "price_usd": 1.25,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-03-31",
+        "last_validated": "2026-06-22",
+        "price_usd": 2.5,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

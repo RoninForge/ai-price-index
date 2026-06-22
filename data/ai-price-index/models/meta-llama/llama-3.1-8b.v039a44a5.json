@@ -1,0 +1,28 @@
+{
+  "model": "llama-3.1-8b",
+  "provider": "meta-llama",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.18,
+        "src": "https://www.together.ai/models/llama-3-1-8b-instruct-turbo",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.18,
+        "src": "https://www.together.ai/models/llama-3-1-8b-instruct-turbo",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

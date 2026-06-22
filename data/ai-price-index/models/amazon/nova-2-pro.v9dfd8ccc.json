@@ -1,14 +1,14 @@
 {
-  "model": "gpt-5",
-  "provider": "openai",
+  "model": "nova-2-pro",
+  "provider": "amazon",
   "variations": {
     "input": [
       {
         "confidence": "inferred",
-        "from": "2025-08-07",
-        "last_validated": "2026-06-15",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
         "price_usd": 1.25,
-        "src": "https://developers.openai.com/api/docs/models/gpt-5",
+        "src": "https://aws.amazon.com/bedrock/pricing/",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -16,10 +16,10 @@
     "output": [
       {
         "confidence": "inferred",
-        "from": "2025-08-07",
-        "last_validated": "2026-06-15",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
         "price_usd": 10,
-        "src": "https://developers.openai.com/api/docs/models/gpt-5",
+        "src": "https://aws.amazon.com/bedrock/pricing/",
         "to": null,
         "unit": "usd_per_mtok"
       }

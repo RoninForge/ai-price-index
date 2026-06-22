@@ -1,0 +1,28 @@
+{
+  "model": "llama-3.3-70b",
+  "provider": "meta-llama",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 1.04,
+        "src": "https://www.together.ai/models/llama-3-3-70b",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 1.04,
+        "src": "https://www.together.ai/models/llama-3-3-70b",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
