@@ -52,5 +52,47 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred"
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-pro",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.435,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-pro",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.87,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-pro",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.003625,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
   }
 ]

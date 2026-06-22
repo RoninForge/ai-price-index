@@ -38,7 +38,9 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-opus-4-5"],
+    "aliases": [
+      "claude-opus-4-5"
+    ],
     "notes": "Opus 4.5 cut the Opus flagship input price from 15 to 5 per Mtok."
   },
   {
@@ -53,7 +55,9 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-opus-4-5"]
+    "aliases": [
+      "claude-opus-4-5"
+    ]
   },
   {
     "provider": "anthropic",
@@ -67,7 +71,9 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-sonnet-4-5"]
+    "aliases": [
+      "claude-sonnet-4-5"
+    ]
   },
   {
     "provider": "anthropic",
@@ -81,7 +87,9 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-sonnet-4-5"]
+    "aliases": [
+      "claude-sonnet-4-5"
+    ]
   },
   {
     "provider": "anthropic",
@@ -437,7 +445,9 @@
     "source_url": "https://www.anthropic.com/news/claude-haiku-4-5",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-haiku-4-5"],
+    "aliases": [
+      "claude-haiku-4-5"
+    ],
     "notes": "Haiku 4.5 at $1/$5 (NOT the older 3.5-Haiku $0.80/$4). GA/announcement 2025-10-15; the snapshot id encodes 2025-10-01. Both dated and short forms emitted; dated is canonical, short is an alias."
   },
   {
@@ -452,7 +462,9 @@
     "source_url": "https://www.anthropic.com/news/claude-haiku-4-5",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-haiku-4-5"],
+    "aliases": [
+      "claude-haiku-4-5"
+    ],
     "notes": "Haiku 4.5 at $1/$5 (NOT the older 3.5-Haiku $0.80/$4). GA/announcement 2025-10-15; the snapshot id encodes 2025-10-01. Both dated and short forms emitted; dated is canonical, short is an alias."
   },
   {
@@ -467,7 +479,9 @@
     "source_url": "https://www.anthropic.com/news/claude-opus-4-1",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-opus-4-1"],
+    "aliases": [
+      "claude-opus-4-1"
+    ],
     "notes": "Opus 4.1 at the original $15/$75 Opus tier. Deprecated 2026-06-05 with scheduled retirement 2026-08-05 (per the model-deprecations page); retirement is in the FUTURE so effective_to stays null (model still current) per the locked modeling rule."
   },
   {
@@ -482,7 +496,9 @@
     "source_url": "https://www.anthropic.com/news/claude-opus-4-1",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "aliases": ["claude-opus-4-1"],
+    "aliases": [
+      "claude-opus-4-1"
+    ],
     "notes": "Opus 4.1 at the original $15/$75 Opus tier. Deprecated 2026-06-05 with scheduled retirement 2026-08-05 (per the model-deprecations page); retirement is in the FUTURE so effective_to stays null (model still current) per the locked modeling rule."
   },
   {
@@ -511,5 +527,145 @@
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 50,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 1,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5",
+    "variation": "cache_write_5m",
+    "unit": "usd_per_mtok",
+    "price_usd": 12.5,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5",
+    "variation": "cache_write_1h",
+    "unit": "usd_per_mtok",
+    "price_usd": 20,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-3-5-haiku-20241022",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.8,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-3-5-haiku-20241022",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 4,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-3-5-haiku-20241022",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.08,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-3-5-haiku-20241022",
+    "variation": "cache_write_5m",
+    "unit": "usd_per_mtok",
+    "price_usd": 1,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-3-5-haiku-20241022",
+    "variation": "cache_write_1h",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.6,
+    "effective_from": "2026-06-22",
+    "effective_to": null,
+    "last_validated_at": "2026-06-22",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
   }
 ]
