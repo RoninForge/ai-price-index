@@ -54,6 +54,10 @@ jobs:
         with:
           # Full history so origin/sentinel/pending can be fetched + diffed for the unchanged check.
           fetch-depth: 0
+          # Check out (and therefore PUSH the rolling branch) with the PAT, not GITHUB_TOKEN, so the
+          # branch update is attributed to a user and CI runs on the PR as if a human pushed it (a
+          # GITHUB_TOKEN push leaves the PR's checks in "action_required"). Same pattern as the consumers.
+          token: ${{ secrets.AUTOMATION_PAT }}
 
       - uses: actions/setup-node@v4
         with:
