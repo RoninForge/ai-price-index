@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-06-22",
+  "dataModified": "2026-06-24",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -408,8 +408,8 @@
     {
       "id": "mistral-small-4",
       "provider": "mistral",
-      "file": "models/mistral/mistral-small-4.v146e73f9.json",
-      "latestRev": "146e73f9"
+      "file": "models/mistral/mistral-small-4.vbc4f851e.json",
+      "latestRev": "bc4f851e"
     },
     {
       "id": "gpt-4",
