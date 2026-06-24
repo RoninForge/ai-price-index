@@ -60,12 +60,26 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.1,
     "effective_from": "2026-03-16",
-    "effective_to": null,
+    "effective_to": "2026-06-24",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/mistral-small-4 (2026-03-16)."
+    "notes": "Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/mistral-small-4 (2026-03-16). Superseded: input raised to 0.15 on 2026-06-24."
+  },
+  {
+    "provider": "mistral",
+    "model_id": "mistral-small-4",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.15,
+    "effective_from": "2026-06-24",
+    "effective_to": null,
+    "last_validated_at": "2026-06-24",
+    "source_url": "https://mistral.ai/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Mistral Small 4 (mistral-small-latest) input raised from 0.10 to 0.15. Confirmed on live mistral.ai/pricing 2026-06-24, corroborated by independent trackers (cloudzero, pricepertoken). Exact change date not published (prior price last validated 2026-06-15); effective_from set to the detection date."
   },
   {
     "provider": "mistral",
@@ -74,11 +88,26 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.3,
     "effective_from": "2026-03-16",
-    "effective_to": null,
+    "effective_to": "2026-06-24",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Superseded: output raised to 0.60 on 2026-06-24."
+  },
+  {
+    "provider": "mistral",
+    "model_id": "mistral-small-4",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.6,
+    "effective_from": "2026-06-24",
+    "effective_to": null,
+    "last_validated_at": "2026-06-24",
+    "source_url": "https://mistral.ai/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Mistral Small 4 (mistral-small-latest) output raised from 0.30 to 0.60. Confirmed on live mistral.ai/pricing 2026-06-24, corroborated by independent trackers (cloudzero, pricepertoken). Exact change date not published (prior price last validated 2026-06-15); effective_from set to the detection date."
   },
   {
     "provider": "mistral",
