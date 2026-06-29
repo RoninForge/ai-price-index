@@ -1,0 +1,28 @@
+{
+  "model": "qwen3.6-plus",
+  "provider": "alibaba",
+  "variations": {
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-04-02",
+        "last_validated": "2026-06-29",
+        "price_usd": 0.5,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-04-02",
+        "last_validated": "2026-06-29",
+        "price_usd": 3,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

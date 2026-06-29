@@ -21,6 +21,15 @@
         "src": "https://docs.x.ai/docs/models",
         "to": null,
         "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-06-29",
+        "last_validated": "2026-06-29",
+        "price_usd": 0.2,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
       }
     ],
     "input": [
@@ -32,6 +41,15 @@
         "src": "https://docs.x.ai/docs/models",
         "to": null,
         "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-06-29",
+        "last_validated": "2026-06-29",
+        "price_usd": 1.25,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
       }
     ],
     "output": [
@@ -39,6 +57,15 @@
         "confidence": "inferred",
         "from": "2026-06-22",
         "last_validated": "2026-06-22",
+        "price_usd": 2.5,
+        "src": "https://docs.x.ai/docs/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-06-29",
+        "last_validated": "2026-06-29",
         "price_usd": 2.5,
         "src": "https://docs.x.ai/docs/models",
         "to": null,
