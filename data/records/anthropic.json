@@ -535,12 +535,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 10,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-06-29",
     "last_validated_at": "2026-06-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+    "notes": "Inferred pending first-party confirmation; superseded 2026-06-29 by the verified record at the same price."
   },
   {
     "provider": "anthropic",
@@ -549,12 +549,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 50,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-06-29",
     "last_validated_at": "2026-06-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+    "notes": "Inferred pending first-party confirmation; superseded 2026-06-29 by the verified record at the same price."
   },
   {
     "provider": "anthropic",
@@ -563,12 +563,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-06-29",
     "last_validated_at": "2026-06-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+    "notes": "Inferred pending first-party confirmation; superseded 2026-06-29 by the verified record at the same price."
   },
   {
     "provider": "anthropic",
@@ -577,12 +577,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 12.5,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-06-29",
     "last_validated_at": "2026-06-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+    "notes": "Inferred pending first-party confirmation; superseded 2026-06-29 by the verified record at the same price."
   },
   {
     "provider": "anthropic",
@@ -591,12 +591,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 20,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-06-29",
     "last_validated_at": "2026-06-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match)."
+    "notes": "Inferred pending first-party confirmation; superseded 2026-06-29 by the verified record at the same price."
   },
   {
     "provider": "anthropic",
