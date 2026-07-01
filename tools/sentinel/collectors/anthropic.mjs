@@ -14,7 +14,7 @@
 //
 // Fail loud: if the header row above is not found, THROW. Never emit a guessed number.
 
-import { fetchText } from '../lib.mjs';
+import { fetchText, today } from '../lib.mjs';
 
 export const PROVIDER = 'anthropic';
 const SOURCE_URL = 'https://platform.claude.com/docs/en/docs/about-claude/pricing.md';
@@ -40,6 +40,7 @@ const NAME_TO_CANONICAL = {
 	'claude opus 4.5': { model_id: 'claude-opus-4-5-20251101', aliases: ['claude-opus-4-5'] },
 	'claude opus 4.1': { model_id: 'claude-opus-4-1-20250805', aliases: ['claude-opus-4-1'] },
 	'claude opus 4': { model_id: 'claude-opus-4-20250514' },
+	'claude sonnet 5': { model_id: 'claude-sonnet-5' },
 	'claude sonnet 4.6': { model_id: 'claude-sonnet-4-6' },
 	'claude sonnet 4.5': { model_id: 'claude-sonnet-4-5-20250929', aliases: ['claude-sonnet-4-5'] },
 	'claude sonnet 4': { model_id: 'claude-sonnet-4-20250514' },
@@ -88,6 +89,50 @@ function cleanModelName(cell) {
 	// collapse whitespace, strip markdown emphasis + stray backticks
 	s = s.replace(/[*`]/g, '').replace(/\s+/g, ' ').trim();
 	return s;
+}
+
+// Month name -> 2-digit number, for TZ-safe date parsing. `new Date("August 31, 2026")` is parsed in
+// the local zone, so its toISOString() shifts by a day west of UTC; we build the ISO string from the
+// parts instead so the collector behaves identically in Bangkok and in CI's UTC.
+const MONTHS = {
+	january: '01', february: '02', march: '03', april: '04', may: '05', june: '06',
+	july: '07', august: '08', september: '09', october: '10', november: '11', december: '12',
+};
+
+/** "August 31, 2026" -> "2026-08-31", or null if not a recognizable "Month D, YYYY" string. */
+function monthDayYearToIso(s) {
+	const m = s.match(/^([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})$/);
+	if (!m) return null;
+	const mo = MONTHS[m[1].toLowerCase()];
+	if (!mo) return null;
+	return `${m[3]}-${mo}-${String(Number(m[2])).padStart(2, '0')}`;
+}
+
+/** Strip inline markdown links "[text](url)" -> "text" (the intro row hides its date inside a link). */
+function stripInlineLinks(s) {
+	return s.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+}
+
+/**
+ * Peel a trailing promotional-window qualifier off a (link-stripped) model name. Anthropic renders a
+ * promo as TWO rows for one model: "Claude Sonnet 5 through August 31, 2026" (the introductory price,
+ * in effect UNTIL that date) and "Claude Sonnet 5 starting September 1, 2026" (the standard price, in
+ * effect FROM that date). Returns { base, window } where window is
+ * { kind: 'through'|'starting', date: 'YYYY-MM-DD' }, or null when there is no qualifier (the normal case).
+ */
+function extractPricingWindow(name) {
+	const m = name.match(/\s+(through|starting)\s+([A-Za-z]+\s+\d{1,2},?\s+\d{4})\s*$/i);
+	if (!m) return { base: name, window: null };
+	const date = monthDayYearToIso(m[2].trim());
+	return { base: name.slice(0, m.index).trim(), window: date ? { kind: m[1].toLowerCase(), date } : null };
+}
+
+/** Is a pricing window in effect on `todayStr`? A row with no window (the normal case) is always in effect. */
+function windowEffectiveToday(window, todayStr) {
+	if (!window) return true;
+	if (window.kind === 'through') return todayStr <= window.date; // intro price: valid until the date (inclusive)
+	if (window.kind === 'starting') return todayStr >= window.date; // standard price: valid from the date on
+	return true;
 }
 
 /** Parse a price cell like "$5 / MTok", "$6.25 / MTok", "$0.50 / MTok" -> number, or null if no price. */
@@ -158,10 +203,14 @@ export async function collect() {
 	if (!Object.values(colVariation).includes('input') || !Object.values(colVariation).includes('output'))
 		throw new Error('anthropic collector: header found but input/output columns not mappable.');
 
+	const t = today();
 	const results = [];
 	for (const cells of dataLines) {
 		if (!cells.length) continue;
-		const display = cleanModelName(cells[0]);
+		// Strip inline links first (the intro row hides its date qualifier inside a markdown link), then
+		// peel off any promotional-window qualifier so both rows of a promo normalize to one model name.
+		const { base, window } = extractPricingWindow(stripInlineLinks(cells[0]));
+		const display = cleanModelName(base);
 		if (!display || !/claude/i.test(display)) continue; // skip non-model footnote rows
 
 		const prices = {};
@@ -188,12 +237,28 @@ export async function collect() {
 			source_kind: 'provider_live',
 			confidence: 'verified',
 			known_mapping: Boolean(mapping),
+			_effectiveToday: windowEffectiveToday(window, t),
 		});
 	}
 
-	if (!results.length)
+	// Collapse a promotional intro/standard split (two rows, one model) to the row whose window covers
+	// today, so we track the CURRENTLY-EFFECTIVE price - which is what current.json publishes as the
+	// model's "current" price. The scheduled future row is dropped here; when its window opens the
+	// sentinel re-surfaces it as a CHANGED price for a human bitemporal interval edit.
+	const byId = new Map();
+	for (const item of results) {
+		const prev = byId.get(item.model_id);
+		if (!prev) {
+			byId.set(item.model_id, item);
+			continue;
+		}
+		if (item._effectiveToday && !prev._effectiveToday) byId.set(item.model_id, item);
+	}
+	const deduped = [...byId.values()].map(({ _effectiveToday, ...rest }) => rest);
+
+	if (!deduped.length)
 		throw new Error('anthropic collector: located the table but extracted zero Claude rows - structure drift.');
-	return results;
+	return deduped;
 }
 
 /** Fallback slug for an unrecognized display name, e.g. "Claude Mythos 5" -> "claude-mythos-5". */
