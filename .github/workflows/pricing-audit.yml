@@ -216,6 +216,7 @@ jobs:
           # remove an entry if LiteLLM corrects its data.
           IGNORE_RATE_DIFFS = {
               ("xai", "grok-4.20-0309-reasoning"),  # LiteLLM $2/$6; x.ai pricing page is $1.25/$2.50 (verified 2026-06-17)
+              ("anthropic", "claude-sonnet-5"),  # LiteLLM $3/$15; first-party is INTRODUCTORY $2/$10 through 2026-08-31 (verified 2026-07-08). Our record's own note schedules the $3/$15 change for 2026-09-01, when this diff disappears - remove this entry then.
           }
 
           rate_diffs = []
