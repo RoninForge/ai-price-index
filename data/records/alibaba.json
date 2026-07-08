@@ -326,5 +326,61 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.6-plus",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-04-02",
+    "effective_to": null,
+    "last_validated_at": "2026-07-08",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. [needs_review] cross-check flagged: input $0.5 is 1.54x OpenRouter's $0.33 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $3 is 1.54x OpenRouter's $1.95 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.6-plus",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 3,
+    "effective_from": "2026-04-02",
+    "effective_to": null,
+    "last_validated_at": "2026-07-08",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. [needs_review] cross-check flagged: input $0.5 is 1.54x OpenRouter's $0.33 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $3 is 1.54x OpenRouter's $1.95 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.7-max",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 2.5,
+    "effective_from": "2026-05-21",
+    "effective_to": null,
+    "last_validated_at": "2026-07-08",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. [needs_review] cross-check flagged: input $2.5 is 2x OpenRouter's $1.25 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $7.5 is 2x OpenRouter's $3.75 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.7-max",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 7.5,
+    "effective_from": "2026-05-21",
+    "effective_to": null,
+    "last_validated_at": "2026-07-08",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "inferred",
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. [needs_review] cross-check flagged: input $2.5 is 2x OpenRouter's $1.25 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $7.5 is 2x OpenRouter's $3.75 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
   }
 ]
