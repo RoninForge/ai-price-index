@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-07-01",
+  "dataModified": "2026-07-08",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -72,14 +72,14 @@
     {
       "id": "qwen3.6-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.6-plus.ve65c60b4.json",
-      "latestRev": "e65c60b4"
+      "file": "models/alibaba/qwen3.6-plus.v20c94886.json",
+      "latestRev": "20c94886"
     },
     {
       "id": "qwen3.7-max",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.7-max.v3ffd9a55.json",
-      "latestRev": "3ffd9a55"
+      "file": "models/alibaba/qwen3.7-max.ved935789.json",
+      "latestRev": "ed935789"
     },
     {
       "id": "qwen3.7-plus",
