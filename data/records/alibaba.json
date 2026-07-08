@@ -251,11 +251,11 @@
     "price_usd": 0.5,
     "effective_from": "2026-04-02",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
+    "last_validated_at": "2026-07-08",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.5 is 1.54x OpenRouter's $0.33 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $3 is 1.54x OpenRouter's $1.95 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. First-party re-confirmed 2026-07-08; the intl-USD tier sits above OpenRouter's routed (domestic) price, so the reseller-vs-first-party cross-check flag is an expected false positive here, not a wrong price."
   },
   {
     "provider": "alibaba",
@@ -265,11 +265,11 @@
     "price_usd": 3,
     "effective_from": "2026-04-02",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
+    "last_validated_at": "2026-07-08",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.5 is 1.54x OpenRouter's $0.33 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $3 is 1.54x OpenRouter's $1.95 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. First-party re-confirmed 2026-07-08; the intl-USD tier sits above OpenRouter's routed (domestic) price, so the reseller-vs-first-party cross-check flag is an expected false positive here, not a wrong price."
   },
   {
     "provider": "alibaba",
@@ -279,11 +279,11 @@
     "price_usd": 2.5,
     "effective_from": "2026-05-21",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
+    "last_validated_at": "2026-07-08",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2.5 is 2x OpenRouter's $1.25 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $7.5 is 2x OpenRouter's $3.75 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. First-party re-confirmed 2026-07-08; the intl-USD tier sits above OpenRouter's routed (domestic) price, so the reseller-vs-first-party cross-check flag is an expected false positive here, not a wrong price."
   },
   {
     "provider": "alibaba",
@@ -293,11 +293,11 @@
     "price_usd": 7.5,
     "effective_from": "2026-05-21",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
+    "last_validated_at": "2026-07-08",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2.5 is 2x OpenRouter's $1.25 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $7.5 is 2x OpenRouter's $3.75 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. First-party re-confirmed 2026-07-08; the intl-USD tier sits above OpenRouter's routed (domestic) price, so the reseller-vs-first-party cross-check flag is an expected false positive here, not a wrong price."
   },
   {
     "provider": "alibaba",
