@@ -1,7 +1,9 @@
 // tools/sentinel/collectors/mistral.mjs  (MIT)
 // First-party Mistral price collector.
 //
-// Source: https://mistral.ai/pricing/  - server-rendered HTML. The API model prices are NOT in a
+// Source: https://mistral.ai/pricing/api/  - server-rendered HTML. (Mistral split the pricing site in
+// 2026: /pricing/ now holds only consumer subscription plans; the per-model API table moved to
+// /pricing/api/.) The API model prices are NOT in a
 // <table>; each model is a card that renders, in document order, as:
 //     <model name heading> ... Input (/M tokens) $X ... Output (/M tokens) $Y ...
 // So we strip tags to newline-separated text and, for every "Input (/M tokens)" anchor, read the next
@@ -18,7 +20,7 @@
 import { fetchText } from '../lib.mjs';
 
 export const PROVIDER = 'mistral';
-const SOURCE_URL = 'https://mistral.ai/pricing/';
+const SOURCE_URL = 'https://mistral.ai/pricing/api/';
 
 // Lower-cased model heading (as it appears on the page) -> canonical id we publish under.
 // Unknown headings fall through to a slug and surface as NEW. Headings on the page sometimes carry a
@@ -40,8 +42,11 @@ const NAME_TO_CANONICAL = {
 
 // A line that looks like a Mistral model NAME (heading), not prose. Anchored to the known families so
 // a descriptive sentence ("For coding: Mistral Medium 3.5.") is not mistaken for a heading.
+// NB: the Ministral cards render as "Ministral 3 - 3B" (hyphen-separated size), so the Ministral
+// alternative must tolerate a hyphen; the canonical lookup below collapses " - " so the existing
+// "ministral 3 3b" keys still match.
 const NAME_LINE_RE =
-	/^(Mistral (?:Large|Medium|Small)(?: \d[\d.]*)?|Magistral (?:Medium|Small)|Ministral [\dA-Za-z. ]+|Devstral(?: Small)?(?: \d)?|Codestral|Pixtral[\w. ]*)$/;
+	/^(Mistral (?:Large|Medium|Small)(?: \d[\d.]*)?|Magistral (?:Medium|Small)|Ministral [\dA-Za-z. -]+|Devstral(?: Small)?(?: \d)?|Codestral|Pixtral[\w. ]*)$/;
 
 function parsePrice(s) {
 	const m = String(s).match(/\$\s*([0-9]+(?:\.[0-9]+)?)/);
@@ -112,7 +117,7 @@ export async function collect() {
 		}
 		if (!display) continue;
 
-		const norm = display.toLowerCase().replace(/\s+/g, ' ').trim();
+		const norm = display.toLowerCase().replace(/\s*-\s*/g, ' ').replace(/\s+/g, ' ').trim();
 		const canonical = NAME_TO_CANONICAL[norm] || slugify(display);
 		// first card wins per model (the page lists a model once in the API table; later duplicate
 		// marketing cards, if any, are ignored).
