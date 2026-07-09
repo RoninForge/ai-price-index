@@ -2,17 +2,17 @@ name: price-sentinel
 
 # Next-gen multi-provider FIRST-PARTY price sentinel.
 #
-# This is the successor to pricing-audit.yml. Where pricing-audit.yml is Anthropic-only (it diffs
-# Anthropic's /v1/models + BerriAI/litellm against current.json), this sentinel runs the keyless
+# This is the sole price-findings source (it retired the Anthropic-only pricing-audit.yml, which used
+# to diff Anthropic's /v1/models + BerriAI/litellm against current.json). This sentinel runs the keyless
 # OpenRouter + HuggingFace TRIPWIRE to spot where to look, then the FIRST-PARTY collectors
 # (tools/sentinel/collectors/*) to read each provider's own pricing surface and draft contribution-form
 # records for genuinely new models. Providers covered: anthropic, meta-llama (Together reference),
 # amazon (Bedrock Nova), mistral, deepseek, google, alibaba, xai.
 #
-# Intended to EVENTUALLY SUPERSEDE pricing-audit.yml. It runs twice daily (01:00 + 13:00 UTC = 08:00 +
-# 20:00 Asia/Bangkok), STAGGERED away from pricing-audit.yml's 14:00 UTC daily run so the two never
-# collide while both exist; it is also available via manual dispatch. The rolling-PR idempotency below
-# means a twice-daily cadence never spams: it keeps refreshing the single rolling PR, not opening new ones.
+# It runs twice daily (01:00 + 13:00 UTC = 08:00 + 20:00 Asia/Bangkok); it is also available via manual
+# dispatch. The rolling-PR idempotency below means a twice-daily cadence never spams: it keeps refreshing
+# the single rolling PR, not opening new ones. (The LiteLLM aggregator-accuracy ledger that used to ride
+# along in pricing-audit.yml now lives in its own aggregator-accuracy.yml; it opens no PRs.)
 #
 # ROLLING-PR IDEMPOTENCY (replaces the old per-UTC-date branch model).
 # `node tools/sentinel/run.mjs --apply` on a FRESH checkout of main regenerates the WHOLE current set of
@@ -30,7 +30,7 @@ name: price-sentinel
 #
 # Because the branch is rebuilt from `main` each run, its content == main + one drafts commit, so a
 # content comparison against origin/sentinel/pending is deterministic. sentinel-report.md is the PR BODY
-# only; like pricing-audit.yml we `git add data/records` exclusively, so the report file is never
+# only; we `git add data/records` exclusively, so the report file is never
 # committed to the tree. validate.yml gates the PR (expected red until a human verifies the drafted
 # first-party fields).
 #
@@ -40,8 +40,7 @@ name: price-sentinel
 on:
   workflow_dispatch:
   schedule:
-    # 08:00 and 20:00 Asia/Bangkok (UTC+7) = 01:00 and 13:00 UTC. Staggered away from pricing-audit.yml
-    # (14:00 UTC) so the two never overlap while both exist.
+    # 08:00 and 20:00 Asia/Bangkok (UTC+7) = 01:00 and 13:00 UTC.
     - cron: '0 1,13 * * *'
 
 permissions:
@@ -138,8 +137,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Commit the regenerated drafts on top of the current main checkout. sentinel-report.md is the
-          # PR body only, so it is intentionally NOT added (stays untracked, never committed) - matches
-          # pricing-audit.yml which only `git add data/records`.
+          # PR body only, so it is intentionally NOT added (stays untracked, never committed): we only
+          # `git add data/records`.
           if [ -n "$(git status --porcelain -- data/records)" ]; then
             git add data/records
             git commit -m "sentinel: draft new-model record(s) from multi-provider sentinel"

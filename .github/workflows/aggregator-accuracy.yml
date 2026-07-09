@@ -1,0 +1,55 @@
+name: aggregator-accuracy
+
+# Maintains the LiteLLM aggregator-accuracy ledger: a longitudinal record of where LiteLLM disagrees
+# with OUR high-confidence (first-party-validated) prices and how long each disagreement stands, in
+# data/aggregator-accuracy/litellm.json.
+#
+# This is the ledger step lifted out of the retired pricing-audit.yml (its price-findings role is now
+# fully covered by price-sentinel.yml). Strategic data only: it opens NO PRs and proposes NO price
+# changes. It commits ONLY the ledger file, straight to main, and only when the ledger actually
+# changed (the export-style no-op-when-unchanged pattern keeps it from committing every day). The
+# ledger path does not match publish-on-merge.yml's data/records/** filter, so this never cascades to
+# consumers, and a GITHUB_TOKEN push does not retrigger any workflow.
+#
+# No secrets required: LiteLLM's price table is a public raw GitHub file, and the comparison reads the
+# already-published data/ai-price-index/current.json from the checkout.
+
+on:
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aggregator-accuracy
+  cancel-in-progress: false
+
+jobs:
+  ledger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Fetch LiteLLM
+        run: |
+          curl -fsSL \
+            "https://raw.githubusercontent.com/BerriAI/litellm/main/litellm/model_prices_and_context_window_backup.json" \
+            > litellm.json
+
+      - name: Update aggregator-accuracy ledger
+        run: |
+          TODAY="$(date -u +%Y-%m-%d)"
+          python3 tools/audit/litellm-ledger.py "$TODAY" litellm.json
+
+          if [ -z "$(git status --porcelain -- data/aggregator-accuracy/litellm.json)" ]; then
+            echo "Ledger unchanged; nothing to commit."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/aggregator-accuracy/litellm.json
+            git commit -m "data(aggregator-accuracy): update LiteLLM accuracy ledger ${TODAY}"
+            git push origin HEAD:main
+            echo "Ledger changed; committed to main."
+          fi

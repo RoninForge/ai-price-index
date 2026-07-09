@@ -161,8 +161,8 @@ function recordsPathFor(provider) {
 
 /**
  * Append drafted records into data/records/<provider>.json, grouped by provider. Creates the file as a
- * JSON array if it does not exist. Preserves 2-space indentation + a single trailing newline, exactly
- * like pricing-audit.yml's append step (json.dump(records, f, indent=2); f.write("\n")).
+ * JSON array if it does not exist. Preserves 2-space indentation + a single trailing newline
+ * (JSON.stringify(records, null, 2) + "\n").
  * Returns [{ provider, file, added }].
  */
 function applyDraftedRecords(drafted) {

@@ -38,7 +38,7 @@
     "source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Grok 4.20 reasoning variant. Price + current lineup confirmed first-party on the x.ai pricing page (2026-06-17); date from the -0309 build slug (2026-03-09). The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are not separately recorded. (LiteLLM lists $2/$6 for this model, which is wrong; see IGNORE_RATE_DIFFS in pricing-audit.yml.)"
+    "notes": "Grok 4.20 reasoning variant. Price + current lineup confirmed first-party on the x.ai pricing page (2026-06-17); date from the -0309 build slug (2026-03-09). The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are not separately recorded. (LiteLLM lists $2/$6 for this model, which is wrong; the aggregator-accuracy ledger tracks that disagreement.)"
   },
   {
     "provider": "xai",

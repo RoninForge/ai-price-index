@@ -70,8 +70,7 @@ is always today. The policy lives in `lib.mjs::effectiveFromForNew`.
 `--apply` is the mode the CI workflow runs. It:
 
 - APPENDS the drafted NEW-model records into the matching `data/records/<provider>.json`, creating the
-  file as a JSON array if it does not exist, preserving 2-space indentation + a single trailing newline
-  (exactly like `pricing-audit.yml`'s append);
+  file as a JSON array if it does not exist, preserving 2-space indentation + a single trailing newline;
 - writes a human-readable `sentinel-report.md` (new models drafted, CHANGED prices as suggested edits,
   errors / BLOCKED providers, advisory tripwire candidates) for use as the PR body; and
 - prints a one-line summary of what it wrote.
@@ -124,15 +123,18 @@ to the `COLLECTORS` array in `run.mjs`. The provider slug must match both what t
 
 ## CI workflow
 
-`.github/workflows/price-sentinel.yml` is the next-gen multi-provider FIRST-PARTY sentinel
-(OpenRouter/HF tripwire -> first-party collectors). It is **`workflow_dispatch` only** (no cron) so it
-does not collide with the daily `pricing-audit.yml` while both exist; it is intended to eventually
-supersede `pricing-audit.yml`. On dispatch it runs `node tools/sentinel/run.mjs --apply`, opens a DRAFT
-PR on branch `sentinel/<UTC-date>` (skipping if that branch or an open PR already exists) with
-`sentinel-report.md` as the body, base `main`. `XAI_API_KEY` is an optional repo secret; without it the
-xAI collector reports BLOCKED and every other provider still runs. `validate.yml` gates the PR.
+`.github/workflows/price-sentinel.yml` is the multi-provider FIRST-PARTY sentinel
+(OpenRouter/HF tripwire -> first-party collectors) and the sole price-findings source: it retired the
+Anthropic-only `pricing-audit.yml`. It runs twice daily (01:00 + 13:00 UTC) and on manual dispatch,
+running `node tools/sentinel/run.mjs --apply`. It keeps ONE rolling draft PR on branch
+`sentinel/pending` (created/refreshed/skip-if-unchanged) with `sentinel-report.md` as the body, base
+`main`. `XAI_API_KEY` is an optional repo secret; without it the xAI collector reports BLOCKED and every
+other provider still runs. `validate.yml` gates the PR.
+
+The LiteLLM aggregator-accuracy ledger that used to ride along in `pricing-audit.yml` now runs on its
+own in `.github/workflows/aggregator-accuracy.yml` (commits `data/aggregator-accuracy/litellm.json`
+straight to main; opens no PRs).
 
 ## Where this is going
 
-The sentinel will graduate from manual dispatch to scheduled once it has supplanted `pricing-audit.yml`.
 Phase 2 adds the headless-rendered pages (OpenAI, Cohere) and `ai21`.

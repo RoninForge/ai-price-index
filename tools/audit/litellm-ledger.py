@@ -7,8 +7,8 @@
 # comes to match us. It is a strategic data asset, NOT an input to any correction flow: it opens
 # no PRs anywhere, and it never proposes changes to LiteLLM.
 #
-# It reuses the daily pricing-audit's model-id matching + IGNORE_RATE_DIFFS set + float tolerance,
-# so the ledger carries the same signal the audit already trusts. It records only the
+# Its model-id matching, IGNORE_RATE_DIFFS set, and float tolerance were originally shared with the
+# (now-retired) pricing-audit.yml; they live here as the single source. It records only the
 # (model, variation) pairs whose OUR value is high-confidence: confidence in {verified, archived}.
 # Inferred/estimated pairs are skipped - if our own number is not first-party-validated, a LiteLLM
 # disagreement is not evidence LiteLLM is wrong, so it does not belong in an "accuracy" ledger.
@@ -19,7 +19,6 @@
 # LiteLLM-wrong pair is the highest-value record, not noise - it is exactly the "LiteLLM is wrong"
 # event we want to time. So the ledger does NOT drop IGNORE_RATE_DIFFS pairs; it records them and
 # flags them confirmed_litellm_wrong=true (a human has already verified LiteLLM is the wrong party).
-# The two files keep ONE shared IGNORE_RATE_DIFFS list, used for opposite-but-consistent ends.
 #
 # Output: data/aggregator-accuracy/litellm.json - a deterministic, sorted JSON document. Pass
 # today's date in (AIPI_TODAY or argv[1]); the compare logic never reads the wall clock, so a run
@@ -41,15 +40,15 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 LEDGER_PATH = os.path.join(REPO_ROOT, "data", "aggregator-accuracy", "litellm.json")
 CURRENT_PATH = os.path.join(REPO_ROOT, "data", "ai-price-index", "current.json")
 
-# Same tolerance as pricing-audit.yml: whole-dollar Claude pricing means a real change is >= $0.50,
-# so $0.01/MTok safely separates "matches" from "disagrees" without float-noise false positives.
+# Whole-dollar Claude pricing means a real change is >= $0.50, so $0.01/MTok safely separates
+# "matches" from "disagrees" without float-noise false positives.
 TOLERANCE = 0.01
 
 # High-confidence == first-party-validated, so we are confident LiteLLM (not us) is wrong.
 HIGH_CONFIDENCE = {"verified", "archived"}
 
-# Kept identical to IGNORE_RATE_DIFFS in .github/workflows/pricing-audit.yml (keep the two in sync).
-# In the audit it suppresses a noise PR; in this ledger it MARKS the pair confirmed_litellm_wrong
+# IGNORE_RATE_DIFFS is the sole copy now (pricing-audit.yml, which used to share it, is retired).
+# In this ledger it MARKS the pair confirmed_litellm_wrong
 # (a human has already verified LiteLLM, not us, is wrong) - so the ledger records it rather than
 # dropping it. A pair NOT in this set but still disagreeing against our high-confidence value is
 # recorded too, just without the human-confirmed flag.
