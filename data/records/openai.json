@@ -254,6 +254,33 @@
   },
   {
     "provider": "openai",
+    "model_id": "gpt-5.3-codex",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.75,
+    "effective_from": "2026-07-10",
+    "effective_to": null,
+    "last_validated_at": "2026-07-10",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Codex-family coding model, Standard tier (Priority is 2x; cached input $0.175). effective_from is the first first-party validation date - OpenAI's pricing page does not state a launch date."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.3-codex",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 14,
+    "effective_from": "2026-07-10",
+    "effective_to": null,
+    "last_validated_at": "2026-07-10",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "openai",
     "model_id": "gpt-5.4",
     "variation": "input",
     "unit": "usd_per_mtok",
