@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-07-09",
+  "dataModified": "2026-07-10",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -494,6 +494,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-5.2-pro.vbe62b6a0.json",
       "latestRev": "be62b6a0"
+    },
+    {
+      "id": "gpt-5.3-codex",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.3-codex.v3d2031e4.json",
+      "latestRev": "3d2031e4"
     },
     {
       "id": "gpt-5.4",
