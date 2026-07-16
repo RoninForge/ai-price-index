@@ -5,7 +5,7 @@
     {
       "confirmed_litellm_wrong": true,
       "first_detected": "2026-06-22",
-      "last_seen": "2026-07-15",
+      "last_seen": "2026-07-16",
       "litellm_usd_per_mtok": 2.0,
       "model": "grok-4.20-0309-reasoning",
       "our_confidence": "verified",
@@ -19,7 +19,7 @@
     {
       "confirmed_litellm_wrong": true,
       "first_detected": "2026-06-22",
-      "last_seen": "2026-07-15",
+      "last_seen": "2026-07-16",
       "litellm_usd_per_mtok": 6.0,
       "model": "grok-4.20-0309-reasoning",
       "our_confidence": "verified",
@@ -61,14 +61,14 @@
   ],
   "summary": {
     "confirmed_open_count": 2,
-    "generated": "2026-07-15",
+    "generated": "2026-07-16",
     "oldest_open": {
       "first_detected": "2026-06-22",
       "model": "grok-4.20-0309-reasoning",
       "provider": "xai",
       "variation": "input"
     },
-    "oldest_open_days": 23,
+    "oldest_open_days": 24,
     "open_count": 2,
     "resolved_count": 2
   }
