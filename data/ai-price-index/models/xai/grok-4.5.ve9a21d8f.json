@@ -13,6 +13,15 @@
         "last_validated": "2026-07-09",
         "price_usd": 0.5,
         "src": "https://docs.x.ai/docs/models",
+        "to": "2026-07-19",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-07-19",
+        "last_validated": "2026-07-20",
+        "price_usd": 0.3,
+        "src": "https://docs.x.ai/docs/models",
         "to": null,
         "unit": "usd_per_mtok"
       }

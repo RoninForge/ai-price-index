@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-07-10",
+  "dataModified": "2026-07-20",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -636,8 +636,8 @@
     {
       "id": "grok-4.5",
       "provider": "xai",
-      "file": "models/xai/grok-4.5.vf5ea37ba.json",
-      "latestRev": "f5ea37ba",
+      "file": "models/xai/grok-4.5.ve9a21d8f.json",
+      "latestRev": "e9a21d8f",
       "aliases": [
         "grok-4.5-latest",
         "grok-build-latest"
