@@ -385,7 +385,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.5,
     "effective_from": "2026-07-08",
-    "effective_to": null,
+    "effective_to": "2026-07-19",
     "last_validated_at": "2026-07-09",
     "source_url": "https://docs.x.ai/docs/models",
     "source_kind": "provider_live",
@@ -394,5 +394,23 @@
       "grok-4.5-latest",
       "grok-build-latest"
     ]
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.5",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.3,
+    "effective_from": "2026-07-19",
+    "effective_to": null,
+    "last_validated_at": "2026-07-20",
+    "source_url": "https://docs.x.ai/docs/models",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "grok-4.5-latest",
+      "grok-build-latest"
+    ],
+    "notes": "Cache-read cut from $0.50 to $0.30/Mtok (standard <200k tier); input/output unchanged at $2/$6. First-party confirmed on docs.x.ai. Supersedes the 2026-07-08 launch cache_read record; effective_from is the first date the $0.30 rate was observed on the provider page (price-sentinel provider_live read)."
   }
 ]
