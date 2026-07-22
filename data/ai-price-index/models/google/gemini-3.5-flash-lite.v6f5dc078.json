@@ -1,0 +1,28 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "provider": "google",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-21",
+        "last_validated": "2026-07-22",
+        "price_usd": 0.3,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-21",
+        "last_validated": "2026-07-22",
+        "price_usd": 2.5,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
