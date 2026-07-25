@@ -30,7 +30,7 @@ Provider pricing pages change quietly with no changelog. This dataset is the cha
 - **{{RECORDS}} price records, {{MODELS}} models, {{PROVIDERS}} providers**: Anthropic, OpenAI, Google, Mistral, xAI, DeepSeek, Cohere, Amazon Nova, AI21, Alibaba Qwen
 - A first-party source URL on **every** price
 - Maintained via a daily automated check against official pricing pages; **every change is human-reviewed before it lands**
-- License: CC BY 4.0. DOI: [10.5281/zenodo.20730241](https://doi.org/10.5281/zenodo.20730241)
+- License: CC BY 4.0. DOI: [10.5281/zenodo.20730240](https://doi.org/10.5281/zenodo.20730240)
 
 ## Load it
 
@@ -86,7 +86,7 @@ A bot diffs each provider's official pricing page daily and flags drift. No pric
   author       = {{RoninForge}},
   title        = {{AI Price Index: dated, first-party AI model API prices over time}},
   year         = {2026},
-  doi          = {10.5281/zenodo.20730241},
+  doi          = {10.5281/zenodo.20730240},
   howpublished = {\url{https://roninforge.org/data/ai-price-index/}},
   note         = {Data licensed CC BY 4.0.}
 }

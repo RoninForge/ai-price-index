@@ -56,4 +56,4 @@ Licensed CC BY 4.0: free to use with attribution. The bitemporal source of truth
 - GitHub (source of truth): https://github.com/RoninForge/ai-price-index
 - Hugging Face mirror: https://huggingface.co/datasets/RoninForge/ai-price-index
 - Browsable view: https://roninforge.org/data/ai-price-index/
-- Citable DOI: https://doi.org/10.5281/zenodo.20730241
+- Citable DOI: https://doi.org/10.5281/zenodo.20730240

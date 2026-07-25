@@ -104,7 +104,7 @@ print(f"  Nova Micro today:    \${job_cost('nova-micro', '2026-06-17'):,.2f}")`]
 - **Price on a date** \`d\`: the row where \`effective_from <= d\` and (\`effective_to\` is empty or \`> d\`).
 - Every row links its **first-party source** in \`source_url\`.
 
-Data licensed CC BY 4.0. Source of truth, methodology, and corrections: https://github.com/RoninForge/ai-price-index . Citable DOI: 10.5281/zenodo.20730241`]
+Data licensed CC BY 4.0. Source of truth, methodology, and corrections: https://github.com/RoninForge/ai-price-index . Citable DOI: 10.5281/zenodo.20730240`]
 ];
 
 const toSource = (text) => {

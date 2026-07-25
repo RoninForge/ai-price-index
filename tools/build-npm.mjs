@@ -17,7 +17,8 @@ const DATA = join(ROOT, 'data', 'ai-price-index');
 const OUT = join(ROOT, 'lib', 'data.json');
 const REPO = 'https://github.com/RoninForge/ai-price-index';
 const DATA_PAGE = 'https://roninforge.org/data/ai-price-index/';
-const DOI = '10.5281/zenodo.20730241';
+// Concept DOI: always resolves to the latest version. Per-release version DOIs differ.
+const DOI = '10.5281/zenodo.20730240';
 
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
 
