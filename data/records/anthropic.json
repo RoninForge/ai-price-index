@@ -737,5 +737,70 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-5",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-07-24",
+    "effective_to": null,
+    "last_validated_at": "2026-07-25",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-5",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-07-24",
+    "effective_to": null,
+    "last_validated_at": "2026-07-25",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-5",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-07-24",
+    "effective_to": null,
+    "last_validated_at": "2026-07-25",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-5",
+    "variation": "cache_write_5m",
+    "unit": "usd_per_mtok",
+    "price_usd": 6.25,
+    "effective_from": "2026-07-24",
+    "effective_to": null,
+    "last_validated_at": "2026-07-25",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-opus-5",
+    "variation": "cache_write_1h",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-07-24",
+    "effective_to": null,
+    "last_validated_at": "2026-07-25",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
