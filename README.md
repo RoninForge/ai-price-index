@@ -126,7 +126,8 @@ node tools/validate.mjs        # validate everything locally
 ```
 
 When you publish anything derived from this data, attribute it: **"AI Price Index by RoninForge, CC
-BY 4.0"** with a link to this repository and the validation date of the values you used.
+BY 4.0"** with a link to <https://roninforge.org/data/ai-price-index/> and the validation date of the
+values you used. See [ATTRIBUTION.md](ATTRIBUTION.md) for copy-paste formats.
 
 ## How to cite
 

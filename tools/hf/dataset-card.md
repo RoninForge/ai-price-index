@@ -68,7 +68,15 @@ To get the current price of a model, filter rows where `effective_to` is empty. 
 - `ai_price_index.csv`: the full flat table (loaded above).
 - `ai_price_index.json`: the same records as JSON.
 
-The bitemporal source of truth, per-provider history, methodology, and tooling live in the GitHub repository.
+The methodology, per-model price history, and changelog live on the dataset home page. The bitemporal ledger and the tooling that builds it live in the GitHub repository.
+
+## Attribution
+
+CC BY 4.0 means you can use this data anywhere, including commercially, for free. Credit it like this:
+
+> AI Price Index by RoninForge (https://roninforge.org/data/ai-price-index/), CC BY 4.0. Values validated <date>.
+
+Keep the validation date in. Prices change and this dataset supersedes values without deleting history, so a dated citation stays checkable years later.
 
 ## Maintenance and methodology
 
@@ -76,8 +84,9 @@ A bot diffs each provider's official pricing page daily and flags drift. No pric
 
 ## Links
 
-- GitHub (source of truth, issues, PRs): https://github.com/RoninForge/ai-price-index
-- Browsable view: https://roninforge.org/data/ai-price-index
+- Dataset home, methodology and history: https://roninforge.org/data/ai-price-index/
+- Citable DOI (concept, always latest): https://doi.org/10.5281/zenodo.20730240
+- Build system, issues, PRs: https://github.com/RoninForge/ai-price-index
 
 ## Citation
 

@@ -51,9 +51,15 @@ print(current.sort_values("price_usd").head())
 
 ## Provenance, license, and corrections
 
-Licensed CC BY 4.0: free to use with attribution. The bitemporal source of truth, the methodology, and the tooling live in the GitHub repository, and corrections or new-provider requests are welcome as issues and pull requests.
+Licensed CC BY 4.0: free to use, including commercially, with attribution. Copy this credit line:
 
-- GitHub (source of truth): https://github.com/RoninForge/ai-price-index
+> AI Price Index by RoninForge (https://roninforge.org/data/ai-price-index/), CC BY 4.0. Values validated <date>.
+
+Keep the validation date in. Prices change and this dataset supersedes values without deleting history, so a dated citation stays checkable years later.
+
+The methodology, the per-model price history, and the changelog live on the dataset home page. The build system and the bitemporal ledger live in the GitHub repository, where corrections and new-provider requests are welcome as issues and pull requests.
+
+- Dataset home, methodology and history: https://roninforge.org/data/ai-price-index/
+- Citable DOI (concept, always latest): https://doi.org/10.5281/zenodo.20730240
 - Hugging Face mirror: https://huggingface.co/datasets/RoninForge/ai-price-index
-- Browsable view: https://roninforge.org/data/ai-price-index/
-- Citable DOI: https://doi.org/10.5281/zenodo.20730240
+- Build system and issue tracker: https://github.com/RoninForge/ai-price-index
