@@ -13,7 +13,7 @@
 //       = $1.25 in / $2.50 out). If the API call FAILS while a key is set, we THROW - the key should
 //       work, so a failure must surface, not silently fall back.
 //   * no XAI_API_KEY                -> KEYLESS HTML FALLBACK (this interim path). Scrape xAI's
-//       first-party docs page https://docs.x.ai/docs/models. A missing key is NO LONGER an error
+//       first-party docs page https://docs.x.ai/developers/models. A missing key is NO LONGER an error
 //       (the old "xai BLOCKED" throw is gone): no key just means "use HTML". We only throw if the
 //       chosen path genuinely fails.
 //
@@ -22,20 +22,35 @@
 // switch automatically onto the robust machine-readable API. Treat any HTML-parse drift as a signal
 // to get a key, not just to patch the scraper.
 //
-// HOW THE HTML PATH WORKS (verified 2026-06-20): https://docs.x.ai/docs/models is a Next.js app. It
-// has NO <table>; instead the full model list is embedded in the page's Next.js RSC payload
-// (`self.__next_f.push(...)` <script> blocks) as `auth_mgmt.LanguageModel` objects whose price fields
-// are the SAME shape and SAME integer scale as the authenticated API:
-//   {"$typeName":"auth_mgmt.LanguageModel","name":"grok-4.3",...,
-//    "promptTextTokenPrice":"$n12500","completionTextTokenPrice":"$n25000",
-//    "cachedPromptTokenPrice":"$n2000","promptTextTokenPriceLongContext":"$n25000",
-//    "completionTokenPriceLongContext":"$n50000","aliases":[...]}
-// (The visible Input/Output price <span>s only render for ~2 models; the embedded payload is the only
-// complete + reliable source on the page, and it mirrors the API field-for-field, so the SAME /10000
-// conversion and the SAME pin apply.) Because the payload lives inside a JS string, the JSON quotes
-// are backslash-escaped, sometimes multiply - the parser below is tolerant of any run of backslashes
-// before quotes. We anchor on English price content via Accept-Language: en-US,en;q=0.9 (docs sites
-// content-negotiate locale, like ai.google.dev did) and retry, mirroring collectors/google.mjs.
+// HOW THE HTML PATH WORKS: the docs page has NO <table>; the full model list is embedded in the page
+// and is the only complete + reliable source on it (the visible Input/Output price <span>s render for
+// only ~2 models). xAI has shipped TWO embed shapes, so the parser handles both and picks whichever
+// the live page carries:
+//
+//   * BLOB shape (current, verified 2026-07-27) at https://docs.x.ai/developers/models. A plain
+//     server-rendered JSON blob in its own <script>:
+//       globalThis.__XAI_PUBLIC_MODELS__={"clusterConfigs":[{"languageModels":[
+//         {"name":"grok-4.3","promptTextTokenPrice":"12500","completionTextTokenPrice":"25000",
+//          "cachedPromptTokenPrice":"2000","promptTextTokenPriceLongContext":"25000",
+//          "completionTokenPriceLongContext":"50000","aliases":[...]}, ...]}, ...]}
+//     Same field names and same integer scale as the API; values are plain numeric strings (no "$n"
+//     marker) and the model list repeats across clusterConfigs, so we take the first copy of each name.
+//
+//   * FLIGHT shape (legacy, verified 2026-06-20, the shape this page served until ~2026-07). The RSC
+//     payload (`self.__next_f.push(...)` <script> blocks) carrying `auth_mgmt.LanguageModel` objects:
+//       {"$typeName":"auth_mgmt.LanguageModel","name":"grok-4.3",...,
+//        "promptTextTokenPrice":"$n12500","completionTextTokenPrice":"$n25000",...}
+//     Values carry the Next.js Flight "$n" number marker, and because the payload lives inside a JS
+//     string the JSON quotes are backslash-escaped (sometimes multiply), so that parser tolerates any
+//     run of backslashes before quotes.
+//
+// 2026-07-27 drift, for the record: the rebuilt docs page dropped the Flight payload in favour of the
+// blob, which is what broke the collector. The /docs/models -> /developers/models 308 was NOT the
+// cause (that redirect predates the break - Wayback has it on 2026-03-04 - and fetch follows it); the
+// URL constant was moved to the canonical target anyway. Prices, field names and the /10000 scale were
+// unchanged; only the embed shape moved. The legacy parser is kept because it costs ~30 lines and a
+// docs rebuild can put it back. We anchor on English price content via Accept-Language: en-US,en;q=0.9
+// (docs sites content-negotiate locale, like ai.google.dev did) and retry, mirroring collectors/google.mjs.
 //
 // UNIT (shared by both paths): the *_token_price fields are an INTEGER scale, NOT USD-per-token. The
 // correct conversion is  usd_per_mtok = price_field / 10000  (grok-4.3: 12500 -> $1.25 in, 25000 ->
@@ -63,7 +78,8 @@
 
 export const PROVIDER = 'xai';
 const API_URL = 'https://api.x.ai/v1/language-models';
-const HTML_URL = 'https://docs.x.ai/docs/models';
+// Canonical docs URL since the 2026-07-27 rebuild. The old /docs/models 308-redirects here.
+const HTML_URL = 'https://docs.x.ai/developers/models';
 
 // Mirrors lib.mjs's fetch knobs so behavior matches the rest of the sentinel.
 const USER_AGENT = 'ai-price-index price-sentinel (+https://roninforge.org)';
@@ -173,13 +189,26 @@ function parseApiModels(data) {
 // KEYLESS HTML FALLBACK PATH
 // ---------------------------------------------------------------------------
 
-/** True when a fetched body carries the embedded model payload we anchor the parser on. */
+const BLOB_MARKER = 'globalThis.__XAI_PUBLIC_MODELS__';
+
+/** True when the body carries priced model fields at all (either embed shape needs them). */
+function hasPriceFields(html) {
+	return /promptTextTokenPrice/.test(html) && /completionTextTokenPrice/.test(html);
+}
+
+/** True when the body carries the current server-rendered JSON blob. */
+function hasBlobPayload(html) {
+	return html.includes(BLOB_MARKER) && hasPriceFields(html);
+}
+
+/** True when the body carries the legacy Next.js RSC Flight payload. */
+function hasFlightPayload(html) {
+	return html.includes('auth_mgmt.LanguageModel') && hasPriceFields(html);
+}
+
+/** True when a fetched body carries an embedded model payload the parser can read. */
 function looksLikeModelsPayload(html) {
-	return (
-		html.includes('auth_mgmt.LanguageModel') &&
-		/promptTextTokenPrice/.test(html) &&
-		/completionTextTokenPrice/.test(html)
-	);
+	return hasBlobPayload(html) || hasFlightPayload(html);
 }
 
 /**
@@ -229,21 +258,110 @@ function flightNum(raw) {
 }
 
 /**
- * Parse the embedded `auth_mgmt.LanguageModel` objects out of the docs/models RSC payload. The JSON
- * lives inside a JS string, so quotes are backslash-escaped (sometimes multiply); every pattern below
+ * Read the models page, whichever embed shape it currently ships. Prefers the blob (the shape xAI
+ * serves today) and falls back to the legacy Flight payload. Throws only when neither is present.
+ */
+function parseHtmlModels(html) {
+	if (hasBlobPayload(html)) return parseBlobModels(html);
+	if (hasFlightPayload(html)) return parseFlightModels(html);
+	throw new Error(
+		'xai collector (HTML): models page has no embedded price payload - neither the ' +
+			`${BLOB_MARKER} blob nor an auth_mgmt.LanguageModel Flight payload carries ` +
+			'promptTextTokenPrice/completionTextTokenPrice. Page is JS-only or drifted again. ' +
+			'Refusing to guess; set XAI_API_KEY to use the authenticated API instead.'
+	);
+}
+
+/**
+ * Slice the `globalThis.__XAI_PUBLIC_MODELS__={...}` object out of its <script> by brace-matching from
+ * the first `{` (string-aware, so braces inside model names or notes cannot end the object early).
+ * Returns the parsed object, or null if the marker/JSON is unreadable.
+ */
+function extractBlobJson(html) {
+	const at = html.indexOf(BLOB_MARKER);
+	if (at < 0) return null;
+	const start = html.indexOf('{', at);
+	if (start < 0) return null;
+	let depth = 0;
+	let inStr = false;
+	let esc = false;
+	for (let p = start; p < html.length; p++) {
+		const c = html[p];
+		if (inStr) {
+			if (esc) esc = false;
+			else if (c === '\\') esc = true;
+			else if (c === '"') inStr = false;
+			continue;
+		}
+		if (c === '"') inStr = true;
+		else if (c === '{') depth++;
+		else if (c === '}' && --depth === 0) {
+			try {
+				return JSON.parse(html.slice(start, p + 1));
+			} catch {
+				return null;
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * Parse the current blob shape: clusterConfigs[].languageModels[], plain JSON, price fields as plain
+ * numeric strings on the same /10000 integer scale as the API. The same model list repeats once per
+ * cluster config, so the first copy of each name wins. Throws on structure/unit drift.
+ */
+function parseBlobModels(html) {
+	const payload = extractBlobJson(html);
+	if (!payload || !Array.isArray(payload.clusterConfigs))
+		throw new Error(
+			`xai collector (HTML/blob): found ${BLOB_MARKER} but could not parse a clusterConfigs ` +
+				'array out of it - structure drift.'
+		);
+
+	const byId = new Map(); // model_id -> built prices, for the post-build unit assertion
+	const aliasesById = new Map();
+	for (const cluster of payload.clusterConfigs) {
+		const models = cluster && Array.isArray(cluster.languageModels) ? cluster.languageModels : [];
+		for (const m of models) {
+			const id = m && m.name;
+			if (typeof id !== 'string' || !id || byId.has(id)) continue;
+
+			const prices = buildPrices({
+				input: m.promptTextTokenPrice,
+				output: m.completionTextTokenPrice,
+				cache_read: m.cachedPromptTokenPrice,
+				tier2_input: m.promptTextTokenPriceLongContext,
+				tier2_output: m.completionTokenPriceLongContext,
+			});
+			if (!prices) continue; // needs at least input + output
+
+			byId.set(id, prices);
+			const aliases = Array.isArray(m.aliases)
+				? [...new Set(m.aliases.filter((a) => typeof a === 'string' && a && a !== id))]
+				: [];
+			aliasesById.set(id, aliases.length ? aliases : undefined);
+		}
+	}
+
+	if (!byId.size)
+		throw new Error(
+			'xai collector (HTML/blob): parsed the models blob but extracted zero priced models - structure drift.'
+		);
+
+	assertPin(byId, 'HTML/blob');
+	return [...byId].map(([id, prices]) => makeRow(id, prices, aliasesById.get(id), HTML_URL));
+}
+
+/**
+ * Parse the legacy embedded `auth_mgmt.LanguageModel` objects out of the RSC payload. The JSON lives
+ * inside a JS string, so quotes are backslash-escaped (sometimes multiply); every pattern below
  * tolerates an arbitrary run of backslashes before a quote via the `[\\"]*` fragments. Each model's
  * fields appear in a fixed window after its name, so we slice a generous window per model and read the
  * price fields by name (order-independent, like the other collectors). Returns array of rows. Throws
  * on structure/unit drift.
  */
-function parseHtmlModels(html) {
-	if (!looksLikeModelsPayload(html))
-		throw new Error(
-			'xai collector (HTML): docs/models page has no embedded LanguageModel price payload ' +
-				'(promptTextTokenPrice/completionTextTokenPrice) - page is JS-only or drifted. ' +
-				'Refusing to guess; set XAI_API_KEY to use the authenticated API instead.'
-		);
-
+function parseFlightModels(html) {
 	// Locate each model: the marker `auth_mgmt.LanguageModel`, then a `name`:"<id>" field.
 	const nameRe = /auth_mgmt\.LanguageModel[\\"]*,[\\"]*name[\\"]*:[\\"]*([a-zA-Z0-9.\-]+)[\\"]/g;
 	const byId = new Map(); // model_id -> built prices, for the post-build unit assertion
@@ -280,10 +398,10 @@ function parseHtmlModels(html) {
 
 	if (!byId.size)
 		throw new Error(
-			'xai collector (HTML): found the LanguageModel payload but extracted zero priced models - structure drift.'
+			'xai collector (HTML/flight): found the LanguageModel payload but extracted zero priced models - structure drift.'
 		);
 
-	assertPin(byId, 'HTML');
+	assertPin(byId, 'HTML/flight');
 
 	const rows = [];
 	for (const [id, prices] of byId) rows.push(makeRow(id, prices, aliasesById.get(id), HTML_URL));

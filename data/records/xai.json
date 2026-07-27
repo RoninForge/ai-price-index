@@ -7,11 +7,15 @@
     "price_usd": 1.25,
     "effective_from": "2026-05-05",
     "effective_to": null,
-    "last_validated_at": "2026-06-17",
-    "source_url": "https://docs.x.ai/docs/models/grok-4.3",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models/grok-4.3",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Flagship, 1M context. Price from docs.x.ai. Cached input is $0.20/Mtok (not recorded). Date from xAI's \"Grok 4.3 is now live on the xAI API\" post (2026-05-05)."
+    "aliases": [
+      "grok-4.3-latest",
+      "grok-latest"
+    ],
+    "notes": "Flagship, 1M context. Price from docs.x.ai. Cached input is $0.20/Mtok (recorded separately since 2026-07-27). Date from xAI's \"Grok 4.3 is now live on the xAI API\" post (2026-05-05)."
   },
   {
     "provider": "xai",
@@ -21,10 +25,14 @@
     "price_usd": 2.5,
     "effective_from": "2026-05-05",
     "effective_to": null,
-    "last_validated_at": "2026-06-17",
-    "source_url": "https://docs.x.ai/docs/models/grok-4.3",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models/grok-4.3",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "aliases": [
+      "grok-4.3-latest",
+      "grok-latest"
+    ]
   },
   {
     "provider": "xai",
@@ -34,11 +42,28 @@
     "price_usd": 1.25,
     "effective_from": "2026-03-09",
     "effective_to": null,
-    "last_validated_at": "2026-06-17",
-    "source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Grok 4.20 reasoning variant. Price + current lineup confirmed first-party on the x.ai pricing page (2026-06-17); date from the -0309 build slug (2026-03-09). The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are not separately recorded. (LiteLLM lists $2/$6 for this model, which is wrong; the aggregator-accuracy ledger tracks that disagreement.)"
+    "aliases": [
+      "grok-4.20-reasoning-latest",
+      "grok-4.20",
+      "grok-4.20-reasoning",
+      "grok-4.20-0309",
+      "grok-4.20-beta-0309-reasoning",
+      "grok-4.20-beta",
+      "grok-4.20-beta-0309",
+      "grok-4.20-beta-latest",
+      "grok-4.20-beta-latest-reasoning",
+      "grok-4.20-beta-reasoning",
+      "grok-4.20-experimental-beta-0304-reasoning",
+      "grok-4.20-experimental-beta-0304",
+      "grok-4.20-experimental-beta-reasoning-latest",
+      "grok-4.20-experimental-beta-latest",
+      "grok-4.20-reasoning-gv2"
+    ],
+    "notes": "Grok 4.20 reasoning variant. Price + current lineup confirmed first-party on the x.ai pricing page (2026-06-17); date from the -0309 build slug (2026-03-09). The 4.20 non-reasoning and multi-agent variants carry the same $1.25/$2.50 and are recorded separately. (LiteLLM lists $2/$6 for this model, which is wrong; the aggregator-accuracy ledger tracks that disagreement.)"
   },
   {
     "provider": "xai",
@@ -48,10 +73,27 @@
     "price_usd": 2.5,
     "effective_from": "2026-03-09",
     "effective_to": null,
-    "last_validated_at": "2026-06-17",
-    "source_url": "https://docs.x.ai/docs/models/grok-4.20-0309-reasoning",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "aliases": [
+      "grok-4.20-reasoning-latest",
+      "grok-4.20",
+      "grok-4.20-reasoning",
+      "grok-4.20-0309",
+      "grok-4.20-beta-0309-reasoning",
+      "grok-4.20-beta",
+      "grok-4.20-beta-0309",
+      "grok-4.20-beta-latest",
+      "grok-4.20-beta-latest-reasoning",
+      "grok-4.20-beta-reasoning",
+      "grok-4.20-experimental-beta-0304-reasoning",
+      "grok-4.20-experimental-beta-0304",
+      "grok-4.20-experimental-beta-reasoning-latest",
+      "grok-4.20-experimental-beta-latest",
+      "grok-4.20-reasoning-gv2"
+    ]
   },
   {
     "provider": "xai",
@@ -160,8 +202,8 @@
     "price_usd": 1,
     "effective_from": "2026-06-22",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -179,8 +221,8 @@
     "price_usd": 2,
     "effective_from": "2026-06-22",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -198,8 +240,8 @@
     "price_usd": 0.2,
     "effective_from": "2026-06-22",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -217,8 +259,8 @@
     "price_usd": 1.25,
     "effective_from": "2026-03-31",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -238,8 +280,8 @@
     "price_usd": 2.5,
     "effective_from": "2026-03-31",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -259,8 +301,8 @@
     "price_usd": 0.2,
     "effective_from": "2026-03-31",
     "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -280,8 +322,8 @@
     "price_usd": 1.25,
     "effective_from": "2026-06-29",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -304,8 +346,8 @@
     "price_usd": 2.5,
     "effective_from": "2026-06-29",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -328,8 +370,8 @@
     "price_usd": 0.2,
     "effective_from": "2026-06-29",
     "effective_to": null,
-    "last_validated_at": "2026-06-29",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -352,8 +394,8 @@
     "price_usd": 2,
     "effective_from": "2026-07-08",
     "effective_to": null,
-    "last_validated_at": "2026-07-09",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -369,8 +411,8 @@
     "price_usd": 6,
     "effective_from": "2026-07-08",
     "effective_to": null,
-    "last_validated_at": "2026-07-09",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -403,8 +445,8 @@
     "price_usd": 0.3,
     "effective_from": "2026-07-19",
     "effective_to": null,
-    "last_validated_at": "2026-07-20",
-    "source_url": "https://docs.x.ai/docs/models",
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
@@ -412,5 +454,54 @@
       "grok-build-latest"
     ],
     "notes": "Cache-read cut from $0.50 to $0.30/Mtok (standard <200k tier); input/output unchanged at $2/$6. First-party confirmed on docs.x.ai. Supersedes the 2026-07-08 launch cache_read record; effective_from is the first date the $0.30 rate was observed on the provider page (price-sentinel provider_live read)."
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.3",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.2,
+    "effective_from": "2026-06-17",
+    "effective_to": null,
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "grok-4.3-latest",
+      "grok-latest"
+    ],
+    "notes": "Cache-read rate. effective_from is the earliest date we have first-party evidence for it: the 2026-06-17 validation of this model observed \"$0.20/Mtok cached input\" and said so in the input row's note, but never wrote the row. Re-confirmed on the xAI models page 2026-07-27 and recorded here. NOT a known change date; the rate may be older. xAI publishes no dated price history and Wayback captures of this page do not archive its embedded price payload, so no earlier evidence exists."
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.20-0309-reasoning",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.2,
+    "effective_from": "2026-07-27",
+    "effective_to": null,
+    "last_validated_at": "2026-07-27",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "grok-4.20-reasoning-latest",
+      "grok-4.20",
+      "grok-4.20-reasoning",
+      "grok-4.20-0309",
+      "grok-4.20-beta-0309-reasoning",
+      "grok-4.20-beta",
+      "grok-4.20-beta-0309",
+      "grok-4.20-beta-latest",
+      "grok-4.20-beta-latest-reasoning",
+      "grok-4.20-beta-reasoning",
+      "grok-4.20-experimental-beta-0304-reasoning",
+      "grok-4.20-experimental-beta-0304",
+      "grok-4.20-experimental-beta-reasoning-latest",
+      "grok-4.20-experimental-beta-latest",
+      "grok-4.20-reasoning-gv2"
+    ],
+    "notes": "Cache-read rate, confirmed first-party on the xAI models page 2026-07-27 during a full re-validation; this model carried input/output rows but no cache row. effective_from is the observation date, NOT a known change date: no dated first-party evidence puts a start on it (xAI publishes no price history, and Wayback captures of this page do not archive its embedded price payload). The $0.20 rate is probably older than this record."
   }
 ]
