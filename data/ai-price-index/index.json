@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-07-25",
+  "dataModified": "2026-07-27",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -612,8 +612,8 @@
     {
       "id": "grok-4.20-0309-non-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-non-reasoning.v9717f83e.json",
-      "latestRev": "9717f83e",
+      "file": "models/xai/grok-4.20-0309-non-reasoning.v451fe046.json",
+      "latestRev": "451fe046",
       "aliases": [
         "grok-4.20-beta-0309-non-reasoning",
         "grok-4.20-beta-latest-non-reasoning",
@@ -628,14 +628,31 @@
     {
       "id": "grok-4.20-0309-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-reasoning.ve015cd5b.json",
-      "latestRev": "e015cd5b"
+      "file": "models/xai/grok-4.20-0309-reasoning.vd43149c7.json",
+      "latestRev": "d43149c7",
+      "aliases": [
+        "grok-4.20",
+        "grok-4.20-0309",
+        "grok-4.20-beta",
+        "grok-4.20-beta-0309",
+        "grok-4.20-beta-0309-reasoning",
+        "grok-4.20-beta-latest",
+        "grok-4.20-beta-latest-reasoning",
+        "grok-4.20-beta-reasoning",
+        "grok-4.20-experimental-beta-0304",
+        "grok-4.20-experimental-beta-0304-reasoning",
+        "grok-4.20-experimental-beta-latest",
+        "grok-4.20-experimental-beta-reasoning-latest",
+        "grok-4.20-reasoning",
+        "grok-4.20-reasoning-gv2",
+        "grok-4.20-reasoning-latest"
+      ]
     },
     {
       "id": "grok-4.20-multi-agent-0309",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-multi-agent-0309.vad88d18d.json",
-      "latestRev": "ad88d18d",
+      "file": "models/xai/grok-4.20-multi-agent-0309.vfd08c0ba.json",
+      "latestRev": "fd08c0ba",
       "aliases": [
         "grok-4.20-multi-agent",
         "grok-4.20-multi-agent-beta-0309",
@@ -648,14 +665,18 @@
     {
       "id": "grok-4.3",
       "provider": "xai",
-      "file": "models/xai/grok-4.3.vf42b27c5.json",
-      "latestRev": "f42b27c5"
+      "file": "models/xai/grok-4.3.vfeb8e1e6.json",
+      "latestRev": "feb8e1e6",
+      "aliases": [
+        "grok-4.3-latest",
+        "grok-latest"
+      ]
     },
     {
       "id": "grok-4.5",
       "provider": "xai",
-      "file": "models/xai/grok-4.5.ve9a21d8f.json",
-      "latestRev": "e9a21d8f",
+      "file": "models/xai/grok-4.5.vfcd1ba6a.json",
+      "latestRev": "fcd1ba6a",
       "aliases": [
         "grok-4.5-latest",
         "grok-build-latest"
@@ -664,8 +685,8 @@
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v4c6af1ea.json",
-      "latestRev": "4c6af1ea",
+      "file": "models/xai/grok-build-0.1.v25e5d958.json",
+      "latestRev": "25e5d958",
       "aliases": [
         "grok-code-fast",
         "grok-code-fast-1",
