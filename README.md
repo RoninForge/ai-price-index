@@ -154,6 +154,50 @@ For academic reuse, cite the DOI (Zenodo): **[10.5281/zenodo.20730240](https://d
 This is the concept DOI and always resolves to the latest version; each release also gets its own
 version DOI for an exact, reproducible snapshot.
 
+## Verify a release (signed interval history)
+
+`current.json` is a flat snapshot of today's prices. It carries no effective dates, so it cannot
+price historical usage: a consumer would have to either reprice all history at today's rate or
+invent a boundary date. For that, each release also publishes the full half-open `[from, to)`
+interval history for Anthropic as a single file, with a detached signature:
+
+```
+https://roninforge.org/data/ai-price-index/history/anthropic.json
+https://roninforge.org/data/ai-price-index/history/anthropic.json.minisig
+```
+
+The signature is [minisign](https://jedisct1.github.io/minisign/) format (Ed25519). Do not take our
+word for the numbers, check them:
+
+```bash
+curl -fsSLO https://roninforge.org/data/ai-price-index/history/anthropic.json
+curl -fsSLO https://roninforge.org/data/ai-price-index/history/anthropic.json.minisig
+
+minisign -V -m anthropic.json \
+  -P 'RWRFfFveQwl6NGYtfQNtpgdecGGC3U8k5iqK+vGmUq3D3SP0wIfmg8P1'
+```
+
+A successful check also prints the trusted comment, which names the dataset release and its data
+date and is itself covered by the signature:
+
+```
+Signature and comment signature verified
+Trusted comment: ai-price-index v2026.07.30-abc1234 dataModified=2026-07-29
+```
+
+Public key `RWRFfFveQwl6NGYtfQNtpgdecGGC3U8k5iqK+vGmUq3D3SP0wIfmg8P1` (key id `347A0943DE5B7C45`).
+
+Signing happens in this repository's CI, and the private key exists only as a secret here. It is
+deliberately **not** on the web server. That server terminates TLS with a valid certificate, so TLS
+proves bytes came from that host, not that they are genuine; a host that both served and signed the
+data would produce perfectly valid signatures after a single-box compromise. Keeping the key out of
+the serving path means the web server is an untrusted mirror, and a tampered file simply fails to
+verify.
+
+What the signature does not cover, stated plainly: a price that was recorded wrongly in the first
+place. It proves the file is the one we published, not that we published the right number. Prices
+carry a `confidence` field and a first-party `src` for exactly that reason.
+
 ## Roadmap
 
 Coverage is seeded **flagship-first, deep on history**: the leading models (Claude, GPT, Gemini)
