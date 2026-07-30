@@ -1,0 +1,232 @@
+name: sign-history
+
+# Owns the detached signature over the published interval-history bundle.
+#
+# WHY THIS IS ITS OWN WORKFLOW, not a job inside publish-on-merge.
+#
+# The exported bundle has more than one writer. publish-on-merge covers the
+# human path: someone merges a price record, the VPS re-exports, and the
+# signature is produced in the same run. But export-and-publish.sh ALSO runs
+# from a cron on the VPS, and that path never had a signing step. Worse, the
+# export regenerates data/ai-price-index/ wholesale, so it DELETES the
+# signature it does not know about.
+#
+# That is not theoretical. It happened on 2026-07-30: the 03:41 merge path
+# signed v2026.07.30-d31d0e2 correctly, the 04:17 VPS cron re-exported and
+# removed the .minisig, and production then served a bundle with a 404 for
+# its signature. Every client with price auto-update on silently stopped
+# updating: the signature fetch failed, the built-in table was kept, and no
+# user-visible error was ever produced. It was caught by a test, not by
+# anyone looking.
+#
+# So signing is owned HERE, keyed to the artifact rather than to whichever
+# workflow happened to produce it. Any push that touches the bundle gets a
+# signature, and the daily schedule catches a writer nobody anticipated.
+#
+# Idempotent: if the committed signature already verifies against the
+# bundle, this exits green without touching anything. That makes it safe to
+# run on a schedule, safe to re-dispatch, and safe if it ever re-triggers
+# itself.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/ai-price-index/history/**'
+  # Safety net for a writer that bypasses the path filter, and the way to
+  # recover by hand if the signature is ever missing in production.
+  schedule:
+    - cron: '25 5 * * *'
+  workflow_dispatch:
+  # Called by publish-on-merge so the human path signs BEFORE consumers are
+  # notified. That ordering is the reason publish-on-merge does not simply
+  # rely on the push trigger above: the landing deploy copies the signature
+  # alongside the bundle, so it must exist by the time the dispatch lands.
+  # Calling it rather than copying it keeps one implementation of signing.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sign-history
+  cancel-in-progress: false
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      BUNDLE: data/ai-price-index/history/anthropic.json
+      # The production public key, here only so this job can verify its own
+      # output before pushing it. The authoritative copy is compiled into the
+      # consumer binary; this is a self-check, not a trust anchor.
+      SIGNING_PUBKEY: RWRFfFveQwl6NGYtfQNtpgdecGGC3U8k5iqK+vGmUq3D3SP0wIfmg8P1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0 # tags are needed to name the release in the comment
+
+      - name: Install minisign
+        run: |
+          set -eu
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq minisign
+          minisign -v
+
+      - name: Decide whether anything needs signing
+        id: check
+        run: |
+          set -eu
+          sig="${BUNDLE}.minisig"
+
+          if [ ! -f "$BUNDLE" ]; then
+            echo "::notice::No $BUNDLE in the tree; nothing to sign."
+            echo "action=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ ! -f "$sig" ]; then
+            echo "::warning::$sig is MISSING. Clients with price auto-update on cannot verify the bundle, so they are silently refusing every update. Signing now."
+            echo "action=sign" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A signature that no longer matches the bundle is as broken as a
+          # missing one, and is what an export over a signed bundle produces.
+          if minisign -V -P "$SIGNING_PUBKEY" -m "$BUNDLE" >/dev/null 2>&1; then
+            echo "signature is present and verifies; nothing to do"
+            echo "action=none" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::$sig does not verify against the current bundle (a re-export almost certainly changed the bytes). Re-signing."
+            echo "action=sign" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve the release tag for the trusted comment
+        if: steps.check.outputs.action == 'sign'
+        run: |
+          set -eu
+          # Prefer a tag pointing at this commit (the normal export case),
+          # then the most recent tag, so the comment always names a release.
+          tag="$(git tag --points-at HEAD --sort=-creatordate | head -n1 || true)"
+          if [ -z "$tag" ]; then
+            tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          fi
+          if [ -z "$tag" ]; then
+            echo "::error::No tag found to name this bundle; refusing to sign an unidentifiable release."
+            exit 1
+          fi
+          case "$tag" in
+            v[0-9]*) ;;
+            *) echo "::error::Unexpected release tag format: $tag"; exit 1 ;;
+          esac
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+          echo "release tag: $tag"
+
+      - name: Check the bundle is well formed
+        if: steps.check.outputs.action == 'sign'
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json, os, sys
+          b = json.load(open(os.environ["BUNDLE"]))
+          for k in ("schemaVersion", "dataModified", "license", "provider", "models"):
+              if k not in b:
+                  sys.exit(f"bundle missing required key: {k}")
+          if b["provider"] != "anthropic":
+              sys.exit(f"unexpected provider: {b['provider']}")
+          models = b["models"]
+          if not isinstance(models, list) or len(models) < 5:
+              sys.exit(f"implausible model count: {len(models)}")
+          for m in models:
+              if not m.get("model"):
+                  sys.exit("a model entry has no id")
+              for name, ivs in (m.get("variations") or {}).items():
+                  if not ivs:
+                      sys.exit(f"{m['model']}.{name}: no intervals")
+                  for iv in ivs:
+                      if not iv.get("from"):
+                          sys.exit(f"{m['model']}.{name}: interval without a from date")
+                      p = iv.get("price_usd")
+                      if not isinstance(p, (int, float)) or p < 0:
+                          sys.exit(f"{m['model']}.{name}: bad price {p!r}")
+          print(f"bundle ok: {len(models)} models, dataModified={b['dataModified']}")
+          PY
+
+      - name: Sign the bundle
+        if: steps.check.outputs.action == 'sign'
+        env:
+          PRICING_SIGNING_KEY: ${{ secrets.PRICING_SIGNING_KEY }}
+          PRICING_SIGNING_KEY_PASSPHRASE: ${{ secrets.PRICING_SIGNING_KEY_PASSPHRASE }}
+        run: |
+          set -eu
+
+          if [ -z "${PRICING_SIGNING_KEY:-}" ] || [ -z "${PRICING_SIGNING_KEY_PASSPHRASE:-}" ]; then
+            echo "::error::Signing secrets are not set; cannot sign the history bundle."
+            exit 1
+          fi
+
+          data_modified="$(python3 -c 'import json,os;print(json.load(open(os.environ["BUNDLE"]))["dataModified"])')"
+
+          umask 077
+          keyfile="$(mktemp)"
+          printf '%s\n' "$PRICING_SIGNING_KEY" > "$keyfile"
+
+          # The trusted comment is covered by the second signature, so the tag
+          # and the data date in it cannot be swapped without invalidating it.
+          printf '%s\n' "$PRICING_SIGNING_KEY_PASSPHRASE" | minisign -S \
+            -s "$keyfile" \
+            -m "$BUNDLE" \
+            -t "ai-price-index $TAG dataModified=$data_modified"
+
+          rm -f "$keyfile"
+          echo "signed $BUNDLE"
+
+      - name: Verify the signature before publishing it
+        if: steps.check.outputs.action == 'sign'
+        run: |
+          set -eu
+          minisign -V -P "$SIGNING_PUBKEY" -m "$BUNDLE"
+          echo "signature verifies against the production public key"
+
+      - name: Commit the signature to main
+        if: steps.check.outputs.action == 'sign'
+        run: |
+          set -eu
+          sig="${BUNDLE}.minisig"
+
+          # Only the signature is committed. The bundle belongs to the export
+          # commit made by the VPS; re-adding it here would fight that commit
+          # for ownership of the file.
+          git checkout -- "$BUNDLE" 2>/dev/null || true
+
+          if git diff --quiet -- "$sig" 2>/dev/null && git ls-files --error-unmatch "$sig" >/dev/null 2>&1; then
+            echo "signature unchanged; nothing to commit"
+            exit 0
+          fi
+
+          git config user.name  "roninforge-bot"
+          git config user.email "bot@roninforge.org"
+          git add "$sig"
+          git commit --quiet -m "data: sign history bundle ${TAG}"
+
+          # Rebase onto any concurrent main movement rather than failing.
+          git pull --rebase --quiet origin main
+          git push --quiet origin HEAD:main
+          echo "pushed signature for $TAG"
+
+      - name: Summary
+        if: always()
+        run: |
+          set -eu
+          {
+            echo "### sign-history"
+            echo
+            if [ "${{ steps.check.outputs.action }}" = "sign" ]; then
+              echo "Signed \`$BUNDLE\` as \`${TAG:-unknown}\`."
+            else
+              echo "No action needed: the committed signature already verifies."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
