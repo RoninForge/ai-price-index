@@ -108,149 +108,21 @@ jobs:
   #
   # This push touches data/ai-price-index/** only, and this workflow triggers on
   # data/records/**, so it cannot re-trigger itself.
+  # Signing is implemented once, in sign-history.yml, and CALLED here rather
+  # than duplicated. That workflow also runs on any push touching the bundle
+  # and on a daily schedule, which covers the VPS cron export path that this
+  # workflow never sees. Calling it here adds the ordering guarantee the
+  # notify job below depends on: signed before consumers are told.
   sign-history:
     needs: publish
     if: needs.publish.outputs.published == 'true'
-    runs-on: ubuntu-latest
+    # A called workflow can only narrow the caller's token, never widen it,
+    # and this workflow declares `contents: read` at the top. Without this
+    # the signature commit would fail with a 403.
     permissions:
       contents: write
-    env:
-      TAG: ${{ needs.publish.outputs.tag }}
-      # The production public key, duplicated here purely so this job can verify
-      # its own output before pushing. The authoritative copy is compiled into
-      # the consumer binary; this is a self-check, not a trust anchor.
-      SIGNING_PUBKEY: RWRFfFveQwl6NGYtfQNtpgdecGGC3U8k5iqK+vGmUq3D3SP0wIfmg8P1
-    steps:
-      - name: Validate the release tag format
-        run: |
-          set -eu
-          case "$TAG" in
-            v[0-9]*) echo "Release tag: $TAG" ;;
-            *) echo "::error::Unexpected release tag format: $TAG"; exit 1 ;;
-          esac
-
-      - uses: actions/checkout@v5
-        with:
-          ref: main
-          fetch-depth: 0 # need the tag as well as main
-
-      - name: Install minisign
-        run: |
-          set -eu
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq minisign
-          minisign -v
-
-      - name: Extract the bundle from the release tag
-        run: |
-          set -eu
-          git fetch --quiet origin "refs/tags/$TAG:refs/tags/$TAG" || true
-
-          path="data/ai-price-index/history/anthropic.json"
-          if ! git cat-file -e "$TAG:$path" 2>/dev/null; then
-            echo "::notice::No $path at $TAG. Nothing to sign (the export predates history bundles)."
-            echo "skip=true" >> "$GITHUB_ENV"
-            exit 0
-          fi
-
-          mkdir -p "$(dirname "$path")"
-          git show "$TAG:$path" > "$path"
-          echo "skip=false" >> "$GITHUB_ENV"
-          echo "extracted $(wc -c < "$path") bytes from $TAG"
-
-      - name: Check the bundle is well formed
-        if: env.skip != 'true'
-        run: |
-          set -eu
-          python3 - <<'PY'
-          import json, sys
-          b = json.load(open("data/ai-price-index/history/anthropic.json"))
-          for k in ("schemaVersion", "dataModified", "license", "provider", "models"):
-              if k not in b:
-                  sys.exit(f"bundle missing required key: {k}")
-          if b["provider"] != "anthropic":
-              sys.exit(f"unexpected provider: {b['provider']}")
-          models = b["models"]
-          if not isinstance(models, list) or len(models) < 5:
-              sys.exit(f"implausible model count: {len(models)}")
-          for m in models:
-              if not m.get("model"):
-                  sys.exit("a model entry has no id")
-              for name, ivs in (m.get("variations") or {}).items():
-                  if not ivs:
-                      sys.exit(f"{m['model']}.{name}: no intervals")
-                  for iv in ivs:
-                      if not iv.get("from"):
-                          sys.exit(f"{m['model']}.{name}: interval without a from date")
-                      p = iv.get("price_usd")
-                      if not isinstance(p, (int, float)) or p < 0:
-                          sys.exit(f"{m['model']}.{name}: bad price {p!r}")
-          print(f"bundle ok: {len(models)} models, dataModified={b['dataModified']}")
-          PY
-
-      - name: Sign the bundle
-        if: env.skip != 'true'
-        env:
-          PRICING_SIGNING_KEY: ${{ secrets.PRICING_SIGNING_KEY }}
-          PRICING_SIGNING_KEY_PASSPHRASE: ${{ secrets.PRICING_SIGNING_KEY_PASSPHRASE }}
-        run: |
-          set -eu
-
-          if [ -z "${PRICING_SIGNING_KEY:-}" ] || [ -z "${PRICING_SIGNING_KEY_PASSPHRASE:-}" ]; then
-            echo "::error::Signing secrets are not set; cannot sign the history bundle."
-            exit 1
-          fi
-
-          path="data/ai-price-index/history/anthropic.json"
-          data_modified="$(BUNDLE="$path" python3 -c 'import json,os;print(json.load(open(os.environ["BUNDLE"]))["dataModified"])')"
-
-          umask 077
-          keyfile="$(mktemp)"
-          printf '%s\n' "$PRICING_SIGNING_KEY" > "$keyfile"
-
-          # The trusted comment is covered by the signature, so the tag and the
-          # data date cannot be swapped without invalidating it.
-          printf '%s\n' "$PRICING_SIGNING_KEY_PASSPHRASE" | minisign -S \
-            -s "$keyfile" \
-            -m "$path" \
-            -t "ai-price-index $TAG dataModified=$data_modified"
-
-          rm -f "$keyfile"
-          echo "signed $path"
-
-      - name: Verify the signature before publishing it
-        if: env.skip != 'true'
-        run: |
-          set -eu
-          path="data/ai-price-index/history/anthropic.json"
-          minisign -V -P "$SIGNING_PUBKEY" -m "$path"
-          echo "signature verifies against the production public key"
-
-      - name: Commit the signature to main
-        if: env.skip != 'true'
-        run: |
-          set -eu
-          sig="data/ai-price-index/history/anthropic.json.minisig"
-
-          # Only the signature is committed. The bundle itself already lives in
-          # the tagged export commit made by the VPS; re-adding it here would
-          # fight that commit for ownership of the file.
-          git checkout -- data/ai-price-index/history/anthropic.json 2>/dev/null || true
-
-          if git diff --quiet -- "$sig" 2>/dev/null && git ls-files --error-unmatch "$sig" >/dev/null 2>&1; then
-            echo "signature unchanged; nothing to commit"
-            exit 0
-          fi
-
-          git config user.name  "roninforge-bot"
-          git config user.email "bot@roninforge.org"
-          git add "$sig"
-          git commit --quiet -m "data: sign history bundle ${TAG}"
-
-          # Rebase onto any concurrent main movement rather than failing the run.
-          git pull --rebase --quiet origin main
-          git push --quiet origin HEAD:main
-          echo "pushed signature for $TAG"
+    uses: ./.github/workflows/sign-history.yml
+    secrets: inherit
 
   notify:
     needs: [publish, sign-history]
