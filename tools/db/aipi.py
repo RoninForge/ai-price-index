@@ -33,6 +33,19 @@ REQUIRED = (
 SCHEMA_VERSION = "1.0.0"
 LICENSE = "CC-BY-4.0"
 
+# Providers that get a single-file interval-history bundle under history/.
+#
+# current.json is a flat snapshot with no effective dates, so a client that
+# prices historical usage cannot use it: it would have to either reprice all
+# history at today's rate or invent a boundary date, and every machine would
+# invent a different one. The bundle carries the full half-open [from, to)
+# series instead, in the same per-model shape as models/**, so a consumer can
+# price any past timestamp correctly from one signed request.
+#
+# Anthropic only for now, because the consumer that needs it (budgetclaw)
+# prices Claude usage. Adding a provider here is the only change required.
+HISTORY_PROVIDERS = ("anthropic",)
+
 
 def now_iso(arg):
     if arg:
@@ -226,8 +239,13 @@ def cmd_export(args):
         shutil.rmtree(models_dir)
     os.makedirs(models_dir, exist_ok=True)
 
+    history_dir = os.path.join(out, "history")
+    if os.path.isdir(history_dir):
+        shutil.rmtree(history_dir)
+
     index_models = []
     current = []
+    history = {p: [] for p in HISTORY_PROVIDERS}
     for (provider, model_id), variations in sorted(models.items()):
         aliases = sorted(model_aliases.get((provider, model_id), set()))
         content = {"model": model_id, "provider": provider, "variations": variations}
@@ -245,6 +263,11 @@ def cmd_export(args):
         if aliases:
             index_entry["aliases"] = aliases
         index_models.append(index_entry)
+
+        if provider in history:
+            # Same document as the per-model file, so a consumer parses one
+            # shape for both the vendored files and the bundle.
+            history[provider].append(content)
 
         for variation, ivs in variations.items():
             # "current" means there is an OPEN interval (to is None). A model whose every interval has
@@ -279,7 +302,32 @@ def cmd_export(args):
         }, f, indent=2)
         f.write("\n")
 
-    print("export ok: %d models, %d current prices -> %s" % (len(index_models), len(current), out))
+    # Interval-history bundles, one file per provider. Deliberately carries NO
+    # wall-clock field: dataModified is derived from the data exactly as above,
+    # so an unchanged re-export stays byte-identical and the daily publish cron
+    # keeps no-opping instead of committing and tagging a release every run.
+    # The dataset tag is not embedded either, since the tag is computed from the
+    # commit that contains this file.
+    history_counts = []
+    for provider in HISTORY_PROVIDERS:
+        docs = history.get(provider) or []
+        if not docs:
+            continue
+        os.makedirs(history_dir, exist_ok=True)
+        bundle = {
+            "schemaVersion": SCHEMA_VERSION,
+            "dataModified": data_modified,
+            "license": LICENSE,
+            "provider": provider,
+            "models": sorted(docs, key=lambda d: d["model"]),
+        }
+        with open(os.path.join(history_dir, "%s.json" % provider), "w", encoding="utf-8") as f:
+            json.dump(bundle, f, indent=2, sort_keys=True)
+            f.write("\n")
+        history_counts.append("%s:%d" % (provider, len(docs)))
+
+    print("export ok: %d models, %d current prices, history [%s] -> %s" % (
+        len(index_models), len(current), ",".join(history_counts) or "none", out))
 
 
 def cmd_stats(args):
