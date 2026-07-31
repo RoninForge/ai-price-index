@@ -1,13 +1,24 @@
 {
-  "model": "o3-mini",
+  "model": "o3-deep-research",
   "provider": "openai",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-31",
+        "last_validated": "2026-07-31",
+        "price_usd": 2.5,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "verified",
-        "from": "2025-01-31",
+        "from": "2025-06-26",
         "last_validated": "2026-06-17",
-        "price_usd": 1.1,
+        "price_usd": 10,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -16,9 +27,9 @@
     "output": [
       {
         "confidence": "verified",
-        "from": "2025-01-31",
+        "from": "2025-06-26",
         "last_validated": "2026-06-17",
-        "price_usd": 4.4,
+        "price_usd": 40,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"

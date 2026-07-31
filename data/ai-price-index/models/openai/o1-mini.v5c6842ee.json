@@ -2,6 +2,17 @@
   "model": "o1-mini",
   "provider": "openai",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-31",
+        "last_validated": "2026-07-31",
+        "price_usd": 0.55,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "verified",

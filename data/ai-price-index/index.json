@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-07-27",
+  "dataModified": "2026-07-31",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -162,14 +162,14 @@
     {
       "id": "claude-fable-5",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-fable-5.vc100e363.json",
-      "latestRev": "c100e363"
+      "file": "models/anthropic/claude-fable-5.v53dd2802.json",
+      "latestRev": "53dd2802"
     },
     {
       "id": "claude-haiku-4-5-20251001",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-haiku-4-5-20251001.vb1dd84cd.json",
-      "latestRev": "b1dd84cd",
+      "file": "models/anthropic/claude-haiku-4-5-20251001.v49c6b4f8.json",
+      "latestRev": "49c6b4f8",
       "aliases": [
         "claude-haiku-4-5"
       ]
@@ -183,8 +183,8 @@
     {
       "id": "claude-opus-4-1-20250805",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-1-20250805.v5117b274.json",
-      "latestRev": "5117b274",
+      "file": "models/anthropic/claude-opus-4-1-20250805.v64b89250.json",
+      "latestRev": "64b89250",
       "aliases": [
         "claude-opus-4-1"
       ]
@@ -192,14 +192,14 @@
     {
       "id": "claude-opus-4-20250514",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-20250514.v860719f7.json",
-      "latestRev": "860719f7"
+      "file": "models/anthropic/claude-opus-4-20250514.v5efc4f0c.json",
+      "latestRev": "5efc4f0c"
     },
     {
       "id": "claude-opus-4-5-20251101",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-5-20251101.v084ac979.json",
-      "latestRev": "084ac979",
+      "file": "models/anthropic/claude-opus-4-5-20251101.v675c4430.json",
+      "latestRev": "675c4430",
       "aliases": [
         "claude-opus-4-5"
       ]
@@ -207,20 +207,20 @@
     {
       "id": "claude-opus-4-6",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-6.v9046843a.json",
-      "latestRev": "9046843a"
+      "file": "models/anthropic/claude-opus-4-6.v702b4bf5.json",
+      "latestRev": "702b4bf5"
     },
     {
       "id": "claude-opus-4-7",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-7.vde94a932.json",
-      "latestRev": "de94a932"
+      "file": "models/anthropic/claude-opus-4-7.v1e4fb323.json",
+      "latestRev": "1e4fb323"
     },
     {
       "id": "claude-opus-4-8",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-opus-4-8.v1b09627d.json",
-      "latestRev": "1b09627d"
+      "file": "models/anthropic/claude-opus-4-8.v2edb86b8.json",
+      "latestRev": "2edb86b8"
     },
     {
       "id": "claude-opus-5",
@@ -231,14 +231,14 @@
     {
       "id": "claude-sonnet-4-20250514",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-sonnet-4-20250514.v84e86b0d.json",
-      "latestRev": "84e86b0d"
+      "file": "models/anthropic/claude-sonnet-4-20250514.v36ca608a.json",
+      "latestRev": "36ca608a"
     },
     {
       "id": "claude-sonnet-4-5-20250929",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-sonnet-4-5-20250929.v9aeb5571.json",
-      "latestRev": "9aeb5571",
+      "file": "models/anthropic/claude-sonnet-4-5-20250929.v693a1b02.json",
+      "latestRev": "693a1b02",
       "aliases": [
         "claude-sonnet-4-5"
       ]
@@ -246,8 +246,8 @@
     {
       "id": "claude-sonnet-4-6",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-sonnet-4-6.v7b912906.json",
-      "latestRev": "7b912906"
+      "file": "models/anthropic/claude-sonnet-4-6.vda220fc4.json",
+      "latestRev": "da220fc4"
     },
     {
       "id": "claude-sonnet-5",
@@ -282,8 +282,12 @@
     {
       "id": "deepseek-v4-flash",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-flash.vcc9da720.json",
-      "latestRev": "cc9da720"
+      "file": "models/deepseek/deepseek-v4-flash.va4a80cbe.json",
+      "latestRev": "a4a80cbe",
+      "aliases": [
+        "deepseek-chat",
+        "deepseek-reasoner"
+      ]
     },
     {
       "id": "deepseek-v4-pro",
@@ -342,8 +346,8 @@
     {
       "id": "gemini-3.1-pro-preview",
       "provider": "google",
-      "file": "models/google/gemini-3.1-pro-preview.ve7d30712.json",
-      "latestRev": "e7d30712"
+      "file": "models/google/gemini-3.1-pro-preview.v8991588a.json",
+      "latestRev": "8991588a"
     },
     {
       "id": "gemini-3.5-flash",
@@ -474,8 +478,8 @@
     {
       "id": "gpt-4.1",
       "provider": "openai",
-      "file": "models/openai/gpt-4.1.v872debd6.json",
-      "latestRev": "872debd6"
+      "file": "models/openai/gpt-4.1.v604bfdcf.json",
+      "latestRev": "604bfdcf"
     },
     {
       "id": "gpt-4o",
@@ -558,14 +562,14 @@
     {
       "id": "o1",
       "provider": "openai",
-      "file": "models/openai/o1.va77b3f00.json",
-      "latestRev": "a77b3f00"
+      "file": "models/openai/o1.v48651a1c.json",
+      "latestRev": "48651a1c"
     },
     {
       "id": "o1-mini",
       "provider": "openai",
-      "file": "models/openai/o1-mini.vbe8651d2.json",
-      "latestRev": "be8651d2"
+      "file": "models/openai/o1-mini.v5c6842ee.json",
+      "latestRev": "5c6842ee"
     },
     {
       "id": "o1-pro",
@@ -576,20 +580,20 @@
     {
       "id": "o3",
       "provider": "openai",
-      "file": "models/openai/o3.v9949aed2.json",
-      "latestRev": "9949aed2"
+      "file": "models/openai/o3.vd7c8c26b.json",
+      "latestRev": "d7c8c26b"
     },
     {
       "id": "o3-deep-research",
       "provider": "openai",
-      "file": "models/openai/o3-deep-research.v93e8708f.json",
-      "latestRev": "93e8708f"
+      "file": "models/openai/o3-deep-research.v6379c8ed.json",
+      "latestRev": "6379c8ed"
     },
     {
       "id": "o3-mini",
       "provider": "openai",
-      "file": "models/openai/o3-mini.v45ea93ba.json",
-      "latestRev": "45ea93ba"
+      "file": "models/openai/o3-mini.vd913cc1a.json",
+      "latestRev": "d913cc1a"
     },
     {
       "id": "o3-pro",
@@ -600,20 +604,20 @@
     {
       "id": "o4-mini",
       "provider": "openai",
-      "file": "models/openai/o4-mini.vc87eb470.json",
-      "latestRev": "c87eb470"
+      "file": "models/openai/o4-mini.v0830efad.json",
+      "latestRev": "0830efad"
     },
     {
       "id": "o4-mini-deep-research",
       "provider": "openai",
-      "file": "models/openai/o4-mini-deep-research.v9a05f8a5.json",
-      "latestRev": "9a05f8a5"
+      "file": "models/openai/o4-mini-deep-research.v41306cb2.json",
+      "latestRev": "41306cb2"
     },
     {
       "id": "grok-4.20-0309-non-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-non-reasoning.v451fe046.json",
-      "latestRev": "451fe046",
+      "file": "models/xai/grok-4.20-0309-non-reasoning.v89c9593a.json",
+      "latestRev": "89c9593a",
       "aliases": [
         "grok-4.20-beta-0309-non-reasoning",
         "grok-4.20-beta-latest-non-reasoning",
@@ -628,8 +632,8 @@
     {
       "id": "grok-4.20-0309-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-reasoning.vd43149c7.json",
-      "latestRev": "d43149c7",
+      "file": "models/xai/grok-4.20-0309-reasoning.vb5938e3e.json",
+      "latestRev": "b5938e3e",
       "aliases": [
         "grok-4.20",
         "grok-4.20-0309",
@@ -651,8 +655,8 @@
     {
       "id": "grok-4.20-multi-agent-0309",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-multi-agent-0309.vfd08c0ba.json",
-      "latestRev": "fd08c0ba",
+      "file": "models/xai/grok-4.20-multi-agent-0309.vc3ac530c.json",
+      "latestRev": "c3ac530c",
       "aliases": [
         "grok-4.20-multi-agent",
         "grok-4.20-multi-agent-beta-0309",
@@ -665,8 +669,8 @@
     {
       "id": "grok-4.3",
       "provider": "xai",
-      "file": "models/xai/grok-4.3.vfeb8e1e6.json",
-      "latestRev": "feb8e1e6",
+      "file": "models/xai/grok-4.3.vaafdd7eb.json",
+      "latestRev": "aafdd7eb",
       "aliases": [
         "grok-4.3-latest",
         "grok-latest"
@@ -675,8 +679,8 @@
     {
       "id": "grok-4.5",
       "provider": "xai",
-      "file": "models/xai/grok-4.5.vfcd1ba6a.json",
-      "latestRev": "fcd1ba6a",
+      "file": "models/xai/grok-4.5.v961ac1da.json",
+      "latestRev": "961ac1da",
       "aliases": [
         "grok-4.5-latest",
         "grok-build-latest"
@@ -685,8 +689,8 @@
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v25e5d958.json",
-      "latestRev": "25e5d958",
+      "file": "models/xai/grok-build-0.1.v12e16d4c.json",
+      "latestRev": "12e16d4c",
       "aliases": [
         "grok-code-fast",
         "grok-code-fast-1",

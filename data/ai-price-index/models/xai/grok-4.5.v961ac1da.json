@@ -47,6 +47,28 @@
         "to": null,
         "unit": "usd_per_mtok"
       }
+    ],
+    "tier2_input": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-31",
+        "last_validated": "2026-07-31",
+        "price_usd": 4,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_output": [
+      {
+        "confidence": "verified",
+        "from": "2026-07-31",
+        "last_validated": "2026-07-31",
+        "price_usd": 12,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
     ]
   }
 }
