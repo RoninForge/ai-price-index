@@ -35,6 +35,7 @@ import {
 	loadCurrent,
 	classify,
 	classifyUpgrade,
+	missingVariations,
 	makeRecord,
 	effectiveFromForNew,
 	REPO_ROOT,
@@ -70,7 +71,18 @@ const COLLECTORS = [
 ];
 
 // Which extracted variations become contribution records (in this order).
-const RECORD_VARIATIONS = ['input', 'output', 'cache_read', 'cache_write_5m', 'cache_write_1h'];
+// tier2_* (long-context tiers, e.g. Gemini >200K or Grok >128K) were missing from this list until
+// 2026-07-31, so collectors extracted them and drafting silently dropped them on the floor - the same
+// discard-what-we-read bug as the missing-variation gap below, one layer further down.
+const RECORD_VARIATIONS = [
+	'input',
+	'output',
+	'cache_read',
+	'cache_write_5m',
+	'cache_write_1h',
+	'tier2_input',
+	'tier2_output',
+];
 
 /**
  * Resolve a non-future effective_from for a NEW model. Delegates the date policy to lib's
@@ -82,18 +94,25 @@ function effectiveFromFor(item) {
 }
 
 /**
- * Turn one collected model into 1..N contribution-form records (NEW models only).
+ * Turn one collected model into 1..N contribution-form records.
  * `confidenceOverride` (optional) replaces item.confidence when the cross-check gate downgraded the
  * model to needs_review (e.g. 'inferred'); `notesPrefix` (optional) is prepended to notes so the
  * reasons travel with the drafted record into the PR.
+ *
+ * `onlyVariations` + `effectiveFromOverride` serve the missing-variation path, which adds rows to a
+ * model we ALREADY track. There the model's own launch date is not evidence for when an unrecorded
+ * cache or long-context rate began, so that caller pins effective_from to the observation date and
+ * says so in the note, rather than back-dating an assertion nobody verified.
  */
-function draftRecordsFor(item, { confidenceOverride, notesPrefix } = {}) {
+function draftRecordsFor(item, { confidenceOverride, notesPrefix, onlyVariations, effectiveFromOverride } = {}) {
 	const recs = [];
-	const effective_from = effectiveFromFor(item);
+	const effective_from = effectiveFromOverride || effectiveFromFor(item);
 	const confidence = confidenceOverride || item.confidence;
 	let notes = item.notes;
 	if (notesPrefix) notes = notes ? `${notesPrefix} ${notes}` : notesPrefix;
+	const wanted = onlyVariations ? new Set(onlyVariations) : null;
 	for (const variation of RECORD_VARIATIONS) {
+		if (wanted && !wanted.has(variation)) continue;
 		const price = item.prices[variation];
 		if (typeof price !== 'number') continue;
 		recs.push(
@@ -180,9 +199,20 @@ function applyDraftedRecords(drafted) {
 			if (!Array.isArray(parsed)) throw new Error(`${path} is not a JSON array; refusing to append.`);
 			existing = parsed;
 		}
-		existing.push(...recs);
+
+		// Skip a record that is already byte-for-byte the same assertion. The sentinel reads what we
+		// PUBLISH (current.json) but writes what we RECORD (data/records), and the two only reconverge
+		// when publish-on-merge re-exports on the VPS. In the window between a merge and that export, a
+		// scheduled run re-derives the same finding and would append it a second time. An exact match on
+		// model + variation + effective_from + price is never a legitimate bitemporal edit (a correction
+		// moves the price or the date), so dropping it is safe and keeps the records file idempotent.
+		const seen = new Set(existing.map((r) => `${r.model_id}|${r.variation}|${r.effective_from}|${r.price_usd}`));
+		const fresh = recs.filter((r) => !seen.has(`${r.model_id}|${r.variation}|${r.effective_from}|${r.price_usd}`));
+		if (!fresh.length) continue;
+
+		existing.push(...fresh);
 		writeFileSync(path, JSON.stringify(existing, null, 2) + '\n');
-		written.push({ provider, file: join('data', 'records', `${provider}.json`), added: recs.length });
+		written.push({ provider, file: join('data', 'records', `${provider}.json`), added: fresh.length });
 	}
 	return written;
 }
@@ -196,6 +226,7 @@ function renderReportMd(report, written) {
 	L.push('');
 	L.push(
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
+			`${report.missing_variations.length} model(s) with missing variation(s), ` +
 			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
 			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
 			`${report.skipped_archived.length} archived model(s) skipped, ` +
@@ -298,6 +329,41 @@ function renderReportMd(report, written) {
 			const to = `${u.to.confidence || '-'} / ${u.to.source_kind || '-'}`;
 			const cc = u.crosscheck && u.crosscheck.verdict === 'needs_review' ? 'needs review' : 'verified';
 			L.push(`| \`${u.provider}\` | \`${u.model_id}\` | ${from} | ${to} | ${cc} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
+	// Missing variations: rates the provider publishes for a model we already track, that we carried no
+	// row for. Purely ADDITIVE - no interval to close, nothing superseded - so unlike a CHANGED price
+	// these are drafted straight into --apply.
+	L.push('## Missing variations (rates we track the model but not the row)');
+	L.push('');
+	if (report.missing_variations.length) {
+		L.push(
+			'The collector read these rates off the provider\'s own page for a model we ALREADY track, but ' +
+				'we published no row for them. They are ADDITIVE: no existing interval is closed and nothing ' +
+				'is superseded, so they are drafted into `data/records` like a new model rather than listed as ' +
+				'a suggested edit.'
+		);
+		L.push('');
+		L.push(
+			'**Check `effective_from` when reviewing.** It is the OBSERVATION date, not a known change ' +
+				'date. The rate is very likely older than the record claims, but no dated first-party evidence ' +
+				'exists for an earlier start, so back-dating it to the model\'s launch would assert something ' +
+				'nobody verified.'
+		);
+		L.push('');
+		L.push('| Provider | Model | Added | effective_from | Cross-check |');
+		L.push('|---|---|---|---|---|');
+		for (const mv of report.missing_variations) {
+			const added = Object.entries(mv.added)
+				.map(([v, p]) => `${v} $${p}`)
+				.join(', ');
+			const cc = mv.crosscheck && mv.crosscheck.verdict === 'needs_review' ? 'needs review' : 'verified';
+			L.push(`| \`${mv.provider}\` | \`${mv.model_id}\` | ${added} | ${mv.effective_from} | ${cc} |`);
 		}
 		L.push('');
 	} else {
@@ -444,6 +510,7 @@ async function main() {
 		tripwire_candidates: [],
 		new_models: [],
 		price_changes: [],
+		missing_variations: [],
 		upgrades: [],
 		pending_first_party: [],
 		pending_filtered_out: 0,
@@ -674,7 +741,94 @@ async function main() {
 					report.errors.push({ stage: 'draft', provider: item.provider, model: canonical, error: e.message });
 				}
 			}
-			// UNCHANGED: nothing to report
+			// UNCHANGED: no price moved, but see the missing-variation pass below.
+
+			// Prices the collector read off the provider's page for a model we ALREADY track but carry
+			// no row for. Deliberately OUTSIDE the status branches: status answers "did a recorded price
+			// move", and a model can have a CHANGED input rate and an unrecorded cache rate in the same
+			// run, so both must be reportable together. NEW is excluded because its own path already
+			// drafts every variation.
+			if (status !== 'NEW') {
+				let gap = null;
+				try {
+					gap = missingVariations(item.provider, item.model_id, item.prices, current);
+					if (!gap && Array.isArray(item.aliases)) {
+						for (const a of item.aliases) {
+							gap = missingVariations(item.provider, a, item.prices, current);
+							if (gap) break;
+						}
+					}
+				} catch (e) {
+					report.errors.push({
+						stage: 'missing-variations',
+						provider: item.provider,
+						model: item.model_id,
+						error: e.message,
+					});
+					gap = null;
+				}
+
+				// Never grow an archived model: same guard the NEW path uses. A retired model lingers on
+				// pricing pages for weeks and we do not resurrect it, in whole or by the variation.
+				const archived = [item.model_id, ...(Array.isArray(item.aliases) ? item.aliases : [])].some((id) =>
+					current.isArchived(item.provider, id)
+				);
+
+				if (gap && !archived) {
+					const prior = current.byProviderModel.get(`${item.provider}/${gap.canonical}`) || null;
+					const gate = runGate({
+						provider: item.provider,
+						model_id: gap.canonical,
+						prices: gap.missing,
+						aliases: item.aliases,
+						isNew: false,
+						prior,
+					});
+					const downgrade = gate.verdict === 'needs_review';
+
+					// effective_from is the OBSERVATION date, never the model's launch date. We are adding a
+					// rate we have never recorded; the fact that the model shipped in March is not evidence
+					// that this cache rate applied in March. Stale-but-labelled is acceptable here,
+					// silently-backdated is not (METHODOLOGY: label uncertainty honestly).
+					const observed = today();
+					const note =
+						`[missing variation] Added by the sentinel's missing-variation pass: the provider ` +
+						`publishes this rate alongside the input/output prices we already track, but we carried ` +
+						`no row for it. effective_from is the OBSERVATION date, NOT a known change date - the ` +
+						`rate is very likely older, and no dated first-party evidence exists for an earlier start.` +
+						(downgrade ? ` [needs_review] cross-check flagged: ${gate.reasons.join('; ')}.` : '');
+
+					report.missing_variations.push({
+						provider: item.provider,
+						model_id: gap.canonical,
+						added: gap.missing,
+						confidence: downgrade ? 'inferred' : item.confidence,
+						source_kind: item.source_kind,
+						effective_from: observed,
+						crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
+					});
+					try {
+						report.drafted_records.push(
+							...draftRecordsFor(
+								{ ...item, model_id: gap.canonical },
+								{
+									onlyVariations: Object.keys(gap.missing),
+									effectiveFromOverride: observed,
+									confidenceOverride: downgrade ? 'inferred' : undefined,
+									notesPrefix: note,
+								}
+							)
+						);
+					} catch (e) {
+						report.errors.push({
+							stage: 'draft',
+							provider: item.provider,
+							model: gap.canonical,
+							error: e.message,
+						});
+					}
+				}
+			}
 		}
 	}
 
