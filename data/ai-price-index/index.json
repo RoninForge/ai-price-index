@@ -526,38 +526,56 @@
     {
       "id": "gpt-5.4",
       "provider": "openai",
-      "file": "models/openai/gpt-5.4.v42a17bf3.json",
-      "latestRev": "42a17bf3"
+      "file": "models/openai/gpt-5.4.va9037b98.json",
+      "latestRev": "a9037b98"
     },
     {
       "id": "gpt-5.4-mini",
       "provider": "openai",
-      "file": "models/openai/gpt-5.4-mini.vb59aea77.json",
-      "latestRev": "b59aea77"
+      "file": "models/openai/gpt-5.4-mini.v1beea459.json",
+      "latestRev": "1beea459"
     },
     {
       "id": "gpt-5.4-nano",
       "provider": "openai",
-      "file": "models/openai/gpt-5.4-nano.v404323a4.json",
-      "latestRev": "404323a4"
+      "file": "models/openai/gpt-5.4-nano.v2a148527.json",
+      "latestRev": "2a148527"
     },
     {
       "id": "gpt-5.4-pro",
       "provider": "openai",
-      "file": "models/openai/gpt-5.4-pro.v91e4b6ef.json",
-      "latestRev": "91e4b6ef"
+      "file": "models/openai/gpt-5.4-pro.vc2f1a879.json",
+      "latestRev": "c2f1a879"
     },
     {
       "id": "gpt-5.5",
       "provider": "openai",
-      "file": "models/openai/gpt-5.5.v1b0cf4d8.json",
-      "latestRev": "1b0cf4d8"
+      "file": "models/openai/gpt-5.5.v8f94cd77.json",
+      "latestRev": "8f94cd77"
     },
     {
       "id": "gpt-5.5-pro",
       "provider": "openai",
-      "file": "models/openai/gpt-5.5-pro.v57c3d834.json",
-      "latestRev": "57c3d834"
+      "file": "models/openai/gpt-5.5-pro.v6acb8d45.json",
+      "latestRev": "6acb8d45"
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.6-luna.v1ed38b16.json",
+      "latestRev": "1ed38b16"
+    },
+    {
+      "id": "gpt-5.6-sol",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.6-sol.v639132f8.json",
+      "latestRev": "639132f8"
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "provider": "openai",
+      "file": "models/openai/gpt-5.6-terra.v1951d3ba.json",
+      "latestRev": "1951d3ba"
     },
     {
       "id": "o1",
