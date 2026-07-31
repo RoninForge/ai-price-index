@@ -651,8 +651,9 @@ export function classifyPendingCandidate({ provider, modelId }, { trackedFamilyR
 // ---------------------------------------------------------------------------
 
 const VARIATIONS = new Set([
-	'input', 'output', 'cache_read', 'cache_write_5m', 'cache_write_1h',
-	'batch_input', 'batch_output', 'tier2_input', 'tier2_output',
+	'input', 'output', 'cache_read', 'cache_write', 'cache_write_5m', 'cache_write_1h',
+	'batch_input', 'batch_output',
+	'tier2_input', 'tier2_output', 'tier2_cache_read', 'tier2_cache_write',
 	'embeddings', 'audio_per_min', 'image_per_item',
 ]);
 const UNITS = new Set([

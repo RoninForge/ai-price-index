@@ -83,7 +83,48 @@ assert something nobody verified. Every drafted record says so in its note. Stal
 acceptable; silently back-dated is not.
 
 A related drop lived one layer down: `RECORD_VARIATIONS` in `run.mjs` omitted `tier2_input` /
-`tier2_output`, so long-context tiers were dropped even for NEW models. Both are now in the list.
+`tier2_output`, so long-context tiers were dropped even for NEW models. Both are now in the list,
+along with `cache_write`, `tier2_cache_read` and `tier2_cache_write`.
+
+`cache_write` is the **untimed** cache-write rate: OpenAI publishes a single "Cache writes" column
+with no TTL dimension. It is deliberately separate from Anthropic's `cache_write_5m` /
+`cache_write_1h`, because folding it into either would assert a TTL the vendor never stated.
+
+### Untracked models on a provider page
+
+Some collectors gate emission on an allow-list of canonical ids (`openai`, `alibaba`, `amazon`,
+`cohere`), because their pages mix per-token text models with audio, image, embedding and dated
+snapshot SKUs that must not be mapped by guesswork. The cost of that gate is that a genuinely new
+model is not "detected and skipped", it is **invisible**: an unknown name is dropped before
+`classify()` ever sees it, so there is nothing to report.
+
+That is how OpenAI's entire `gpt-5.6` family (sol / terra / luna) shipped, sat on the vendor's own
+pricing page, and never entered the index.
+
+A collector may now export `getNotices()` alongside `collect()`. `run.mjs` reads it after a
+successful collect and files each `untracked_model` notice into `report.untracked_models`, which gets
+its own report section and its own term in the CI findings gate. Nothing is drafted: naming a model
+is a human call. The decision it asks for is binary, and both answers are cheap:
+
+- add the id to the collector's `TRACKED` set to start recording it, or
+- add it to the collector's `KNOWN_UNTRACKED` map with a reason to keep ignoring it.
+
+Leave it undecided and the notice fires again on the next run, which is the intended nag.
+
+### Collector coverage
+
+`openai.mjs` asserts **coverage**: every id in `TRACKED` must have been parsed, unless it is listed in
+`PAGE_ABSENT` with a reason. This exists because the failure it catches is a silence rather than a
+crash. OpenAI added a "Cache writes" column; the old parser hardcoded three price slots per row, so
+the newest models' four-slot rows stopped matching and six tracked models vanished from the
+collector's output while it went on reporting success. The gpt-4o PIN still passed, because gpt-4o is
+a three-slot row.
+
+Two guards now make that shape of drift loud. The column layout is read from the pricing table's own
+**header** (`Input` / `Cached input` / `Cache writes` / `Output`, under a `Short context` /
+`Long context` group) rather than assumed by position, and an unrecognised column or group throws
+instead of shifting every value one place left. Coverage is then asserted over the result. A
+collector that quietly covers less than it claims is worse than one that fails.
 
 ### `effective_from` for new models
 
@@ -121,7 +162,8 @@ It does **not** auto-edit existing records for CHANGED prices.
 | `xai` | `api.x.ai/v1/language-models` | first-party (`provider_live`) | **Requires `XAI_API_KEY`** (free). Without it: a loud `xai BLOCKED: ...` error in `errors[]`, never a crash. |
 | OpenRouter | `openrouter.ai/api/v1/models` | **tripwire only** | Keyless. Reseller per-token prices, used as a new/changed signal + the `effective_from` launch-date source, never published. |
 | HuggingFace | `huggingface.co/api/models?author=<org>` | **tripwire only** | Keyless. Flags freshly-published open weights from meta-llama / mistralai / deepseek-ai / Qwen. No price implied. |
-| `openai`, `cohere` | (deferred) | — | Pricing pages need headless rendering. **Phase 2.** |
+| `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
+| `cohere` | first-party Cohere pricing | first-party | See `collectors/cohere.mjs`. Also allow-list gated. |
 | `ai21` | (deferred) | — | Add as `collectors/<provider>.mjs` and one line in the `COLLECTORS` registry in `run.mjs`. |
 
 Adding a provider: write `collectors/<provider>.mjs` exporting `async function collect()` (return per-model

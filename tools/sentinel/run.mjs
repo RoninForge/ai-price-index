@@ -66,7 +66,7 @@ const COLLECTORS = [
 	{ provider: 'google', collect: google.collect },
 	{ provider: 'alibaba', collect: alibaba.collect },
 	{ provider: 'xai', collect: xai.collect },
-	{ provider: 'openai', collect: openai.collect },
+	{ provider: 'openai', collect: openai.collect, getNotices: openai.getNotices },
 	{ provider: 'cohere', collect: cohere.collect },
 ];
 
@@ -74,14 +74,22 @@ const COLLECTORS = [
 // tier2_* (long-context tiers, e.g. Gemini >200K or Grok >128K) were missing from this list until
 // 2026-07-31, so collectors extracted them and drafting silently dropped them on the floor - the same
 // discard-what-we-read bug as the missing-variation gap below, one layer further down.
+//
+// `cache_write` is the UNTIMED cache-write rate (OpenAI publishes one "Cache writes" column with no
+// TTL dimension). It is deliberately NOT folded into cache_write_5m/cache_write_1h, which are
+// Anthropic's two TTL-specific rates: collapsing them would assert a TTL the vendor never stated.
+// tier2_cache_read / tier2_cache_write are the same rates under a long-context tier.
 const RECORD_VARIATIONS = [
 	'input',
 	'output',
 	'cache_read',
+	'cache_write',
 	'cache_write_5m',
 	'cache_write_1h',
 	'tier2_input',
 	'tier2_output',
+	'tier2_cache_read',
+	'tier2_cache_write',
 ];
 
 /**
@@ -227,6 +235,7 @@ function renderReportMd(report, written) {
 	L.push(
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.missing_variations.length} model(s) with missing variation(s), ` +
+			`${report.untracked_models.length} untracked model(s) on a provider page, ` +
 			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
 			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
 			`${report.skipped_archived.length} archived model(s) skipped, ` +
@@ -364,6 +373,30 @@ function renderReportMd(report, written) {
 				.join(', ');
 			const cc = mv.crosscheck && mv.crosscheck.verdict === 'needs_review' ? 'needs review' : 'verified';
 			L.push(`| \`${mv.provider}\` | \`${mv.model_id}\` | ${added} | ${mv.effective_from} | ${cc} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
+	// Untracked models: a model priced on the provider's OWN page that our collector's tracked set does
+	// not name. This is the discovery path for collectors that gate emission on an allow-list; without
+	// it a new model is not "NEW", it is invisible. Nothing is drafted - naming a model is a human call.
+	L.push('## Untracked models on a provider page');
+	L.push('');
+	if (report.untracked_models.length) {
+		L.push(
+			'These are priced on the provider\'s own pricing page but are not in the collector\'s tracked ' +
+				'set, so no record was drafted for them. This is a DECISION, not a diff: add each to the ' +
+				'collector\'s TRACKED set to start recording it, or to its known-untracked list with a reason ' +
+				'to keep ignoring it. Leaving it here means the model stays unpriced in the index.'
+		);
+		L.push('');
+		L.push('| Provider | Model | Seen as | Source |');
+		L.push('|---|---|---|---|');
+		for (const um of report.untracked_models) {
+			L.push(`| \`${um.provider}\` | \`${um.model_id}\` | ${um.display_name} | ${um.source_url} |`);
 		}
 		L.push('');
 	} else {
@@ -511,6 +544,7 @@ async function main() {
 		new_models: [],
 		price_changes: [],
 		missing_variations: [],
+		untracked_models: [],
 		upgrades: [],
 		pending_first_party: [],
 		pending_filtered_out: 0,
@@ -581,6 +615,16 @@ async function main() {
 		} catch (e) {
 			report.errors.push({ stage: 'collector', provider: c.provider, error: e.message });
 			continue;
+		}
+
+		// Optional out-of-band channel: a collector that gates emission on an allow-list reports the
+		// models it SAW but does not track. Without this a new model from such a provider is not
+		// detected-and-skipped, it is invisible - which is how OpenAI's whole gpt-5.6 family shipped
+		// without the index noticing. Read only on success; a throwing collector has nothing to say.
+		if (typeof c.getNotices === 'function') {
+			for (const n of c.getNotices()) {
+				if (n && n.kind === 'untracked_model') report.untracked_models.push(n);
+			}
 		}
 		for (const item of items) {
 			// A model the first-party collector returned at all is "on the provider's own page"; record
