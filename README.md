@@ -13,11 +13,8 @@ given date**, **when that price was last confirmed**, and **links the first-part
 it**. That provenance is the point: every value carries a verifiable source and a `last_validated_at`
 date, including historical ones.
 
-**Why this index**
-
-- **Quality over coverage.** We curate the models that matter and get them right, instead of chasing a long tail of variants and open-weight forks. Less noise, more signal.
-- **Verifiable, not scraped.** Every price links to the provider's own pricing page, with the date it was confirmed and a confidence rating, and you can look up what any model cost on any past date.
-- **Automated freshness, human QA.** Automation watches first-party sources for new models and price changes and cross-checks every number; a human signs off before anything is published.
+Why this index exists, what it is for, and how it is kept honest:
+**<https://roninforge.org/data/ai-price-index/>**
 
 - **Data license:** CC BY 4.0 (see [DATA-LICENSE.md](DATA-LICENSE.md)). Use it anywhere, just attribute.
 - **Tooling license:** MIT (see [LICENSE](LICENSE)).
@@ -27,13 +24,6 @@ date, including historical ones.
 > Status: early. The schema, validation, and methodology are in place; coverage is being seeded
 > flagship-first (see Roadmap). Prices can change and history is partly reconstructed; trust the
 > `confidence` label and the `source_url` on each record, not this sentence.
-
-## Why it exists
-
-No first-party provider publishes its own price history. Several open lists have broad **current**
-pricing, but none pairs each price with a dated, verifiable first-party source under a clear license,
-and none surfaces when a price was last validated. Tools that need to value **past** usage (what did
-this token cost back then) have nothing reliable to read. This fills that gap.
 
 ## What is in here
 
@@ -210,3 +200,14 @@ and never rendered with the same weight as a live-confirmed price.
 Found a wrong or missing price? Open an issue or a PR with the correct value **and a first-party
 source URL plus the date you saw it**. A contribution without a dated first-party source cannot be
 accepted; that rule is what makes this trustworthy. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Docs
+
+- [The dataset, the current price table and why it exists](https://roninforge.org/data/ai-price-index/)
+- [Query it from Claude Code or Cursor over MCP](https://roninforge.org/data/ai-price-index/#mcp)
+- [Why a price change should not restate your recorded history](https://roninforge.org/data/ai-price-index/back-dating/)
+- [AI prices did not fall, they fanned out](https://roninforge.org/data/ai-price-index/the-fan-out/)
+- [Every dated price change, newest first](https://roninforge.org/data/ai-price-index/changelog/)
+- [Per-model pricing pages with dated history](https://roninforge.org/data/ai-price-index/models/)
+
+The AI Price Index is part of [RoninForge.org](https://roninforge.org).
