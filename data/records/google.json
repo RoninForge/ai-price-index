@@ -332,5 +332,33 @@
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.1-pro-preview",
+    "variation": "tier2_input",
+    "unit": "usd_per_mtok",
+    "price_usd": 4,
+    "effective_from": "2026-07-31",
+    "effective_to": null,
+    "last_validated_at": "2026-07-31",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.1-pro-preview",
+    "variation": "tier2_output",
+    "unit": "usd_per_mtok",
+    "price_usd": 18,
+    "effective_from": "2026-07-31",
+    "effective_to": null,
+    "last_validated_at": "2026-07-31",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
   }
 ]

@@ -415,6 +415,35 @@ export function classifyUpgrade(provider, model, extracted, incoming, current) {
 	return 'UNCHANGED';
 }
 
+/**
+ * Variations the collector read off the provider's own page for a model we ALREADY track, but which
+ * we do not publish a price row for.
+ *
+ * This is the gap `classify()` cannot see. classify() answers "did a price we already record move?"
+ * and deliberately skips any variation absent from our data (`if (!(variation in have)) continue`),
+ * so a model tracked on input+output alone stays UNCHANGED forever while its cache and long-context
+ * rates are fetched twice a day and thrown away. Found 2026-07-30 with 56 such rows standing across
+ * anthropic/xai/openai/google/deepseek; the same shape as the xAI cache_read gap fixed 2026-07-27.
+ *
+ * Returns `{ canonical, missing: { variation: price } }`, or null when there is nothing to add.
+ * NEW models return null on purpose: they have no published row yet, so the NEW path already drafts
+ * every variation the collector saw and would otherwise double-draft here.
+ */
+export function missingVariations(provider, model, extracted, current) {
+	const canonical = current.resolve(provider, model);
+	if (!canonical) return null; // NEW model -> the NEW path drafts all of its variations
+	const have = current.byProviderModel.get(`${provider}/${canonical}`);
+	if (!have) return null; // in the index but unpriced -> classify() calls it NEW, same reasoning
+
+	const missing = {};
+	for (const [variation, price] of Object.entries(extracted)) {
+		if (typeof price !== 'number') continue;
+		if (variation in have) continue; // we publish it: CHANGED/UNCHANGED already covers it
+		missing[variation] = price;
+	}
+	return Object.keys(missing).length ? { canonical, missing } : null;
+}
+
 // ---------------------------------------------------------------------------
 // "new family" filter for pending_first_party
 // ---------------------------------------------------------------------------

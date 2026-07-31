@@ -48,6 +48,7 @@ BLOCKED state, never a silent skip and never a crash of the run.
   "tripwire_candidates": [ /* advisory NEW/CHANGED from OpenRouter + HuggingFace */ ],
   "new_models":  [ /* models a first-party collector saw that are not in our index (carry effective_from) */ ],
   "price_changes": [ /* known models whose first-party price differs from current.json (LISTED only) */ ],
+  "missing_variations": [ /* tracked models whose page carries a rate we publish NO row for (DRAFTED) */ ],
   "drafted_records": [ /* full, valid contribution-form records for the NEW models */ ],
   "errors": [ /* per-stage / per-collector failures; one dead source never kills the run */ ]
 }
@@ -57,6 +58,32 @@ BLOCKED state, never a silent skip and never a crash of the run.
 out-of-bounds price, or future date - so an invalid draft surfaces as an error rather than being
 emitted. The sentinel does **not** auto-write bitemporal edits for `price_changes`; they are reported
 for a human to action (and, under `--apply`, listed in `sentinel-report.md` as suggested edits).
+
+### Missing variations
+
+`classify()` answers one question: *did a price we already record move?* It deliberately skips any
+variation absent from our data (`if (!(variation in have)) continue`), so a model tracked on
+input+output alone stayed `UNCHANGED` forever while the collector read its cache and long-context
+rates off the same page and threw them away. Found 2026-07-30 with **56 such rows standing** across
+anthropic (33), xai (12), openai (8), google (2) and deepseek (1) - the same shape as the xAI
+`cache_read` gap fixed three days earlier, which is what made it worth a durable fix instead of a
+second one-off backfill.
+
+`missingVariations()` in `lib.mjs` is the detector. It runs on every non-NEW item, independently of
+the status branches, because a model can have a CHANGED input rate and an unrecorded cache rate in
+the same run. Archived models are excluded by the same guard the NEW path uses.
+
+These are **drafted into `--apply`**, not merely listed like a CHANGED price. A missing variation is
+purely additive: no interval is closed and nothing is superseded, so it carries the same risk as a
+NEW model's first record, which the sentinel already drafts.
+
+`effective_from` is the **observation date**, never the model's launch date. Adding a rate we have
+never recorded is not evidence that it applied when the model shipped, and back-dating it would
+assert something nobody verified. Every drafted record says so in its note. Stale-but-labelled is
+acceptable; silently back-dated is not.
+
+A related drop lived one layer down: `RECORD_VARIATIONS` in `run.mjs` omitted `tier2_input` /
+`tier2_output`, so long-context tiers were dropped even for NEW models. Both are now in the list.
 
 ### `effective_from` for new models
 
@@ -69,8 +96,11 @@ is always today. The policy lives in `lib.mjs::effectiveFromForNew`.
 
 `--apply` is the mode the CI workflow runs. It:
 
-- APPENDS the drafted NEW-model records into the matching `data/records/<provider>.json`, creating the
-  file as a JSON array if it does not exist, preserving 2-space indentation + a single trailing newline;
+- APPENDS the drafted NEW-model and missing-variation records into the matching
+  `data/records/<provider>.json`, creating the file as a JSON array if it does not exist, preserving
+  2-space indentation + a single trailing newline. An append that exactly matches an existing record on
+  model + variation + `effective_from` + price is skipped, so a run landing in the window between a
+  merge and the VPS re-export cannot double-write the same assertion;
 - writes a human-readable `sentinel-report.md` (new models drafted, CHANGED prices as suggested edits,
   errors / BLOCKED providers, advisory tripwire candidates) for use as the PR body; and
 - prints a one-line summary of what it wrote.

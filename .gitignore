@@ -15,3 +15,8 @@ dist/
 
 # the npm package's inline data bundle (regenerable via tools/build-npm.mjs, built on prepare/prepack)
 lib/data.json
+
+# the sentinel's human-readable run report. Regenerable via `node tools/sentinel/run.mjs --apply`,
+# and used only as the rolling PR's BODY - price-sentinel.yml stages `data/records` exclusively and
+# never commits this file. Ignored so a local --apply cannot sneak it into a commit.
+sentinel-report.md
