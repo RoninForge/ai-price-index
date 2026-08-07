@@ -6,7 +6,12 @@
 [![Cite this](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.20730240-informational)](https://doi.org/10.5281/zenodo.20730240)
 
-**When AI price-data quality actually matters.** An open, dated, first-party-sourced record of AI model API prices over time.
+RoninForge AI Price Index is a dated, first-party-sourced record of AI model API prices over
+time, including what each model cost on a given date. The data is CC BY 4.0, every price links
+the official source that proves it, and no result depends on an API key.
+
+Part of [RoninForge.org](https://roninforge.org), an independent open-source workshop that
+keeps dated, reproducible records of the AI developer tooling economy.
 
 Most price lists tell you what a model costs **today**. This one tells you what it cost **on a
 given date**, **when that price was last confirmed**, and **links the first-party source that proves
