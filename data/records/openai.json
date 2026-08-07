@@ -1109,11 +1109,11 @@
     "price_usd": 2,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1123,11 +1123,11 @@
     "price_usd": 12,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1137,11 +1137,11 @@
     "price_usd": 0.2,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1151,11 +1151,11 @@
     "price_usd": 2.5,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1165,11 +1165,11 @@
     "price_usd": 4,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1179,11 +1179,11 @@
     "price_usd": 18,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1193,11 +1193,11 @@
     "price_usd": 0.4,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1207,11 +1207,11 @@
     "price_usd": 5,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $2 is 2x OpenRouter's $1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $12 is 2x OpenRouter's $6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1221,11 +1221,11 @@
     "price_usd": 0.2,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1235,11 +1235,11 @@
     "price_usd": 1.2,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1249,11 +1249,11 @@
     "price_usd": 0.02,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1263,11 +1263,11 @@
     "price_usd": 0.25,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1277,11 +1277,11 @@
     "price_usd": 0.4,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1291,11 +1291,11 @@
     "price_usd": 1.8,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1305,11 +1305,11 @@
     "price_usd": 0.04,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
@@ -1319,11 +1319,11 @@
     "price_usd": 0.5,
     "effective_from": "2026-07-09",
     "effective_to": null,
-    "last_validated_at": "2026-07-31",
+    "last_validated_at": "2026-08-07",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.2 is 2x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $1.2 is 2x OpenRouter's $0.6 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5])."
+    "confidence": "verified",
+    "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
   },
   {
     "provider": "openai",
