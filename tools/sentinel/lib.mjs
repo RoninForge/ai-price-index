@@ -59,6 +59,19 @@ export function unixSecToIsoDate(sec) {
 // fetch with timeout + retries
 // ---------------------------------------------------------------------------
 
+/**
+ * The source could not be reached: DNS, timeout, or a non-2xx status. Distinct from a collector
+ * throwing because it could not understand a page it DID receive - the first is transient, the
+ * second means we are no longer monitoring that provider.
+ */
+export class SourceUnavailableError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'SourceUnavailableError';
+		this.code = 'SOURCE_UNAVAILABLE';
+	}
+}
+
 async function fetchWithRetry(url, { retries = DEFAULT_RETRIES, timeoutMs = DEFAULT_TIMEOUT_MS, accept } = {}) {
 	let lastErr;
 	for (let attempt = 0; attempt <= retries; attempt++) {
@@ -78,7 +91,7 @@ async function fetchWithRetry(url, { retries = DEFAULT_RETRIES, timeoutMs = DEFA
 			clearTimeout(timer);
 		}
 	}
-	throw new Error(`fetch failed after ${retries + 1} attempt(s): ${lastErr && lastErr.message}`);
+	throw new SourceUnavailableError(`fetch failed after ${retries + 1} attempt(s): ${lastErr && lastErr.message}`);
 }
 
 function sleep(ms) {

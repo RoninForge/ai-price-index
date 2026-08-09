@@ -77,6 +77,8 @@
 // lib's UA/timeout conventions.
 
 export const PROVIDER = 'xai';
+import { SourceUnavailableError } from '../lib.mjs';
+
 const API_URL = 'https://api.x.ai/v1/language-models';
 // Canonical docs URL since the 2026-07-27 rebuild. The old /docs/models 308-redirects here.
 const HTML_URL = 'https://docs.x.ai/developers/models';
@@ -142,7 +144,7 @@ async function keyedFetchJson(url, key) {
 			signal: controller.signal,
 			redirect: 'follow',
 		});
-		if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
+		if (!res.ok) throw new SourceUnavailableError(`HTTP ${res.status} ${res.statusText} for ${url}`);
 		const txt = await res.text();
 		try {
 			return JSON.parse(txt);
@@ -244,7 +246,9 @@ async function fetchEnglishModelsHtml() {
 		if (attempt < MAX_FETCH_ATTEMPTS) await new Promise((r) => setTimeout(r, 400 * attempt));
 	}
 	if (!lastHtml && lastErr)
-		throw new Error(`xai collector (HTML): fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr.message}`);
+		throw new SourceUnavailableError(
+			`xai collector (HTML): fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr.message}`
+		);
 	// Got a body but it never carried the payload: surface the precise drift error after parsing.
 	return lastHtml;
 }

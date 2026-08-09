@@ -232,6 +232,9 @@ function renderReportMd(report, written) {
 	// glance; needs-review items are downgraded to `inferred` and listed with the reasons a human
 	// should resolve before flipping them back to verified.
 	const cc = report.crosscheck || { auto_verified: 0, needs_review: 0, items: [] };
+	// A collector whose source changed shape stops monitoring that provider silently. Counted
+	// separately from `errors` because an unreachable source is transient and must not raise a PR.
+	const broken = report.broken_collectors || [];
 	L.push('# Price Sentinel report');
 	L.push('');
 	L.push(`Generated ${report.generated_at} by \`.github/workflows/price-sentinel.yml\` (\`node tools/sentinel/run.mjs --apply\`).`);
@@ -243,6 +246,7 @@ function renderReportMd(report, written) {
 			`${report.missing_variations.length} model(s) with missing variation(s), ` +
 			`${report.untracked_models.length} untracked model(s) on a provider page, ` +
 			`${report.upgrades.length} provenance upgrade(s), ${cc.needs_review} cross-check item(s) needing review, ` +
+			`${broken.length} broken collector(s), ` +
 			`${report.pending_first_party.length} detected awaiting ` +
 			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
 			`${report.skipped_archived.length} archived model(s) skipped, ` +
@@ -489,18 +493,31 @@ function renderReportMd(report, written) {
 		L.push('');
 	}
 
+	L.push('## Broken collectors');
+	L.push('');
+	if (broken.length) {
+		L.push(
+			`${broken.map((p) => `\`${p}\``).join(', ')} reached the source but could not read it. ` +
+				'Those providers are NOT being price-checked until the collector is repointed.'
+		);
+		L.push('');
+	} else {
+		L.push('None. Every collector read its source.');
+		L.push('');
+	}
+
 	// Errors + BLOCKED providers
 	L.push('## Errors and BLOCKED providers');
 	L.push('');
 	if (report.errors.length) {
 		L.push('One dead source never kills the run; these are surfaced for visibility (e.g. xAI is BLOCKED without a key).');
 		L.push('');
-		L.push('| Stage | Provider/Source | Error |');
-		L.push('|---|---|---|');
+		L.push('| Stage | Provider/Source | Kind | Error |');
+		L.push('|---|---|---|---|');
 		for (const e of report.errors) {
 			const who = e.provider || e.source || '-';
 			const msg = String(e.error || '').replace(/\|/g, '\\|');
-			L.push(`| ${e.stage} | \`${who}\` | ${msg} |`);
+			L.push(`| ${e.stage} | \`${who}\` | ${e.kind || '-'} | ${msg} |`);
 		}
 		L.push('');
 	} else {
@@ -554,6 +571,7 @@ async function main() {
 		skipped_archived: [],
 		drafted_records: [],
 		crosscheck: { auto_verified: 0, needs_review: 0, items: [] },
+		broken_collectors: [],
 		errors: [],
 	};
 
@@ -616,7 +634,23 @@ async function main() {
 		try {
 			items = await c.collect();
 		} catch (e) {
-			report.errors.push({ stage: 'collector', provider: c.provider, error: e.message });
+			// `unavailable` = we never got the bytes (DNS, timeout, non-2xx). Transient, and a source
+			// that is merely down must not raise a PR every run. Anything else means we DID receive the
+			// page and could not understand it, so that provider is now unmonitored: a finding.
+			const kind = e && e.code === 'SOURCE_UNAVAILABLE' ? 'unavailable' : 'parse';
+			report.errors.push({ stage: 'collector', provider: c.provider, kind, error: e.message });
+			continue;
+		}
+
+		// A collector that succeeds but returns nothing is broken in the same way, just quietly:
+		// no throw, no models, no monitoring. Every provider we track sells at least one model.
+		if (!Array.isArray(items) || items.length === 0) {
+			report.errors.push({
+				stage: 'collector',
+				provider: c.provider,
+				kind: 'parse',
+				error: 'collector returned 0 models - the source parsed but yielded nothing.',
+			});
 			continue;
 		}
 
@@ -936,6 +970,10 @@ async function main() {
 	}
 
 	// 4. emit
+	report.broken_collectors = [
+		...new Set(report.errors.filter((e) => e.stage === 'collector' && e.kind === 'parse').map((e) => e.provider)),
+	].sort();
+
 	if (apply) {
 		let written = [];
 		if (report.drafted_records.length) {
@@ -956,7 +994,9 @@ async function main() {
 				`(${report.pending_filtered_out} variant/open-weight SKUs filtered out); ` +
 				`${report.skipped_archived.length} archived model(s) skipped; ` +
 				`cross-check: ${report.crosscheck.auto_verified} auto-verified, ${report.crosscheck.needs_review} need review; ` +
-				`${report.errors.length} error(s). Wrote sentinel-report.md.`
+				`${report.broken_collectors.length} broken collector(s)` +
+				(report.broken_collectors.length ? ` (${report.broken_collectors.join(', ')})` : '') +
+				`; ${report.errors.length} error(s). Wrote sentinel-report.md.`
 		);
 		return;
 	}
