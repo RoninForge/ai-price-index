@@ -228,29 +228,32 @@ function applyDraftedRecords(drafted) {
 /** Render the human-readable sentinel-report.md used as the PR body. */
 function renderReportMd(report, written) {
 	const L = [];
+	// Cross-check gate: the correctness differentiator. Auto-verified items are safe to merge with a
+	// glance; needs-review items are downgraded to `inferred` and listed with the reasons a human
+	// should resolve before flipping them back to verified.
+	const cc = report.crosscheck || { auto_verified: 0, needs_review: 0, items: [] };
 	L.push('# Price Sentinel report');
 	L.push('');
 	L.push(`Generated ${report.generated_at} by \`.github/workflows/price-sentinel.yml\` (\`node tools/sentinel/run.mjs --apply\`).`);
 	L.push('');
+	// The workflow's has_findings gate parses this line, so every term that can require a human
+	// decision must appear here - `needs review` included.
 	L.push(
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.missing_variations.length} model(s) with missing variation(s), ` +
 			`${report.untracked_models.length} untracked model(s) on a provider page, ` +
-			`${report.upgrades.length} provenance upgrade(s), ${report.pending_first_party.length} detected awaiting ` +
+			`${report.upgrades.length} provenance upgrade(s), ${cc.needs_review} cross-check item(s) needing review, ` +
+			`${report.pending_first_party.length} detected awaiting ` +
 			`first-party price (${report.pending_filtered_out} variant/open-weight SKUs filtered out), ` +
 			`${report.skipped_archived.length} archived model(s) skipped, ` +
 			`${report.tripwire_candidates.length} tripwire candidate(s), ${report.errors.length} error(s).`
 	);
 	L.push('');
 
-	// Cross-check gate: the correctness differentiator. Auto-verified items are safe to merge with a
-	// glance; needs-review items are downgraded to `inferred` and listed with the reasons a human
-	// should resolve before flipping them back to verified.
-	const cc = report.crosscheck || { auto_verified: 0, needs_review: 0, items: [] };
 	L.push('## Cross-check gate');
 	L.push('');
 	L.push(
-		`The correctness gate ran on every NEW model and CHANGED price: ` +
+		`The correctness gate ran on every NEW model, CHANGED price and provenance UPGRADE: ` +
 			`${cc.auto_verified} auto-verified, ${cc.needs_review} need review.`
 	);
 	L.push('');
