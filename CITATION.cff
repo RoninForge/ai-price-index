@@ -1,12 +1,11 @@
 # Machine-readable citation metadata. GitHub renders a "Cite this repository" button from this file.
-# After enabling the Zenodo GitHub integration and cutting a release, add the minted DOI below
-# (uncomment `doi:` and the `identifiers:` block) so every versioned snapshot is citeable.
 cff-version: 1.2.0
 title: "AI Price Index"
 message: "If you use this dataset, please cite it using the metadata in this file."
 type: dataset
 authors:
   - name: "RoninForge"
+    email: "jens@rasta.online"
     website: "https://roninforge.org"
 abstract: >-
   An open, dated, first-party-sourced record of AI model API prices over time.
