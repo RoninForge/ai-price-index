@@ -90,9 +90,10 @@ jobs:
           # DETECT findings two ways:
           #   1. data/records changed (NEW-model drafts were appended), OR
           #   2. the report indicates findings even without a JSON write (suggested CHANGED price edits,
-          #      or new-model rows). The report's Summary line carries the counts; we treat a non-zero
-          #      "new model(s)" or "price change(s)" as findings. (Errors / BLOCKED providers alone are
-          #      NOT findings - they would otherwise open a PR every run a key is missing.)
+          #      new-model rows, untracked models, or a cross-check flag on something we already
+          #      publish). The report's Summary line carries the counts; any non-zero term below is a
+          #      finding. (Errors / BLOCKED providers alone are NOT findings - they would otherwise open
+          #      a PR every run a key is missing.)
           if [ -n "$(git status --porcelain -- data/records)" ]; then
             has_data_changes=true
           else
@@ -108,20 +109,32 @@ jobs:
           price_changes="$(printf '%s' "$summary" | sed -n 's/.* \([0-9]\{1,\}\) price change(s).*/\1/p')"
           missing_variations="$(printf '%s' "$summary" | sed -n 's/.* \([0-9]\{1,\}\) model(s) with missing variation(s).*/\1/p')"
           untracked_models="$(printf '%s' "$summary" | sed -n 's/.* \([0-9]\{1,\}\) untracked model(s) on a provider page.*/\1/p')"
+          needs_review="$(printf '%s' "$summary" | sed -n 's/.* \([0-9]\{1,\}\) cross-check item(s) needing review.*/\1/p')"
           new_models="${new_models:-0}"
           price_changes="${price_changes:-0}"
           missing_variations="${missing_variations:-0}"
           untracked_models="${untracked_models:-0}"
+          needs_review="${needs_review:-0}"
           echo "new_models=$new_models"   >> "$GITHUB_OUTPUT"
           echo "price_changes=$price_changes" >> "$GITHUB_OUTPUT"
           echo "missing_variations=$missing_variations" >> "$GITHUB_OUTPUT"
           echo "untracked_models=$untracked_models" >> "$GITHUB_OUTPUT"
+          echo "needs_review=$needs_review" >> "$GITHUB_OUTPUT"
+
+          # No "needing review" term at all means run.mjs and this gate have drifted. Fail loudly
+          # rather than default to 0, which would silently reopen the hole this term closes.
+          if ! printf '%s' "$summary" | grep -q 'cross-check item(s) needing review'; then
+            echo "::error::Summary line has no 'cross-check item(s) needing review' term; run.mjs and this gate have drifted."
+            exit 1
+          fi
 
           # missing variations DO write to data/records, so has_data_changes already covers them; the
           # explicit term keeps the gate honest if that ever stops being true.
           # untracked models write NOTHING - naming a model is a human call - so without their own term
           # the report that surfaces them would never be raised at all.
-          if [ "$has_data_changes" = "true" ] || [ "$new_models" -gt 0 ] || [ "$price_changes" -gt 0 ] || [ "$missing_variations" -gt 0 ] || [ "$untracked_models" -gt 0 ]; then
+          # needs_review flags a price we ALREADY publish, so it is a finding with or without a JSON
+          # write - an UPGRADE whose rows dedup to a no-op still leaves the question open.
+          if [ "$has_data_changes" = "true" ] || [ "$new_models" -gt 0 ] || [ "$price_changes" -gt 0 ] || [ "$missing_variations" -gt 0 ] || [ "$untracked_models" -gt 0 ] || [ "$needs_review" -gt 0 ]; then
             echo "has_findings=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_findings=false" >> "$GITHUB_OUTPUT"
