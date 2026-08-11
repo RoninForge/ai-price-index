@@ -9,7 +9,7 @@
         "last_validated": "2026-06-22",
         "price_usd": 1.25,
         "src": "https://aws.amazon.com/bedrock/pricing/",
-        "to": null,
+        "to": "2026-06-29",
         "unit": "usd_per_mtok"
       },
       {
@@ -29,7 +29,7 @@
         "last_validated": "2026-06-22",
         "price_usd": 10,
         "src": "https://aws.amazon.com/bedrock/pricing/",
-        "to": null,
+        "to": "2026-06-29",
         "unit": "usd_per_mtok"
       },
       {

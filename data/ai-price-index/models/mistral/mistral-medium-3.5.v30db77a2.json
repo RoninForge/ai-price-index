@@ -9,7 +9,7 @@
         "last_validated": "2026-06-15",
         "price_usd": 1.5,
         "src": "https://mistral.ai/pricing",
-        "to": null,
+        "to": "2026-06-22",
         "unit": "usd_per_mtok"
       },
       {
@@ -29,7 +29,7 @@
         "last_validated": "2026-06-15",
         "price_usd": 7.5,
         "src": "https://mistral.ai/pricing",
-        "to": null,
+        "to": "2026-06-22",
         "unit": "usd_per_mtok"
       },
       {

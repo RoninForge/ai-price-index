@@ -96,8 +96,8 @@
     {
       "id": "nova-2-pro",
       "provider": "amazon",
-      "file": "models/amazon/nova-2-pro.vaea1977b.json",
-      "latestRev": "aea1977b"
+      "file": "models/amazon/nova-2-pro.v55a1be86.json",
+      "latestRev": "55a1be86"
     },
     {
       "id": "nova-lite",
@@ -292,8 +292,8 @@
     {
       "id": "deepseek-v4-pro",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-pro.vbfcc6e03.json",
-      "latestRev": "bfcc6e03"
+      "file": "models/deepseek/deepseek-v4-pro.v48d9a7e5.json",
+      "latestRev": "48d9a7e5"
     },
     {
       "id": "gemini-1.5-flash",
@@ -454,8 +454,8 @@
     {
       "id": "mistral-medium-3.5",
       "provider": "mistral",
-      "file": "models/mistral/mistral-medium-3.5.v80d6d246.json",
-      "latestRev": "80d6d246"
+      "file": "models/mistral/mistral-medium-3.5.v30db77a2.json",
+      "latestRev": "30db77a2"
     },
     {
       "id": "mistral-small-4",
@@ -496,26 +496,26 @@
     {
       "id": "gpt-5",
       "provider": "openai",
-      "file": "models/openai/gpt-5.v3dcf458b.json",
-      "latestRev": "3dcf458b"
+      "file": "models/openai/gpt-5.vfe2896f7.json",
+      "latestRev": "fe2896f7"
     },
     {
       "id": "gpt-5.1",
       "provider": "openai",
-      "file": "models/openai/gpt-5.1.v2a9c9358.json",
-      "latestRev": "2a9c9358"
+      "file": "models/openai/gpt-5.1.v3fd789a3.json",
+      "latestRev": "3fd789a3"
     },
     {
       "id": "gpt-5.2",
       "provider": "openai",
-      "file": "models/openai/gpt-5.2.v424cb672.json",
-      "latestRev": "424cb672"
+      "file": "models/openai/gpt-5.2.vf7302d96.json",
+      "latestRev": "f7302d96"
     },
     {
       "id": "gpt-5.2-pro",
       "provider": "openai",
-      "file": "models/openai/gpt-5.2-pro.vbe62b6a0.json",
-      "latestRev": "be62b6a0"
+      "file": "models/openai/gpt-5.2-pro.vee9d5a2f.json",
+      "latestRev": "ee9d5a2f"
     },
     {
       "id": "gpt-5.3-codex",
@@ -634,8 +634,8 @@
     {
       "id": "grok-4.20-0309-non-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-non-reasoning.v89c9593a.json",
-      "latestRev": "89c9593a",
+      "file": "models/xai/grok-4.20-0309-non-reasoning.v77120f0a.json",
+      "latestRev": "77120f0a",
       "aliases": [
         "grok-4.20-beta-0309-non-reasoning",
         "grok-4.20-beta-latest-non-reasoning",
@@ -707,8 +707,8 @@
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v12e16d4c.json",
-      "latestRev": "12e16d4c",
+      "file": "models/xai/grok-build-0.1.v5575a7e8.json",
+      "latestRev": "5575a7e8",
       "aliases": [
         "grok-code-fast",
         "grok-code-fast-1",

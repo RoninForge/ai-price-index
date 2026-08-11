@@ -1,22 +1,33 @@
 {
-  "model": "gpt-5.2-pro",
+  "model": "gpt-5.1",
   "provider": "openai",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-06-22",
+        "last_validated": "2026-06-22",
+        "price_usd": 0.125,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "inferred",
-        "from": "2026-01-15",
+        "from": "2025-11-13",
         "last_validated": "2026-06-17",
-        "price_usd": 21,
+        "price_usd": 1.25,
         "src": "https://developers.openai.com/api/docs/pricing",
-        "to": null,
+        "to": "2026-06-22",
         "unit": "usd_per_mtok"
       },
       {
         "confidence": "verified",
         "from": "2026-06-22",
         "last_validated": "2026-06-22",
-        "price_usd": 21,
+        "price_usd": 1.25,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -25,18 +36,18 @@
     "output": [
       {
         "confidence": "inferred",
-        "from": "2026-01-15",
+        "from": "2025-11-13",
         "last_validated": "2026-06-17",
-        "price_usd": 168,
+        "price_usd": 10,
         "src": "https://developers.openai.com/api/docs/pricing",
-        "to": null,
+        "to": "2026-06-22",
         "unit": "usd_per_mtok"
       },
       {
         "confidence": "verified",
         "from": "2026-06-22",
         "last_validated": "2026-06-22",
-        "price_usd": 168,
+        "price_usd": 10,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
