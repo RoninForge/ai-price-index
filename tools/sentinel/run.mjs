@@ -199,6 +199,7 @@ function applyDraftedRecords(drafted) {
 		byProvider.get(rec.provider).push(rec);
 	}
 	const written = [];
+	const conflicts = [];
 	for (const [provider, recs] of byProvider) {
 		const path = recordsPathFor(provider);
 		let existing = [];
@@ -218,11 +219,37 @@ function applyDraftedRecords(drafted) {
 		const fresh = recs.filter((r) => !seen.has(`${r.model_id}|${r.variation}|${r.effective_from}|${r.price_usd}`));
 		if (!fresh.length) continue;
 
+		// A drafted record SUPERSEDES whatever is still open for the same model+variation - a provenance
+		// upgrade re-states today's price at a higher confidence. Appending without closing the old row
+		// leaves two rows open, and since consumers read the current price as "the row where
+		// effective_to is empty", that makes the current price ambiguous. Close it at the new record's
+		// effective_from, the half-open [from, to) convention the rest of the dataset already uses.
+		for (const rec of fresh) {
+			for (const prior of existing) {
+				if (prior.model_id !== rec.model_id || prior.variation !== rec.variation) continue;
+				if ((prior.effective_to ?? null) !== null) continue;
+				if (prior.effective_from < rec.effective_from) {
+					prior.effective_to = rec.effective_from;
+				} else {
+					// Same-day or backwards: no reading of this is obviously right, so leave both rows
+					// alone and surface it rather than invent an interval.
+					conflicts.push({
+						provider,
+						model_id: rec.model_id,
+						variation: rec.variation,
+						error:
+							`drafted record effective_from ${rec.effective_from} does not follow the open ` +
+							`record's ${prior.effective_from}; left both open for a human to resolve.`,
+					});
+				}
+			}
+		}
+
 		existing.push(...fresh);
 		writeFileSync(path, JSON.stringify(existing, null, 2) + '\n');
 		written.push({ provider, file: join('data', 'records', `${provider}.json`), added: fresh.length });
 	}
-	return written;
+	return { written, conflicts };
 }
 
 /** Render the human-readable sentinel-report.md used as the PR body. */
@@ -977,7 +1004,16 @@ async function main() {
 	if (apply) {
 		let written = [];
 		if (report.drafted_records.length) {
-			written = applyDraftedRecords(report.drafted_records);
+			const applied = applyDraftedRecords(report.drafted_records);
+			written = applied.written;
+			for (const c of applied.conflicts) {
+				report.errors.push({
+					stage: 'apply',
+					provider: `${c.provider}/${c.model_id} ${c.variation}`,
+					kind: 'conflict',
+					error: c.error,
+				});
+			}
 		}
 		const md = renderReportMd(report, written);
 		const mdPath = join(REPO_ROOT, 'sentinel-report.md');

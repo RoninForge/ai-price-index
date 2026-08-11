@@ -132,6 +132,30 @@ function validateRecord(file, i, r) {
 	}
 }
 
+/**
+ * At most ONE open record per (model_id, variation). Consumers read the current price as "the row
+ * where effective_to is empty", so a second open row makes the current price ambiguous, and lets the
+ * two rows drift apart the moment either one is edited.
+ */
+function validateOpenIntervals(file, data) {
+	const open = new Map();
+	data.forEach((r, i) => {
+		if (typeof r !== 'object' || r === null) return;
+		if ((r.effective_to ?? null) !== null) return;
+		const key = `${r.model_id}|${r.variation}`;
+		if (!open.has(key)) open.set(key, []);
+		open.get(key).push({ i, r });
+	});
+	for (const [key, rows] of open) {
+		if (rows.length < 2) continue;
+		const [model_id, variation] = key.split('|');
+		const detail = rows.map((x) => `#${x.i} from=${x.r.effective_from} ${x.r.confidence} $${x.r.price_usd}`).join(' vs ');
+		err(file, `[${rows.map((x) => x.i).join(',')}]`,
+			`${rows.length} open records for ${model_id} ${variation}: ${detail} - ` +
+				'the current price is ambiguous; close the superseded record');
+	}
+}
+
 function validateSeries(file, s) {
 	if (typeof s !== 'object' || s === null) return err(file, '(root)', 'not an object');
 	if (typeof s.model !== 'string' || !s.model) err(file, '(root)', 'model required');
@@ -173,6 +197,7 @@ for (const dir of ['examples/records', 'data/records']) {
 		if (data === undefined) continue;
 		if (!Array.isArray(data)) { err(file, '(root)', 'a records file must be a JSON array'); continue; }
 		data.forEach((r, i) => { recordCount++; validateRecord(file, i, r); });
+		validateOpenIntervals(file, data);
 	}
 }
 
