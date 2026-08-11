@@ -1,7 +1,14 @@
 // tools/sentinel/collectors/deepseek.mjs  (MIT)
 // First-party DeepSeek price collector.
 //
-// AUTHORITATIVE source: https://api-docs.deepseek.com/quick_start/pricing
+// AUTHORITATIVE source: https://api-docs.deepseek.com/quick_start/pricing/
+//
+// The TRAILING SLASH is load-bearing. DeepSeek's CDN (Tencent EdgeOne) holds a bad cache entry on the
+// slash-less /quick_start/pricing: it answers 200 with an entirely DIFFERENT document ("Your First API
+// Call"). A cache MISS on that URL redirects correctly, so the wrong page appears and disappears with
+// the cache TTL, which is why this reads as an intermittent collector break. The slash-less form is the
+// one DeepSeek declares rel=canonical, so we cite the slashed form knowingly: it is the URL that
+// actually renders the price table for every client, and a citation nobody can verify is worthless.
 // This Docusaurus page server-renders a single TRANSPOSED <table>: the models are the COLUMNS
 // (deepseek-v4-flash, deepseek-v4-pro) and the attributes are the ROWS. There is no <thead>/<th>;
 // every cell is a <td>. The shape (verified 2026-06-20) is:
@@ -35,7 +42,7 @@
 import { fetchText } from '../lib.mjs';
 
 export const PROVIDER = 'deepseek';
-const SOURCE_URL = 'https://api-docs.deepseek.com/quick_start/pricing';
+const SOURCE_URL = 'https://api-docs.deepseek.com/quick_start/pricing/';
 
 // Canonical model id (as it appears in the MODEL row of the authoritative table) -> aliases we carry.
 // deepseek-chat + deepseek-reasoner both route to v4-flash and share its pricing (they deprecate
@@ -94,6 +101,16 @@ function rowVariation(cells) {
  */
 export async function collect() {
 	const html = await fetchText(SOURCE_URL);
+
+	// Check we were served the pricing page before blaming its table: a wrong document otherwise
+	// reports as "the table shape changed" and sends the reader hunting for a redesign that never was.
+	const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [, ''])[1].trim();
+	if (!/pricing/i.test(title))
+		throw new Error(
+			`deepseek collector: served a different document (title "${title}") instead of the pricing ` +
+				`page. Usually a stale CDN cache entry on ${SOURCE_URL}, not a DeepSeek change.`
+		);
+
 	const tableMatch = html.match(/<table[\s\S]*?<\/table>/i);
 	if (!tableMatch) throw new Error('deepseek collector: no <table> on the authoritative pricing page - structure drift.');
 	const table = tableMatch[0];
