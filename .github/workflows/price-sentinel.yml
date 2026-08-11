@@ -148,11 +148,25 @@ jobs:
             echo "has_findings=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # CASE 1 - nothing to report: stop here, green, no branch/commit/PR.
+      # CASE 1 - nothing to report: stop here, green, no branch/commit/PR. A rolling PR left open by an
+      # earlier run is now stale, so retire it: its findings have since been fixed, and leaving it open
+      # states otherwise. Closing it also removes the branch, which otherwise outlives the PR.
       - name: Sentinel clean (no findings)
         if: steps.run.outputs.has_findings == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
         run: |
+          set -euo pipefail
           echo "sentinel clean: nothing to report"
+          BRANCH="sentinel/pending"
+          existing="$(gh pr list --state open --head "$BRANCH" --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "Retiring stale rolling PR #$existing - this run found nothing."
+            gh pr close "$existing" --delete-branch \
+              --comment "Retired by the sentinel: a later run found nothing, so this report is stale. A new PR opens automatically the next time something needs a decision."
+          else
+            echo "No open rolling PR to retire."
+          fi
 
       # Build the rolling branch content in the working tree (commit on top of the current main checkout),
       # then compare it to the existing remote rolling branch to decide create / update / skip-unchanged.
