@@ -3,34 +3,6 @@
   "aggregator": "litellm",
   "entries": [
     {
-      "confirmed_litellm_wrong": true,
-      "first_detected": "2026-06-22",
-      "last_seen": "2026-08-11",
-      "litellm_usd_per_mtok": 2.0,
-      "model": "grok-4.20-0309-reasoning",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-07-27",
-      "our_source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
-      "our_usd_per_mtok": 1.25,
-      "provider": "xai",
-      "resolved": null,
-      "variation": "input"
-    },
-    {
-      "confirmed_litellm_wrong": true,
-      "first_detected": "2026-06-22",
-      "last_seen": "2026-08-11",
-      "litellm_usd_per_mtok": 6.0,
-      "model": "grok-4.20-0309-reasoning",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-07-27",
-      "our_source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
-      "our_usd_per_mtok": 2.5,
-      "provider": "xai",
-      "resolved": null,
-      "variation": "output"
-    },
-    {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-07-01",
       "last_seen": "2026-07-03",
@@ -57,19 +29,42 @@
       "provider": "anthropic",
       "resolved": "2026-07-04",
       "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": true,
+      "first_detected": "2026-06-22",
+      "last_seen": "2026-08-11",
+      "litellm_usd_per_mtok": 2.0,
+      "model": "grok-4.20-0309-reasoning",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-07-27",
+      "our_source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
+      "our_usd_per_mtok": 1.25,
+      "provider": "xai",
+      "resolved": "2026-08-12",
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": true,
+      "first_detected": "2026-06-22",
+      "last_seen": "2026-08-11",
+      "litellm_usd_per_mtok": 6.0,
+      "model": "grok-4.20-0309-reasoning",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-07-27",
+      "our_source_url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
+      "our_usd_per_mtok": 2.5,
+      "provider": "xai",
+      "resolved": "2026-08-12",
+      "variation": "output"
     }
   ],
   "summary": {
-    "confirmed_open_count": 2,
-    "generated": "2026-08-11",
-    "oldest_open": {
-      "first_detected": "2026-06-22",
-      "model": "grok-4.20-0309-reasoning",
-      "provider": "xai",
-      "variation": "input"
-    },
-    "oldest_open_days": 50,
-    "open_count": 2,
-    "resolved_count": 2
+    "confirmed_open_count": 0,
+    "generated": "2026-08-12",
+    "oldest_open": null,
+    "oldest_open_days": 0,
+    "open_count": 0,
+    "resolved_count": 4
   }
 }
