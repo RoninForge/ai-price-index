@@ -288,8 +288,8 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.5,
     "effective_from": "2026-07-21",
-    "effective_to": null,
-    "last_validated_at": "2026-07-22",
+    "effective_to": "2026-08-13",
+    "last_validated_at": "2026-08-17",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -301,8 +301,8 @@
     "unit": "usd_per_mtok",
     "price_usd": 7.5,
     "effective_from": "2026-07-21",
-    "effective_to": null,
-    "last_validated_at": "2026-07-22",
+    "effective_to": "2026-08-13",
+    "last_validated_at": "2026-08-17",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -360,5 +360,61 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.6-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.75,
+    "effective_from": "2026-08-13",
+    "effective_to": null,
+    "last_validated_at": "2026-08-17",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Promotional pricing. The first-party pricing page states \"$0.75 through December 31, 2026. $1.50 starting January 1, 2027.\" effective_from is the sentinel first-observation date: the 2026-08-12 run still read $1.50, the 2026-08-13 run read $0.75. The scheduled 2027-01-01 reversion is not carried as a record because the schema forbids a future effective_from."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.6-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 3.75,
+    "effective_from": "2026-08-13",
+    "effective_to": null,
+    "last_validated_at": "2026-08-17",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Promotional pricing. The first-party pricing page states \"$3.75 through December 31, 2026. $7.50 starting January 1, 2027.\" effective_from is the sentinel first-observation date: the 2026-08-12 run still read $7.50, the 2026-08-13 run read $3.75. The scheduled 2027-01-01 reversion is not carried as a record because the schema forbids a future effective_from."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.7-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.75,
+    "effective_from": "2026-08-13",
+    "effective_to": null,
+    "last_validated_at": "2026-08-17",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$0.75 through December 31, 2026. $1.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $0.38, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.7-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 3.75,
+    "effective_from": "2026-08-13",
+    "effective_to": null,
+    "last_validated_at": "2026-08-17",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$3.75 through December 31, 2026. $7.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $1.88, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from."
   }
 ]
