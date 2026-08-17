@@ -4,6 +4,90 @@
   "entries": [
     {
       "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 0.14,
+      "model": "deepseek-v4-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 0.22,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 0.28,
+      "model": "deepseek-v4-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 0.66,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 0.435,
+      "model": "deepseek-v4-pro",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 0.66,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 0.87,
+      "model": "deepseek-v4-pro",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 1.98,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 1.5,
+      "model": "gemini-3.6-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "our_usd_per_mtok": 0.75,
+      "provider": "google",
+      "resolved": null,
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-17",
+      "last_seen": "2026-08-17",
+      "litellm_usd_per_mtok": 7.5,
+      "model": "gemini-3.6-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-08-17",
+      "our_source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "our_usd_per_mtok": 3.75,
+      "provider": "google",
+      "resolved": null,
+      "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
       "first_detected": "2026-07-01",
       "last_seen": "2026-07-03",
       "litellm_usd_per_mtok": 3.0,
@@ -61,10 +145,15 @@
   ],
   "summary": {
     "confirmed_open_count": 0,
-    "generated": "2026-08-16",
-    "oldest_open": null,
+    "generated": "2026-08-17",
+    "oldest_open": {
+      "first_detected": "2026-08-17",
+      "model": "deepseek-v4-flash",
+      "provider": "deepseek",
+      "variation": "input"
+    },
     "oldest_open_days": 0,
-    "open_count": 0,
+    "open_count": 6,
     "resolved_count": 4
   }
 }
