@@ -11,13 +11,24 @@
 // actually renders the price table for every client, and a citation nobody can verify is worthless.
 // This Docusaurus page server-renders a single TRANSPOSED <table>: the models are the COLUMNS
 // (deepseek-v4-flash, deepseek-v4-pro) and the attributes are the ROWS. There is no <thead>/<th>;
-// every cell is a <td>. The shape (verified 2026-06-20) is:
+// every cell is a <td>. DeepSeek split every price row into OFF-PEAK / PEAK on 2026-08-16; each
+// label cell now carries rowspan="2" and the PEAK values live on the FOLLOWING <tr>:
 //
 //   | MODEL                            | deepseek-v4-flash(1) | deepseek-v4-pro |
 //   | ...                              | ...                  | ...             |
-//   | PRICING | 1M INPUT TOKENS (CACHE HIT)  | $0.0028 | $0.003625 |   <- rowspan "PRICING" leads
-//   |         | 1M INPUT TOKENS (CACHE MISS) | $0.14   | $0.435    |
-//   |         | 1M OUTPUT TOKENS            | $0.28   | $0.87     |
+//   | PRICING | 1M INPUT TOKENS (CACHE HIT)  | OFF-PEAK | $0.007 | $0.022 |
+//   |         |                              | PEAK     | $0.014 | $0.044 |
+//   |         | 1M INPUT TOKENS (CACHE MISS) | OFF-PEAK | $0.22  | $0.66  |
+//   |         |                              | PEAK     | $0.44  | $1.32  |
+//   |         | 1M OUTPUT TOKENS             | OFF-PEAK | $0.66  | $1.98  |
+//   |         |                              | PEAK     | $1.32  | $3.96  |
+//
+// We publish the OFF-PEAK rate as the standard input/output/cache_read. The page defines the split
+// as "Off-peak rates are half of the peak rates", and off-peak covers 17 of 24 hours (peak is
+// 01:00-04:00 and 06:00-10:00 UTC). OpenRouter resells deepseek-v4-pro at exactly the off-peak
+// numbers, which is the cross-check that settles which rate the market treats as the list price.
+// PEAK is parsed too, but only to ASSERT the page's own 2x invariant; it is never emitted, because
+// the schema has no variation for a time-of-day rate.
 //
 // Label -> variation mapping (cache MISS is the standard/billed input rate; cache HIT is the
 // discounted cached read):
@@ -60,14 +71,21 @@ const LABEL_TO_VARIATION = [
 	[/1m output tokens/i, 'output'], //                     output
 ];
 
-// Correctness pins (USD per 1M tokens, verified against the authoritative page 2026-06-20). If the
-// live page disagrees beyond EPS, THROW so a real change surfaces for human review instead of silently
-// flipping the dataset.
+// Correctness pins (USD per 1M tokens, OFF-PEAK, verified against the authoritative page 2026-08-17).
+// If the live page disagrees beyond EPS, THROW so a real change surfaces for human review instead of
+// silently flipping the dataset.
 const PIN = {
-	'deepseek-v4-flash': { input: 0.14, cache_read: 0.0028, output: 0.28 },
-	'deepseek-v4-pro': { input: 0.435, cache_read: 0.003625, output: 0.87 },
+	'deepseek-v4-flash': { input: 0.22, cache_read: 0.007, output: 0.66 },
+	'deepseek-v4-pro': { input: 0.66, cache_read: 0.022, output: 1.98 },
 };
 const EPS = 1e-6;
+
+// The page states "Off-peak rates are half of the peak rates". Parse PEAK and hold it to that, so a
+// silent re-ordering of the two sub-rows cannot make us publish peak rates as standard.
+const PEAK_MULTIPLIER = 2;
+const PEAK_REL_TOL = 1e-9;
+const OFF_PEAK_RE = /off-?peak/i;
+const PEAK_RE = /^peak$/i;
 
 function cellText(html) {
 	return html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
@@ -141,26 +159,56 @@ export async function collect() {
 				'table "MODEL | deepseek-v4-flash | deepseek-v4-pro | ...". Refusing to guess.'
 		);
 
-	// 2) Walk the price rows. For each, the trailing N cells (N = #models) are the per-model values in
-	//    column order. The first PRICING row also carries a leading "PRICING" rowspan label cell, which
-	//    is why we take the LAST modelIds.length numeric cells rather than a fixed slice offset.
+	// 2) Walk the price rows. Each labelled row is the OFF-PEAK half and the row straight after it is
+	//    the PEAK half. The trailing N cells (N = #models) are the per-model values in column order;
+	//    leading label cells ("PRICING", the variation, "OFF-PEAK") carry no "$" so they drop out.
+	const priceCells = (cells, variation, half) => {
+		const vals = cells.map(parsePrice).filter((v) => v !== null);
+		if (vals.length !== modelIds.length)
+			throw new Error(
+				`deepseek collector: "${variation}" ${half} row has ${vals.length} price cell(s) but there are ` +
+					`${modelIds.length} model column(s) [${modelIds.join(', ')}]. Row: [${cells.join(' | ')}]. Refusing to guess.`
+			);
+		return vals;
+	};
+
 	const prices = Object.fromEntries(modelIds.map((id) => [id, {}]));
 	const seen = new Set();
-	for (const cells of rows) {
+	for (let i = 0; i < rows.length; i++) {
+		const cells = rows[i];
 		const variation = rowVariation(cells);
 		if (!variation) continue;
 		if (seen.has(variation))
 			throw new Error(`deepseek collector: price row for "${variation}" appears twice - structure drift, refusing to guess.`);
-		const parsed = cells.map(parsePrice);
-		const vals = parsed.filter((v) => v !== null);
-		if (vals.length !== modelIds.length)
+
+		if (!cells.some((c) => OFF_PEAK_RE.test(c)))
 			throw new Error(
-				`deepseek collector: "${variation}" row has ${vals.length} price cell(s) but there are ` +
-					`${modelIds.length} model column(s) [${modelIds.join(', ')}]. Row: [${cells.join(' | ')}]. Refusing to guess.`
+				`deepseek collector: "${variation}" row carries no OFF-PEAK marker. Row: [${cells.join(' | ')}]. ` +
+					'The peak/off-peak split changed shape - refusing to guess which half is the standard rate.'
 			);
+
+		const offPeak = priceCells(cells, variation, 'off-peak');
+		const next = rows[i + 1];
+		if (!next || !next.some((c) => PEAK_RE.test(c)))
+			throw new Error(
+				`deepseek collector: "${variation}" off-peak row is not followed by a PEAK row. ` +
+					`Next row: [${(next || []).join(' | ')}]. Refusing to guess.`
+			);
+		const peak = priceCells(next, variation, 'peak');
+
+		peak.forEach((p, j) => {
+			const want = offPeak[j] * PEAK_MULTIPLIER;
+			if (Math.abs(p - want) > Math.max(EPS, Math.abs(want) * PEAK_REL_TOL))
+				throw new Error(
+					`deepseek collector: ${modelIds[j]}.${variation} peak ${p} is not ${PEAK_MULTIPLIER}x off-peak ` +
+						`${offPeak[j]} (expected ${want}). The page's stated "off-peak is half of peak" rule no longer ` +
+						'holds, so which half is the standard rate is no longer decidable - human review required.'
+				);
+		});
+
 		seen.add(variation);
-		modelIds.forEach((id, i) => {
-			prices[id][variation] = vals[i];
+		modelIds.forEach((id, j) => {
+			prices[id][variation] = offPeak[j];
 		});
 	}
 
