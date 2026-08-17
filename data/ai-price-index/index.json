@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-08-07",
+  "dataModified": "2026-08-17",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -282,8 +282,8 @@
     {
       "id": "deepseek-v4-flash",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-flash.va4a80cbe.json",
-      "latestRev": "a4a80cbe",
+      "file": "models/deepseek/deepseek-v4-flash.vec876f25.json",
+      "latestRev": "ec876f25",
       "aliases": [
         "deepseek-chat",
         "deepseek-reasoner"
@@ -292,8 +292,8 @@
     {
       "id": "deepseek-v4-pro",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-pro.v48d9a7e5.json",
-      "latestRev": "48d9a7e5"
+      "file": "models/deepseek/deepseek-v4-pro.v482a3d70.json",
+      "latestRev": "482a3d70"
     },
     {
       "id": "gemini-1.5-flash",
@@ -364,8 +364,14 @@
     {
       "id": "gemini-3.6-flash",
       "provider": "google",
-      "file": "models/google/gemini-3.6-flash.v374ef15e.json",
-      "latestRev": "374ef15e"
+      "file": "models/google/gemini-3.6-flash.va6218485.json",
+      "latestRev": "a6218485"
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "provider": "google",
+      "file": "models/google/gemini-3.7-flash.v9bf664a9.json",
+      "latestRev": "9bf664a9"
     },
     {
       "id": "llama-3.1-405b",
