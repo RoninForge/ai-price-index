@@ -767,5 +767,70 @@
       "grok-latest"
     ],
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.6",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 2,
+    "effective_from": "2026-08-12",
+    "effective_to": null,
+    "last_validated_at": "2026-08-19",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.6",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 6,
+    "effective_from": "2026-08-12",
+    "effective_to": null,
+    "last_validated_at": "2026-08-19",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.6",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-08-12",
+    "effective_to": null,
+    "last_validated_at": "2026-08-19",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.6",
+    "variation": "tier2_input",
+    "unit": "usd_per_mtok",
+    "price_usd": 4,
+    "effective_from": "2026-08-12",
+    "effective_to": null,
+    "last_validated_at": "2026-08-19",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "xai",
+    "model_id": "grok-4.6",
+    "variation": "tier2_output",
+    "unit": "usd_per_mtok",
+    "price_usd": 12,
+    "effective_from": "2026-08-12",
+    "effective_to": null,
+    "last_validated_at": "2026-08-19",
+    "source_url": "https://docs.x.ai/developers/models",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
