@@ -1,0 +1,61 @@
+{
+  "model": "grok-4.6",
+  "provider": "xai",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-12",
+        "last_validated": "2026-08-19",
+        "price_usd": 0.5,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-12",
+        "last_validated": "2026-08-19",
+        "price_usd": 2,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-12",
+        "last_validated": "2026-08-19",
+        "price_usd": 6,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_input": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-12",
+        "last_validated": "2026-08-19",
+        "price_usd": 4,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_output": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-12",
+        "last_validated": "2026-08-19",
+        "price_usd": 12,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
