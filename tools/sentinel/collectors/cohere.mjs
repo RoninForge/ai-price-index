@@ -70,8 +70,42 @@ const NAME_TO_CANONICAL = {
 	'command r plus': { model_id: 'command-r-plus' },
 };
 
-// Models the dataset tracks for this provider; used only to compute the "missing" report.
+// Models the dataset tracks for this provider.
 const TRACKED = ['command-a-plus', 'command-r', 'command-r-plus', 'command-r7b'];
+
+// Tracked models that are legitimately NOT readable as a per-Mtok API rate on the pricing page, with
+// the reason. Without this list their absence was silent: the collector returned 2 of 4 tracked models
+// and said nothing, so the two published prices below could drift indefinitely with no monitor.
+// Verified 2026-08-21 against https://cohere.com/pricing.
+const PAGE_ABSENT = new Map([
+	[
+		'command-a-plus',
+		'the page cards it only as the free open-weights tier (per:"Free", inputLabel:"API key" 0, ' +
+			'outputLabel:"Model download" 0), which is not an API per-token rate; the unit guard correctly ' +
+			'skips it. Our published $2.50/$10 API rate is NOT re-verifiable from this page.',
+	],
+	[
+		'command-r-plus',
+		'no longer carded on the pricing page at all as of 2026-08-21. Its rate survives only in the ' +
+			'page\'s FAQ prose ("Command R+ 08-2024 pricing is $2.50/1M tokens for input and $10"), which ' +
+			'this parser does not read, and which still matches our published $2.50/$10.',
+	],
+]);
+
+/**
+ * COVERAGE: every tracked model must have been parsed, unless documented in PAGE_ABSENT.
+ * A collector that quietly returns a subset is the worst failure mode here - it reports success while
+ * the un-returned models sit unmonitored, and a dead monitor repeats its last reading forever.
+ */
+function assertCoverage(byId) {
+	const missing = TRACKED.filter((id) => !byId.has(id) && !PAGE_ABSENT.has(id));
+	if (missing.length)
+		throw new Error(
+			`cohere collector: ${missing.length} tracked model(s) were not parsed from the pricing page: ` +
+				`${missing.join(', ')}. Either the parse drifted (fix it) or Cohere removed them (record that ` +
+				`in PAGE_ABSENT with a reason). Refusing to report partial coverage as success.`
+		);
+}
 
 // PIN: command-r7b is first-party $0.0375 in / $0.15 out (verified during the LiteLLM PR work).
 const PIN_ID = 'command-r7b';
@@ -227,6 +261,7 @@ function parseModels(html) {
 export async function collect() {
 	const html = await fetchPricingHtml();
 	const byId = parseModels(html);
+	assertCoverage(byId);
 
 	const rows = [];
 	for (const [model_id, { prices, display, known, aliases }] of byId) {
@@ -250,7 +285,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 	collect()
 		.then((rows) => {
 			const found = new Set(rows.map((r) => r.model_id));
-			const missing = TRACKED.filter((id) => !found.has(id));
+			const missing = TRACKED.filter((id) => !found.has(id) && !PAGE_ABSENT.has(id));
+			for (const [id, why] of PAGE_ABSENT) if (!found.has(id)) console.error(`page-absent (documented): ${id} - ${why}`);
 			console.log(JSON.stringify(rows, null, 2));
 			if (missing.length) console.error('tracked-but-missing (omitted, not invented):', missing.join(', '));
 		})
