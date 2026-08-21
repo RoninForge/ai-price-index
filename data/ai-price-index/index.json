@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-08-19",
+  "dataModified": "2026-08-21",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -76,6 +76,12 @@
       "latestRev": "20c94886"
     },
     {
+      "id": "qwen3.7-flash",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3.7-flash.vd0080932.json",
+      "latestRev": "d0080932"
+    },
+    {
       "id": "qwen3.7-max",
       "provider": "alibaba",
       "file": "models/alibaba/qwen3.7-max.ved935789.json",
@@ -86,6 +92,12 @@
       "provider": "alibaba",
       "file": "models/alibaba/qwen3.7-plus.vefd9631d.json",
       "latestRev": "efd9631d"
+    },
+    {
+      "id": "qwen3.8-max",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3.8-max.v80b1e77f.json",
+      "latestRev": "80b1e77f"
     },
     {
       "id": "nova-2-lite",
