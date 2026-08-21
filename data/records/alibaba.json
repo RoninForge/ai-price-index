@@ -326,5 +326,61 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.7-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.03,
+    "effective_from": "2026-07-27",
+    "effective_to": null,
+    "last_validated_at": "2026-08-21",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.7-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.13,
+    "effective_from": "2026-07-27",
+    "effective_to": null,
+    "last_validated_at": "2026-08-21",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.8-max",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 2,
+    "effective_from": "2026-08-03",
+    "effective_to": null,
+    "last_validated_at": "2026-08-21",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3.8-max",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 6,
+    "effective_from": "2026-08-03",
+    "effective_to": null,
+    "last_validated_at": "2026-08-21",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
   }
 ]

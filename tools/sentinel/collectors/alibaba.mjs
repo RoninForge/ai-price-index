@@ -63,7 +63,29 @@ const TRACKED = [
 	'qwen3.6-plus',
 	'qwen3.7-max',
 	'qwen3.7-plus',
+	'qwen3.7-flash',
+	'qwen3.8-max',
 ];
+
+// Ids that ARE priced per-Mtok at International scope on this doc but that we deliberately do not
+// track. Each entry is a REASON, so the notice below can stay silent about it without the silence
+// being an accident. Anything priced here that matches neither TRACKED nor these rules is reported.
+const UNTRACKED_RULES = [
+	[/^(?!qwen)/, 'third-party model hosted on Bailian; belongs to its own provider, not alibaba'],
+	[/-\d{4}-\d{2}-\d{2}$/, 'dated snapshot of a tracked family'],
+	[/-(preview|latest)$/, 'preview/latest alias, not a stable priced id'],
+	[/-(us|intl|cn)$/, 'regional deployment variant of a tracked id'],
+	[/(^|-)\d+(\.\d+)?[bt](-a\d+(\.\d+)?b)?(-|$)/, 'open-weight size SKU, not a mainline API model'],
+	[
+		/(^|-)(vl|omni|mt|livetranslate|rerank|asr|tts|audio|image|ocr|captioner|character|realtime)(-|$)/,
+		'non-text or modality-specific SKU; the index tracks per-token text models',
+	],
+];
+
+function untrackedReason(id) {
+	for (const [re, reason] of UNTRACKED_RULES) if (re.test(id)) return reason;
+	return null;
+}
 
 // Sanity bounds (usd_per_mtok). Far wider than any plausible Qwen price; outside means a parse/unit error.
 const PRICE_MIN = 0.001;
@@ -115,17 +137,37 @@ function rowsOf(tableHtml) {
 
 const round6 = (n) => Math.round(n * 1e6) / 1e6;
 
+// Out-of-band channel for models this collector SAW priced first-party but does not track. Without
+// it the TRACKED allow-list makes a new model invisible rather than detected-and-skipped: qwen3.8-max
+// sat first-party-priced on this very doc for 18 days while the tripwire reported it as "awaiting
+// first-party price". Reset per collect() so a notice never outlives the run that produced it.
+let notices = [];
+
+/** Read by run.mjs after a successful collect(); see tools/sentinel/README.md. */
+export function getNotices() {
+	return notices;
+}
+
 /**
  * Collect Alibaba Qwen International-scope base-tier prices for every tracked model.
  * Returns an array of { provider, model_id, display_name, prices:{input,output}, unit, source_url,
  * source_kind, confidence, known_mapping, notes }. Throws on structural drift; reports missing models.
  */
 export async function collect() {
+	notices = [];
 	const doc = await fetchJson(CONTENT_API);
 	const content = doc && doc.data && doc.data.content;
 	if (!content || typeof content !== 'string')
+		// Stays a hard finding (kind:"parse"), never SourceUnavailableError: an empty body means alibaba
+		// is unmonitored, and the "unavailable" class is the one that deliberately stops nagging. But the
+		// message must not assert a CAUSE we did not observe - this fired once on 2026-08-21 and the doc
+		// was intact minutes later, so the old wording ("the pricing doc id changed") stated our transient
+		// failure as a fact about Alibaba. Report what we saw; list causes as possibilities.
 		throw new Error(
-			`alibaba collector: content API returned no doc body (nodeId ${PRICING_NODE_ID}, website=intl). The help content API or the pricing doc id changed. Verify ${SOURCE_URL}.`
+			`alibaba collector: content API responded (code=${doc && doc.code}, success=${doc && doc.success}) ` +
+				`but carried no doc body for nodeId ${PRICING_NODE_ID} (website=intl), so alibaba was NOT ` +
+				`price-checked. Cause not established: this has occurred transiently. If it repeats, check ` +
+				`whether the help content API or the pricing doc id changed at ${SOURCE_URL}.`
 		);
 
 	const tables = [...content.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => m[0]);
@@ -135,6 +177,7 @@ export async function collect() {
 		throw new Error('alibaba collector: no "International" deployment scope in the pricing doc - structure/region drift.');
 
 	const found = new Map(); // model_id -> { input, output }
+	const untracked = new Map(); // model_id -> raw display text (priced first-party, not in TRACKED)
 	for (const t of tables) {
 		const rows = rowsOf(t);
 		if (rows.length < 2) continue;
@@ -150,13 +193,18 @@ export async function collect() {
 		for (let i = 1; i < rows.length; i++) {
 			const r = rows[i];
 			const id = (r[0] || '').trim().split(/\s+/)[0].toLowerCase();
-			if (!TRACKED.includes(id)) continue;
-			if (found.has(id)) continue; // first International base row (in doc order) wins
+			if (!id || !/^[a-z0-9]/.test(id)) continue;
+			// Scope first, so an untracked model is reported once (at International) and not once per scope.
 			if (!CANONICAL_SCOPE_RE.test((r[scopeCol] || '').trim())) continue;
-			if (bandCol >= 0 && !isBaseBand(r[bandCol])) continue;
 			const input = parsePrice(r[inCol]);
 			const output = parsePrice(r[outCol]);
 			if (input === null || output === null) continue;
+			if (!TRACKED.includes(id)) {
+				if (!untrackedReason(id)) untracked.set(id, (r[0] || '').trim());
+				continue;
+			}
+			if (found.has(id)) continue; // first International base row (in doc order) wins
+			if (bandCol >= 0 && !isBaseBand(r[bandCol])) continue;
 			found.set(id, { input: round6(input), output: round6(output) });
 		}
 	}
@@ -165,6 +213,20 @@ export async function collect() {
 		throw new Error(
 			'alibaba collector: parsed the pricing doc but resolved ZERO tracked International prices - structure drift. Refusing to guess.'
 		);
+
+	for (const [model_id, display] of untracked) {
+		notices.push({
+			kind: 'untracked_model',
+			provider: PROVIDER,
+			model_id,
+			display_name: display,
+			source_url: SOURCE_URL,
+			message:
+				`"${display}" is priced per-1M-tokens at International scope on Alibaba's own Model Studio ` +
+				`pricing doc but is in neither TRACKED nor UNTRACKED_RULES. Add it to TRACKED to start ` +
+				`recording it, or add a rule to UNTRACKED_RULES with a reason to keep ignoring it.`,
+		});
+	}
 
 	const results = [];
 	for (const model_id of TRACKED) {
