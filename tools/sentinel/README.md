@@ -101,13 +101,17 @@ model is not "detected and skipped", it is **invisible**: an unknown name is dro
 That is how OpenAI's entire `gpt-5.6` family (sol / terra / luna) shipped, sat on the vendor's own
 pricing page, and never entered the index.
 
-A collector may now export `getNotices()` alongside `collect()`. `run.mjs` reads it after a
+A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`); it must also be
+wired into the `COLLECTORS` registry in `run.mjs`, which reads `getNotices` per entry - exporting it
+from the collector alone is silently ignored. `run.mjs` reads it after a
 successful collect and files each `untracked_model` notice into `report.untracked_models`, which gets
 its own report section and its own term in the CI findings gate. Nothing is drafted: naming a model
 is a human call. The decision it asks for is binary, and both answers are cheap:
 
 - add the id to the collector's `TRACKED` set to start recording it, or
-- add it to the collector's `KNOWN_UNTRACKED` map with a reason to keep ignoring it.
+- add it to the collector's `KNOWN_UNTRACKED` map (exact ids, as `openai.mjs` does) or its
+  `UNTRACKED_RULES` list (patterns + reason, as `alibaba.mjs` does, where the doc prices ~100 ids
+  across a handful of categories) to keep ignoring it.
 
 Leave it undecided and the notice fires again on the next run, which is the intended nag.
 

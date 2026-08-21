@@ -64,7 +64,7 @@ const COLLECTORS = [
 	{ provider: 'mistral', collect: mistral.collect },
 	{ provider: 'deepseek', collect: deepseek.collect },
 	{ provider: 'google', collect: google.collect },
-	{ provider: 'alibaba', collect: alibaba.collect },
+	{ provider: 'alibaba', collect: alibaba.collect, getNotices: alibaba.getNotices },
 	{ provider: 'xai', collect: xai.collect },
 	{ provider: 'openai', collect: openai.collect, getNotices: openai.getNotices },
 	{ provider: 'cohere', collect: cohere.collect },
