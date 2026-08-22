@@ -382,5 +382,61 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3-coder-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.3,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-22",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3-coder-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-22",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3-coder-next",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.3,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-22",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
+  },
+  {
+    "provider": "alibaba",
+    "model_id": "qwen3-coder-next",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-22",
+    "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
   }
 ]
