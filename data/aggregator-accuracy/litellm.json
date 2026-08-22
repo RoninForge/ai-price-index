@@ -5,7 +5,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-21",
+      "last_seen": "2026-08-22",
       "litellm_usd_per_mtok": 0.44,
       "model": "deepseek-v4-flash",
       "our_confidence": "verified",
@@ -19,7 +19,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-21",
+      "last_seen": "2026-08-22",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-flash",
       "our_confidence": "verified",
@@ -33,7 +33,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-21",
+      "last_seen": "2026-08-22",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -47,7 +47,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-21",
+      "last_seen": "2026-08-22",
       "litellm_usd_per_mtok": 3.96,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -145,14 +145,14 @@
   ],
   "summary": {
     "confirmed_open_count": 0,
-    "generated": "2026-08-21",
+    "generated": "2026-08-22",
     "oldest_open": {
       "first_detected": "2026-08-17",
       "model": "deepseek-v4-flash",
       "provider": "deepseek",
       "variation": "input"
     },
-    "oldest_open_days": 4,
+    "oldest_open_days": 5,
     "open_count": 4,
     "resolved_count": 6
   }
