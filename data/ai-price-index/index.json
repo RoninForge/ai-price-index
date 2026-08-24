@@ -40,6 +40,18 @@
       "latestRev": "640da853"
     },
     {
+      "id": "qwen3-coder-flash",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3-coder-flash.v54092dc6.json",
+      "latestRev": "54092dc6"
+    },
+    {
+      "id": "qwen3-coder-next",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3-coder-next.v86a66781.json",
+      "latestRev": "86a66781"
+    },
+    {
       "id": "qwen3-coder-plus",
       "provider": "alibaba",
       "file": "models/alibaba/qwen3-coder-plus.v453e128a.json",

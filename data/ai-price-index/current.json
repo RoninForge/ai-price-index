@@ -125,6 +125,46 @@
     },
     {
       "provider": "alibaba",
+      "model": "qwen3-coder-flash",
+      "variation": "input",
+      "price_usd": 0.3,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-08-22",
+      "confidence": "verified",
+      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+    },
+    {
+      "provider": "alibaba",
+      "model": "qwen3-coder-flash",
+      "variation": "output",
+      "price_usd": 1.5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-08-22",
+      "confidence": "verified",
+      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+    },
+    {
+      "provider": "alibaba",
+      "model": "qwen3-coder-next",
+      "variation": "input",
+      "price_usd": 0.3,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-08-22",
+      "confidence": "verified",
+      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+    },
+    {
+      "provider": "alibaba",
+      "model": "qwen3-coder-next",
+      "variation": "output",
+      "price_usd": 1.5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-08-22",
+      "confidence": "verified",
+      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
+    },
+    {
+      "provider": "alibaba",
       "model": "qwen3-coder-plus",
       "variation": "input",
       "price_usd": 1,
