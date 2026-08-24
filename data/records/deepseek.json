@@ -196,5 +196,44 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $3.96/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record."
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-flash-vision-exp",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.22,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-24",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-flash-vision-exp",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.66,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-24",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "deepseek",
+    "model_id": "deepseek-v4-flash-vision-exp",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.007,
+    "effective_from": "2026-08-21",
+    "effective_to": null,
+    "last_validated_at": "2026-08-24",
+    "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
