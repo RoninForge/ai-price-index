@@ -65,6 +65,8 @@ const TRACKED = [
 	'qwen3.7-plus',
 	'qwen3.7-flash',
 	'qwen3.8-max',
+	'qwen3-coder-flash',
+	'qwen3-coder-next',
 ];
 
 // Ids that ARE priced per-Mtok at International scope on this doc but that we deliberately do not
