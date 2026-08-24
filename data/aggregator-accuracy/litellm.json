@@ -5,7 +5,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-23",
+      "last_seen": "2026-08-24",
       "litellm_usd_per_mtok": 0.44,
       "model": "deepseek-v4-flash",
       "our_confidence": "verified",
@@ -19,7 +19,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-23",
+      "last_seen": "2026-08-24",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-flash",
       "our_confidence": "verified",
@@ -33,7 +33,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-23",
+      "last_seen": "2026-08-24",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -47,7 +47,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-08-23",
+      "last_seen": "2026-08-24",
       "litellm_usd_per_mtok": 3.96,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -55,34 +55,6 @@
       "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
       "our_usd_per_mtok": 1.98,
       "provider": "deepseek",
-      "resolved": null,
-      "variation": "output"
-    },
-    {
-      "confirmed_litellm_wrong": false,
-      "first_detected": "2026-08-23",
-      "last_seen": "2026-08-23",
-      "litellm_usd_per_mtok": 4.0,
-      "model": "gpt-5.6-sol",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-07-31",
-      "our_source_url": "https://developers.openai.com/api/docs/pricing",
-      "our_usd_per_mtok": 5,
-      "provider": "openai",
-      "resolved": null,
-      "variation": "input"
-    },
-    {
-      "confirmed_litellm_wrong": false,
-      "first_detected": "2026-08-23",
-      "last_seen": "2026-08-23",
-      "litellm_usd_per_mtok": 20.0,
-      "model": "gpt-5.6-sol",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-07-31",
-      "our_source_url": "https://developers.openai.com/api/docs/pricing",
-      "our_usd_per_mtok": 30,
-      "provider": "openai",
       "resolved": null,
       "variation": "output"
     },
@@ -169,19 +141,47 @@
       "provider": "google",
       "resolved": "2026-08-19",
       "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-23",
+      "last_seen": "2026-08-23",
+      "litellm_usd_per_mtok": 4.0,
+      "model": "gpt-5.6-sol",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-07-31",
+      "our_source_url": "https://developers.openai.com/api/docs/pricing",
+      "our_usd_per_mtok": 5,
+      "provider": "openai",
+      "resolved": "2026-08-24",
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-08-23",
+      "last_seen": "2026-08-23",
+      "litellm_usd_per_mtok": 20.0,
+      "model": "gpt-5.6-sol",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-07-31",
+      "our_source_url": "https://developers.openai.com/api/docs/pricing",
+      "our_usd_per_mtok": 30,
+      "provider": "openai",
+      "resolved": "2026-08-24",
+      "variation": "output"
     }
   ],
   "summary": {
     "confirmed_open_count": 0,
-    "generated": "2026-08-23",
+    "generated": "2026-08-24",
     "oldest_open": {
       "first_detected": "2026-08-17",
       "model": "deepseek-v4-flash",
       "provider": "deepseek",
       "variation": "input"
     },
-    "oldest_open_days": 6,
-    "open_count": 6,
-    "resolved_count": 6
+    "oldest_open_days": 7,
+    "open_count": 4,
+    "resolved_count": 8
   }
 }
