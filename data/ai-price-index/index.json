@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-08-21",
+  "dataModified": "2026-08-22",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -302,6 +302,12 @@
       ]
     },
     {
+      "id": "deepseek-v4-flash-vision-exp",
+      "provider": "deepseek",
+      "file": "models/deepseek/deepseek-v4-flash-vision-exp.vc02fbc85.json",
+      "latestRev": "c02fbc85"
+    },
+    {
       "id": "deepseek-v4-pro",
       "provider": "deepseek",
       "file": "models/deepseek/deepseek-v4-pro.v482a3d70.json",
@@ -586,8 +592,8 @@
     {
       "id": "gpt-5.6-sol",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-sol.v639132f8.json",
-      "latestRev": "639132f8"
+      "file": "models/openai/gpt-5.6-sol.vfc53e1a6.json",
+      "latestRev": "fc53e1a6"
     },
     {
       "id": "gpt-5.6-terra",

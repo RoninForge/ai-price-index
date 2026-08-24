@@ -1,0 +1,39 @@
+{
+  "model": "deepseek-v4-flash-vision-exp",
+  "provider": "deepseek",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-21",
+        "last_validated": "2026-08-22",
+        "price_usd": 0.007,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-21",
+        "last_validated": "2026-08-22",
+        "price_usd": 0.22,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-21",
+        "last_validated": "2026-08-22",
+        "price_usd": 0.66,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
