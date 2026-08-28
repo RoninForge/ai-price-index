@@ -10,7 +10,7 @@
         "price_usd": 0.075,
         "snapshot": "20241001092414",
         "src": "https://web.archive.org/web/20241001092414/https://ai.google.dev/pricing",
-        "to": null,
+        "to": "2026-08-28",
         "unit": "usd_per_mtok"
       }
     ],
@@ -22,7 +22,7 @@
         "price_usd": 0.3,
         "snapshot": "20241001092414",
         "src": "https://web.archive.org/web/20241001092414/https://ai.google.dev/pricing",
-        "to": null,
+        "to": "2026-08-28",
         "unit": "usd_per_mtok"
       }
     ]

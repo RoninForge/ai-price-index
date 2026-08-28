@@ -1,0 +1,28 @@
+{
+  "model": "qwen3.8-flash",
+  "provider": "alibaba",
+  "variations": {
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-26",
+        "last_validated": "2026-08-28",
+        "price_usd": 0.15,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-08-26",
+        "last_validated": "2026-08-28",
+        "price_usd": 0.47,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

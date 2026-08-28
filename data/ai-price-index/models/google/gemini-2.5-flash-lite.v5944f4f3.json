@@ -10,6 +10,15 @@
         "price_usd": 0.1,
         "snapshot": "20250621161929",
         "src": "https://web.archive.org/web/20250621161929/https://ai.google.dev/gemini-api/docs/pricing",
+        "to": "2026-08-28",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "inferred",
+        "from": "2026-08-28",
+        "last_validated": "2026-08-28",
+        "price_usd": 0.1,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -22,6 +31,15 @@
         "price_usd": 0.4,
         "snapshot": "20250621161929",
         "src": "https://web.archive.org/web/20250621161929/https://ai.google.dev/gemini-api/docs/pricing",
+        "to": "2026-08-28",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "inferred",
+        "from": "2026-08-28",
+        "last_validated": "2026-08-28",
+        "price_usd": 0.4,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }

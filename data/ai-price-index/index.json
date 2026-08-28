@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-08-22",
+  "dataModified": "2026-08-28",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -104,6 +104,12 @@
       "provider": "alibaba",
       "file": "models/alibaba/qwen3.7-plus.vefd9631d.json",
       "latestRev": "efd9631d"
+    },
+    {
+      "id": "qwen3.8-flash",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen3.8-flash.v028147a0.json",
+      "latestRev": "028147a0"
     },
     {
       "id": "qwen3.8-max",
@@ -282,8 +288,8 @@
     {
       "id": "command-a-plus",
       "provider": "cohere",
-      "file": "models/cohere/command-a-plus.vb206b35e.json",
-      "latestRev": "b206b35e"
+      "file": "models/cohere/command-a-plus.v404f3811.json",
+      "latestRev": "404f3811"
     },
     {
       "id": "command-r",
@@ -294,8 +300,8 @@
     {
       "id": "command-r-plus",
       "provider": "cohere",
-      "file": "models/cohere/command-r-plus.vcc4064bf.json",
-      "latestRev": "cc4064bf"
+      "file": "models/cohere/command-r-plus.v59ff5a68.json",
+      "latestRev": "59ff5a68"
     },
     {
       "id": "command-r7b",
@@ -328,14 +334,14 @@
     {
       "id": "gemini-1.5-flash",
       "provider": "google",
-      "file": "models/google/gemini-1.5-flash.v0a2af119.json",
-      "latestRev": "0a2af119"
+      "file": "models/google/gemini-1.5-flash.v54e61026.json",
+      "latestRev": "54e61026"
     },
     {
       "id": "gemini-1.5-pro",
       "provider": "google",
-      "file": "models/google/gemini-1.5-pro.v2dd62db5.json",
-      "latestRev": "2dd62db5"
+      "file": "models/google/gemini-1.5-pro.v3519ce65.json",
+      "latestRev": "3519ce65"
     },
     {
       "id": "gemini-2.0-flash",
@@ -346,20 +352,20 @@
     {
       "id": "gemini-2.5-flash",
       "provider": "google",
-      "file": "models/google/gemini-2.5-flash.v6dfd4e6c.json",
-      "latestRev": "6dfd4e6c"
+      "file": "models/google/gemini-2.5-flash.v2142ff96.json",
+      "latestRev": "2142ff96"
     },
     {
       "id": "gemini-2.5-flash-lite",
       "provider": "google",
-      "file": "models/google/gemini-2.5-flash-lite.v22f9c9b1.json",
-      "latestRev": "22f9c9b1"
+      "file": "models/google/gemini-2.5-flash-lite.v5944f4f3.json",
+      "latestRev": "5944f4f3"
     },
     {
       "id": "gemini-2.5-pro",
       "provider": "google",
-      "file": "models/google/gemini-2.5-pro.vd27b2825.json",
-      "latestRev": "d27b2825"
+      "file": "models/google/gemini-2.5-pro.vbee60677.json",
+      "latestRev": "bee60677"
     },
     {
       "id": "gemini-3-flash-preview",
@@ -502,14 +508,14 @@
     {
       "id": "gpt-4",
       "provider": "openai",
-      "file": "models/openai/gpt-4.va3684099.json",
-      "latestRev": "a3684099"
+      "file": "models/openai/gpt-4.vb4f5074a.json",
+      "latestRev": "b4f5074a"
     },
     {
       "id": "gpt-4-turbo",
       "provider": "openai",
-      "file": "models/openai/gpt-4-turbo.v78152e2a.json",
-      "latestRev": "78152e2a"
+      "file": "models/openai/gpt-4-turbo.v6ddfaf39.json",
+      "latestRev": "6ddfaf39"
     },
     {
       "id": "gpt-4.1",
@@ -520,14 +526,14 @@
     {
       "id": "gpt-4o",
       "provider": "openai",
-      "file": "models/openai/gpt-4o.vac3888d0.json",
-      "latestRev": "ac3888d0"
+      "file": "models/openai/gpt-4o.v9af327e3.json",
+      "latestRev": "9af327e3"
     },
     {
       "id": "gpt-4o-mini",
       "provider": "openai",
-      "file": "models/openai/gpt-4o-mini.v27cc35fb.json",
-      "latestRev": "27cc35fb"
+      "file": "models/openai/gpt-4o-mini.v702d011a.json",
+      "latestRev": "702d011a"
     },
     {
       "id": "gpt-5",

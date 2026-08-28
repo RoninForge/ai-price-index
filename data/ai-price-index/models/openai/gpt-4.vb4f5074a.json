@@ -10,7 +10,7 @@
         "price_usd": 30,
         "snapshot": "20230415223802",
         "src": "https://web.archive.org/web/20230415223802/https://openai.com/pricing",
-        "to": null,
+        "to": "2026-08-28",
         "unit": "usd_per_mtok"
       }
     ],
@@ -22,7 +22,7 @@
         "price_usd": 60,
         "snapshot": "20230415223802",
         "src": "https://web.archive.org/web/20230415223802/https://openai.com/pricing",
-        "to": null,
+        "to": "2026-08-28",
         "unit": "usd_per_mtok"
       }
     ]
