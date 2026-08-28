@@ -176,9 +176,10 @@ function loadRecordsProvenance(root = REPO_ROOT) {
 /**
  * Scan every data/records/<provider>.json and decide, per provider+model_id, whether the model is
  * ARCHIVED in our records - i.e. we have deliberately retired it. A model is archived when it has
- * records but NO open/active interval:
- *   * NO record has effective_to === null (every interval is closed), AND/OR
- *   * the latest record (max effective_from) is confidence "archived" or source_kind "wayback".
+ * records but NO open/active interval: NO record has effective_to === null.
+ * Closing the interval is the ONLY evidence of retirement. Provenance grades ("archived" confidence,
+ * "wayback" source_kind) describe where a NUMBER came from, never whether the MODEL is alive, and are
+ * deliberately not consulted here.
  * This is keyed off our RECORDS' archived state (not current.json), so it stays correct even when
  * current.json is stale or out of sync. The result is canonical-model-keyed; loadCurrent() wraps it
  * with an alias-aware lookup. Returns
@@ -222,10 +223,12 @@ function loadArchivedModels(root = REPO_ROOT) {
 		}
 	}
 	for (const [key, agg] of byModel) {
-		const latestIsArchival =
-			agg.latest && (agg.latest.confidence === 'archived' || agg.latest.source_kind === 'wayback');
-		// archived = no open interval at all, OR the most recent record is an archival one.
-		if (!agg.hasOpen || latestIsArchival) archived.add(key);
+		// ARCHIVED is a LIFECYCLE state and the only evidence for it is that we closed every interval.
+		// It is deliberately NOT inferred from `confidence: 'archived'` / `source_kind: 'wayback'`,
+		// which are PROVENANCE grades meaning "this number came off an archive snapshot": a live model
+		// whose newest row was backfilled from Wayback is still live, and reading it as retired
+		// silently suppressed the missing-variation pass and the NEW path for it.
+		if (!agg.hasOpen) archived.add(key);
 	}
 	return { archived, aliasToCanonical };
 }
@@ -375,13 +378,13 @@ function nearlyEqual(a, b, eps = 1e-9) {
 // "Weak" provenance: the record exists but is not first-party-verified. A model whose CURRENT record
 // has any of these confidences, OR any of these source_kinds, is a candidate for a provenance upgrade
 // when a first-party collector later confirms the SAME price.
-const WEAK_CONFIDENCE = new Set(['inferred', 'estimated']);
-const WEAK_SOURCE_KIND = new Set(['aggregator', 'changelog', 'manual']);
+const WEAK_CONFIDENCE = new Set(['inferred', 'estimated', 'archived']);
+const WEAK_SOURCE_KIND = new Set(['aggregator', 'changelog', 'manual', 'wayback']);
 
 /**
  * Is `current` ({ confidence, source_kind }) weaker provenance than `incoming`?
- * Weaker means: current.confidence in {inferred, estimated} OR current.source_kind in
- * {aggregator, changelog, manual}, while incoming is a genuine first-party upgrade
+ * Weaker means: current.confidence in {inferred, estimated, archived} OR current.source_kind in
+ * {aggregator, changelog, manual, wayback}, while incoming is a genuine first-party upgrade
  * (confidence verified + source_kind provider_live). Returns false if either side is missing the
  * fields, or if current is already verified+provider_live (nothing to upgrade).
  */
