@@ -64,6 +64,7 @@ const TRACKED = [
 	'qwen3.7-max',
 	'qwen3.7-plus',
 	'qwen3.7-flash',
+	'qwen3.8-flash',
 	'qwen3.8-max',
 	'qwen3-coder-flash',
 	'qwen3-coder-next',

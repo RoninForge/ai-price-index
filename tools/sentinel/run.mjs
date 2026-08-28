@@ -810,8 +810,12 @@ async function main() {
 
 				// Cross-check the upgrade too (fail-safe): a verified first-party record should pass, but a
 				// flagged one is drafted as `inferred` + needs_review like any other suspicious row.
-				const createdDate = tripwireCreatedDate(item, tripwireDates);
-				const drafted = { ...item, model_id: canonical, createdDate };
+				// NOT tripwireCreatedDate: that is when the MODEL appeared, which is the right
+				// effective_from for a NEW model and the wrong one here. An upgrade dates from when WE
+				// confirmed the price first-party, i.e. today. Using the model's creation date made the
+				// drafted row an exact match for the row it was meant to supersede, so the append-time
+				// dedup dropped it and the upgrade silently became a no-op.
+				const drafted = { ...item, model_id: canonical };
 				const gate = runGate({
 					provider: item.provider,
 					model_id: canonical,
@@ -836,14 +840,22 @@ async function main() {
 					prices: item.prices,
 					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
 				});
+				// Restrict the upgrade to the variations we ALREADY publish. An upgrade supersedes an
+				// existing row; a variation we carry no row for is not an upgrade, it is a missing
+				// variation, and the pass below owns it. Drafting both produced two open records for the
+				// same variation in one run (caught by validate as an ambiguous current price).
+				const publishedVariations = Object.keys(
+					current.byProviderModel.get(`${item.provider}/${canonical}`) || {}
+				);
 				try {
 					report.drafted_records.push(
-						...draftRecordsFor(
-							drafted,
-							downgrade
+						...draftRecordsFor(drafted, {
+							onlyVariations: publishedVariations,
+							effectiveFromOverride: today(),
+							...(downgrade
 								? { confidenceOverride: 'inferred', notesPrefix: reasonNote }
-								: { notesPrefix: reasonNote }
-						)
+								: { notesPrefix: reasonNote }),
+						})
 					);
 				} catch (e) {
 					report.errors.push({ stage: 'draft', provider: item.provider, model: canonical, error: e.message });
