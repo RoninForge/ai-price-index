@@ -41,9 +41,10 @@
 // We key off that aside (a warning aside whose body says deprecated/discontinued/retired/shut(-)down/
 // sunset OR links to /docs/deprecations) sitting in [modelHeading, firstTable). We do NOT name-blocklist
 // gemini-2.0-* - the marker generalizes to any future retirement. Current models (gemini-3.x,
-// gemini-2.5-x) carry no such aside and are kept. Fail loud: if the page text says "deprecat" anywhere
-// but we detect ZERO deprecation asides, the marker drifted - THROW rather than silently re-emit a
-// retired model as a NEW current price.
+// gemini-2.5-x) carry no such aside and are kept. Fail loud: if the ARTICLE BODY says "deprecat" but
+// we detect ZERO deprecation asides, the marker drifted - THROW rather than silently re-emit a
+// retired model as a NEW current price. Google may instead DELIST a retired model outright, in which
+// case the body is clean, no aside exists, and the collector simply stops seeing it.
 
 export const PROVIDER = 'google';
 const SOURCE_URL = 'https://ai.google.dev/gemini-api/docs/pricing';
@@ -117,6 +118,23 @@ const NAME_TO_CANONICAL = {
 const WARNING_ASIDE_RE = /<aside\b[^>]*\bclass="[^"]*\bwarning\b[^"]*"[^>]*>([\s\S]*?)<\/aside>/gi;
 const DEPRECATION_WORDS_RE = /(deprecat|discontinu|retir|shut[\s-]*down|sunset)/i;
 const DEPRECATION_LINK_RE = /\/gemini-api\/docs\/deprecations/i;
+
+// The devsite chrome carries the word "deprecated" on every render (a left-nav link to
+// /gemini-api/docs/deprecations, plus a `.deprecated` inline-CSS rule), so the drift check below must
+// read the ARTICLE BODY only or it fires on a page with no deprecated model on it at all.
+const ARTICLE_BODY_OPEN_RE = /<div\b[^>]*\bclass="[^"]*\bdevsite-article-body\b[^"]*"[^>]*>/i;
+
+/** The pricing article's own HTML, with the surrounding devsite nav/footer chrome removed. */
+function articleBody(html) {
+	const m = ARTICLE_BODY_OPEN_RE.exec(html);
+	if (!m)
+		throw new Error(
+			'google collector: no devsite-article-body container on the pricing page - structure drift.'
+		);
+	const rest = html.slice(m.index + m[0].length);
+	const end = rest.search(/devsite-content-footer/i);
+	return end > 0 ? rest.slice(0, end) : rest;
+}
 
 /** True if an aside's inner HTML reads as a deprecation/retirement notice for a model. */
 function isDeprecationAside(innerHtml) {
@@ -193,7 +211,7 @@ export async function collect() {
 	// Fail loud on marker drift: the page clearly marks deprecations in prose ("deprecat..." appears),
 	// yet our aside detector found none -> the warning markup changed and we'd silently re-emit retired
 	// models as NEW current prices. Refuse rather than guess.
-	if (/deprecat/i.test(html) && deprecationAsides.length === 0)
+	if (/deprecat/i.test(articleBody(html)) && deprecationAsides.length === 0)
 		throw new Error(
 			'google collector: page text mentions deprecation but no deprecation <aside class="warning"> was matched - deprecation marker drifted. Refusing to risk emitting a retired model.'
 		);
