@@ -71,6 +71,9 @@ export function buildOpenRouterLookup(tripwireCandidates) {
 	const byProviderKey = new Map();
 	for (const c of tripwireCandidates || []) {
 		if (!c || c.source !== 'openrouter') continue;
+		// A ":variant" SKU (":batch", ":free") prices a DIFFERENT product, and normalizeModelKey strips
+		// the suffix - so such a row would silently become the baseline for the standard SKU.
+		if (typeof c.source_id === 'string' && c.source_id.includes(':')) continue;
 		const input = numOrNull(c.reseller_input_usd_per_mtok);
 		const output = numOrNull(c.reseller_output_usd_per_mtok);
 		if (input === null && output === null) continue; // no price to cross-check against

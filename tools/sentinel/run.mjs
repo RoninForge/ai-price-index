@@ -41,6 +41,7 @@ import {
 	REPO_ROOT,
 	buildTrackedFamilyRoots,
 	classifyPendingCandidate,
+	isStrongerProvenance,
 } from './lib.mjs';
 import { findCandidates } from './tripwire.mjs';
 import { crossCheck, buildOpenRouterLookup, normalizeModelKey } from './crosscheck.mjs';
@@ -365,13 +366,15 @@ function renderReportMd(report, written) {
 				'(same price, better provenance). Close the prior open interval per CONTRIBUTING when merging.'
 		);
 		L.push('');
-		L.push('| Provider | Model | From | To | Cross-check |');
-		L.push('|---|---|---|---|---|');
+		L.push('| Provider | Model | From | To | Cross-check | Drafted |');
+		L.push('|---|---|---|---|---|---|');
 		for (const u of report.upgrades) {
 			const from = `${u.from.confidence || '-'} / ${u.from.source_kind || '-'}`;
 			const to = `${u.to.confidence || '-'} / ${u.to.source_kind || '-'}`;
 			const cc = u.crosscheck && u.crosscheck.verdict === 'needs_review' ? 'needs review' : 'verified';
-			L.push(`| \`${u.provider}\` | \`${u.model_id}\` | ${from} | ${to} | ${cc} |`);
+			const n = u.drafted_variations;
+			const drafted = n === 0 ? 'no row (already at this provenance)' : `${n} row(s)`;
+			L.push(`| \`${u.provider}\` | \`${u.model_id}\` | ${from} | ${to} | ${cc} | ${drafted} |`);
 		}
 		L.push('');
 	} else {
@@ -832,33 +835,45 @@ async function main() {
 					? `${upgradeNote} [needs_review] cross-check flagged: ${gate.reasons.join('; ')}.`
 					: upgradeNote;
 
+				// Restrict the upgrade to the variations we ALREADY publish. An upgrade supersedes an
+				// existing row; a variation we carry no row for is not an upgrade, it is a missing
+				// variation, and the pass below owns it. Drafting both produced two open records for the
+				// same variation in one run (caught by validate as an ambiguous current price).
+				// Then drop any variation the draft would not strictly improve: a cross-check downgrade can
+				// land on the provenance we already hold (a no-op supersede that re-drafts every run), or
+				// BELOW it, which would demote a row another pass had already verified.
+				const draftedProv = {
+					confidence: downgrade ? 'inferred' : item.confidence,
+					source_kind: item.source_kind,
+				};
+				const publishedVariations = Object.keys(
+					current.byProviderModel.get(`${item.provider}/${canonical}`) || {}
+				).filter((v) => isStrongerProvenance(fromProv[v], draftedProv));
+
 				report.upgrades.push({
 					provider: item.provider,
 					model_id: canonical,
 					from,
 					to: downgrade ? { confidence: 'inferred', source_kind: to.source_kind } : to,
 					prices: item.prices,
+					drafted_variations: publishedVariations.length,
 					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
 				});
-				// Restrict the upgrade to the variations we ALREADY publish. An upgrade supersedes an
-				// existing row; a variation we carry no row for is not an upgrade, it is a missing
-				// variation, and the pass below owns it. Drafting both produced two open records for the
-				// same variation in one run (caught by validate as an ambiguous current price).
-				const publishedVariations = Object.keys(
-					current.byProviderModel.get(`${item.provider}/${canonical}`) || {}
-				);
-				try {
-					report.drafted_records.push(
-						...draftRecordsFor(drafted, {
-							onlyVariations: publishedVariations,
-							effectiveFromOverride: today(),
-							...(downgrade
-								? { confidenceOverride: 'inferred', notesPrefix: reasonNote }
-								: { notesPrefix: reasonNote }),
-						})
-					);
-				} catch (e) {
-					report.errors.push({ stage: 'draft', provider: item.provider, model: canonical, error: e.message });
+
+				if (publishedVariations.length) {
+					try {
+						report.drafted_records.push(
+							...draftRecordsFor(drafted, {
+								onlyVariations: publishedVariations,
+								effectiveFromOverride: today(),
+								...(downgrade
+									? { confidenceOverride: 'inferred', notesPrefix: reasonNote }
+									: { notesPrefix: reasonNote }),
+							})
+						);
+					} catch (e) {
+						report.errors.push({ stage: 'draft', provider: item.provider, model: canonical, error: e.message });
+					}
 				}
 			}
 			// UNCHANGED: no price moved, but see the missing-variation pass below.

@@ -397,6 +397,22 @@ export function isWeakerProvenance(current, incoming) {
 }
 
 /**
+ * Is `incoming` provenance strictly BETTER than `current` on the same weak/strong split
+ * isWeakerProvenance uses? Neither axis may regress and at least one must improve. A draft failing
+ * this is a no-op supersede or a demotion of a row we already hold at a higher grade.
+ */
+export function isStrongerProvenance(current, incoming) {
+	if (!incoming) return false;
+	if (!current) return true;
+	const conf = (c) => (c === 'verified' ? 1 : 0);
+	const sk = (k) => (k === 'provider_live' ? 1 : 0);
+	const dConf = conf(incoming.confidence) - conf(current.confidence);
+	const dKind = sk(incoming.source_kind) - sk(current.source_kind);
+	if (dConf < 0 || dKind < 0) return false;
+	return dConf > 0 || dKind > 0;
+}
+
+/**
  * Classify a first-party-collected model against the published prices + provenance for the
  * provisional->verified lifecycle. Returns one of:
  *   'NEW'       - unknown model (delegates to classify()).
