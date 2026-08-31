@@ -1,5 +1,5 @@
 {
-  "model": "gemini-2.5-pro",
+  "model": "gemini-2.5-flash-lite",
   "provider": "google",
   "variations": {
     "input": [
@@ -7,7 +7,7 @@
         "confidence": "archived",
         "from": "2025-06-17",
         "last_validated": "2025-06-21",
-        "price_usd": 1.25,
+        "price_usd": 0.1,
         "snapshot": "20250621161929",
         "src": "https://web.archive.org/web/20250621161929/https://ai.google.dev/gemini-api/docs/pricing",
         "to": "2026-08-28",
@@ -17,7 +17,16 @@
         "confidence": "inferred",
         "from": "2026-08-28",
         "last_validated": "2026-08-28",
-        "price_usd": 1.25,
+        "price_usd": 0.1,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": "2026-08-31",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-08-31",
+        "last_validated": "2026-08-31",
+        "price_usd": 0.1,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -28,7 +37,7 @@
         "confidence": "archived",
         "from": "2025-06-17",
         "last_validated": "2025-06-21",
-        "price_usd": 10,
+        "price_usd": 0.4,
         "snapshot": "20250621161929",
         "src": "https://web.archive.org/web/20250621161929/https://ai.google.dev/gemini-api/docs/pricing",
         "to": "2026-08-28",
@@ -38,29 +47,16 @@
         "confidence": "inferred",
         "from": "2026-08-28",
         "last_validated": "2026-08-28",
-        "price_usd": 10,
+        "price_usd": 0.4,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
-        "to": null,
+        "to": "2026-08-31",
         "unit": "usd_per_mtok"
-      }
-    ],
-    "tier2_input": [
+      },
       {
         "confidence": "verified",
-        "from": "2026-08-28",
-        "last_validated": "2026-08-28",
-        "price_usd": 2.5,
-        "src": "https://ai.google.dev/gemini-api/docs/pricing",
-        "to": null,
-        "unit": "usd_per_mtok"
-      }
-    ],
-    "tier2_output": [
-      {
-        "confidence": "verified",
-        "from": "2026-08-28",
-        "last_validated": "2026-08-28",
-        "price_usd": 15,
+        "from": "2026-08-31",
+        "last_validated": "2026-08-31",
+        "price_usd": 0.4,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
