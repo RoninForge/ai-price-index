@@ -48,7 +48,7 @@ const HF_URL = (org) =>
 // Covers OpenRouter routing variants AND HuggingFace quantizations / research artifacts
 // (GPTQ/AWQ/FP8/GGUF/bnb quants, SAE probes, base/bench/embedding repos, sub-billion params).
 const NOISE_RE =
-	/(free|preview|experimental|extended|online|:thinking|nitro|beta\b|fine-?tune|gptq|awq|gguf|fp8|int4|int8|bnb-|-mlx|sae-|-bench\b|-base\b|guard|embedding|reranker|whisper|deepseek-ocr|tts|asr)/i;
+	/(free|preview|experimental|extended|online|:thinking|:batch|nitro|beta\b|fine-?tune|gptq|awq|gguf|fp8|int4|int8|bnb-|-mlx|sae-|-bench\b|-base\b|guard|embedding|reranker|whisper|deepseek-ocr|tts|asr)/i;
 
 function unixToIsoDate(sec) {
 	if (!Number.isFinite(sec)) return null;
