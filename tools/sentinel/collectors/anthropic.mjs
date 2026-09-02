@@ -19,15 +19,32 @@ import { fetchText, today } from '../lib.mjs';
 export const PROVIDER = 'anthropic';
 const SOURCE_URL = 'https://platform.claude.com/docs/en/docs/about-claude/pricing.md';
 
-// Column header (normalized lower-case) -> our variation. The presence + order of these is what we
-// assert against; we read by matched header position, not by a fixed column index, so a re-order is safe.
+// Column header (normalized via normalizeHeader) -> our variation. We read by matched header position,
+// not by a fixed column index, so a re-order is safe. EVERY key here must resolve to a column: a header
+// we cannot map is a silent data loss (the rate is published but never recorded), so collect() throws
+// rather than emit a model with a missing rate.
 const HEADER_TO_VARIATION = {
 	'base input tokens': 'input',
 	'5m cache writes': 'cache_write_5m',
 	'1h cache writes': 'cache_write_1h',
-	'cache hits & refreshes': 'cache_read',
+	'cache hits and refreshes': 'cache_read',
 	'output tokens': 'output',
 };
+
+/**
+ * Normalize a header cell for lookup. Anthropic has rendered the cache-read column as both
+ * "Cache Hits & Refreshes" and "Cache hits and refreshes"; a trailing footnote marker can also ride
+ * along ("Cache hits and refreshes1"). Fold case, spell "&" as "and", drop a trailing footnote digit,
+ * and collapse whitespace so either rendering resolves to one key.
+ */
+function normalizeHeader(h) {
+	return String(h)
+		.toLowerCase()
+		.replace(/&/g, ' and ')
+		.replace(/[0-9]+$/, '')
+		.replace(/\s+/g, ' ')
+		.trim();
+}
 
 // Map a display name (already link-stripped + trimmed) to a canonical model id + alias.
 // Dated snapshot ids mirror data/ai-price-index/index.json; newer point models use the bare id
@@ -197,11 +214,19 @@ export async function collect() {
 	// build columnIndex -> variation from the matched header (order-independent)
 	const colVariation = {};
 	headerCells.forEach((h, idx) => {
-		const key = h.toLowerCase();
+		const key = normalizeHeader(h);
 		if (HEADER_TO_VARIATION[key]) colVariation[idx] = HEADER_TO_VARIATION[key];
 	});
-	if (!Object.values(colVariation).includes('input') || !Object.values(colVariation).includes('output'))
-		throw new Error('anthropic collector: header found but input/output columns not mappable.');
+	// Assert FULL coverage, not just input/output. A renamed column silently drops a rate we would
+	// otherwise record, and a missing cache_read is worse than no row at all: consumers derive a cached
+	// rate as 0.1x input, so a model priced off that multiplier publishes a wrong number instead of none.
+	const mapped = new Set(Object.values(colVariation));
+	const missing = Object.values(HEADER_TO_VARIATION).filter((v) => !mapped.has(v));
+	if (missing.length)
+		throw new Error(
+			`anthropic collector: header found but these columns are not mappable: ${missing.join(', ')}. ` +
+				`Header was: ${headerCells.join(' | ')}. Structure drift - refusing to emit partial rates.`
+		);
 
 	const t = today();
 	const results = [];
