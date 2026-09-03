@@ -58,11 +58,21 @@
 // out to exactly $1.25 / $2.50; a live disagreement THROWS so a real change escalates to a human
 // rather than silently flipping data.
 //
-// Mapping (both paths):
-//   prompt_text_token_price / promptTextTokenPrice                  -> input
-//   completion_text_token_price / completionTextTokenPrice          -> output
-//   cached_prompt_text_token_price / cachedPromptTokenPrice         -> cache_read
-//   *_token_price_long_context / *TokenPriceLongContext             -> tier2_input / tier2_output
+// Mapping (both paths). The field name lists in API_FIELDS / BLOB_FIELDS below are the single source
+// of truth; this table is the human-readable copy:
+//   prompt_text_token_price / promptTextTokenPrice                              -> input
+//   completion_text_token_price / completionTextTokenPrice                      -> output
+//   cached_prompt_text_token_price / cachedPromptTokenPrice                     -> cache_read
+//   prompt_text_token_price_long_context / promptTextTokenPriceLongContext      -> tier2_input
+//   completion_text_token_price_long_context / completionTokenPriceLongContext  -> tier2_output
+//   cached_..._token_price_long_context / cachedPromptTokenPriceLongContext     -> tier2_cache_read
+//
+// COVERAGE IS ASSERTED, NOT ASSUMED. Every key matching /price/i on a model must be either mapped
+// above or listed in IGNORED_PRICE_FIELDS with a reason; anything else throws. This collector shipped
+// without the tier2_cache_read mapping, so xAI published a long-context cached-input rate for all 7
+// models and the index carried no row for any of them, with nothing failing (found 2026-09-03). A
+// published rate we drop on the floor is invisible: it looks exactly like a rate the provider does
+// not charge. Reading a field is now the only way to not fail on it.
 //
 // Contract (same as the other collectors): an array of
 //   { provider:"xai", model_id, display_name, aliases?,
@@ -102,6 +112,76 @@ const PIN_EXPECT = { input: 1.25, output: 2.5 };
 const PIN_IDS = ['grok-4.3', 'grok-4.20-0309-reasoning'];
 function nearly(a, b) {
 	return typeof a === 'number' && Math.abs(a - b) <= 1e-6;
+}
+
+// variation -> upstream field name(s), most-likely first. Arrays because the paths do not share one
+// naming convention (the blob drops "Text" where the API keeps it) and the API path has never run -
+// we hold no key - so its long-context cache name is unconfirmed. A wrong guess is not silent: the
+// field stays unconsumed and the coverage assertion throws naming the real one.
+const API_FIELDS = {
+	input: ['prompt_text_token_price'],
+	output: ['completion_text_token_price'],
+	cache_read: ['cached_prompt_text_token_price'],
+	tier2_input: ['prompt_text_token_price_long_context'],
+	tier2_output: ['completion_text_token_price_long_context'],
+	tier2_cache_read: ['cached_prompt_text_token_price_long_context', 'cached_prompt_token_price_long_context'],
+};
+
+// Verified against the live blob on 2026-09-03 (all 7 models carry all 6 fields).
+const BLOB_FIELDS = {
+	input: ['promptTextTokenPrice'],
+	output: ['completionTextTokenPrice'],
+	cache_read: ['cachedPromptTokenPrice'],
+	tier2_input: ['promptTextTokenPriceLongContext'],
+	tier2_output: ['completionTokenPriceLongContext'],
+	tier2_cache_read: ['cachedPromptTokenPriceLongContext'],
+};
+
+// Price fields we deliberately do NOT record, each with the reason it is not a gap. Adding a name
+// here is a decision to keep ignoring a published rate; leaving one out is a hard failure.
+const IGNORED_PRICE_FIELDS = new Map([
+	[
+		'promptImageTokenPrice',
+		'image INPUT tokens; every current Grok model prices them identically to text input, and the ' +
+			'schema has no per-input-image-token variation (image_per_item is per GENERATED image)',
+	],
+	['prompt_image_token_price', 'API spelling of promptImageTokenPrice; same reason'],
+]);
+
+/** Read the first present field for a variation, returning [value, consumedKey] or [null, null]. */
+function pick(model, names) {
+	for (const n of names) {
+		if (model[n] !== undefined && model[n] !== null) return [model[n], n];
+	}
+	return [null, null];
+}
+
+/** Read every mapped variation off a model object, asserting coverage first. Null without input+output. */
+function pricesFromModel(model, fields, pathLabel) {
+	const raw = {};
+	const consumed = new Set();
+	for (const [variation, names] of Object.entries(fields)) {
+		const [value, key] = pick(model, names);
+		if (key) {
+			raw[variation] = value;
+			consumed.add(key);
+		}
+	}
+	assertPriceFieldsCovered(model, consumed, pathLabel);
+	return buildPrices(raw);
+}
+
+/** Throw unless every /price/i key on the model was mapped or explicitly ignored. */
+function assertPriceFieldsCovered(model, consumed, pathLabel) {
+	const unmapped = Object.keys(model).filter(
+		(k) => /price/i.test(k) && !consumed.has(k) && !IGNORED_PRICE_FIELDS.has(k)
+	);
+	if (!unmapped.length) return;
+	throw new Error(
+		`xai collector (${pathLabel}): model "${model.name ?? model.id ?? '(unnamed)'}" publishes price ` +
+			`field(s) this collector neither maps nor ignores: ${unmapped.join(', ')}. Refusing to emit a ` +
+			`partial rate card - map each to a variation, or add it to IGNORED_PRICE_FIELDS with a reason.`
+	);
 }
 
 /**
@@ -165,13 +245,7 @@ function parseApiModels(data) {
 	for (const m of models) {
 		const id = m && m.id;
 		if (typeof id !== 'string' || !id) continue;
-		const prices = buildPrices({
-			input: m.prompt_text_token_price,
-			output: m.completion_text_token_price,
-			cache_read: m.cached_prompt_text_token_price,
-			tier2_input: m.prompt_text_token_price_long_context,
-			tier2_output: m.completion_text_token_price_long_context,
-		});
+		const prices = pricesFromModel(m, API_FIELDS, 'API');
 		if (!prices) continue; // needs at least input + output
 		const aliases =
 			Array.isArray(m.aliases) && m.aliases.length
@@ -331,13 +405,7 @@ function parseBlobModels(html) {
 			const id = m && m.name;
 			if (typeof id !== 'string' || !id || byId.has(id)) continue;
 
-			const prices = buildPrices({
-				input: m.promptTextTokenPrice,
-				output: m.completionTextTokenPrice,
-				cache_read: m.cachedPromptTokenPrice,
-				tier2_input: m.promptTextTokenPriceLongContext,
-				tier2_output: m.completionTokenPriceLongContext,
-			});
+			const prices = pricesFromModel(m, BLOB_FIELDS, 'HTML/blob');
 			if (!prices) continue; // needs at least input + output
 
 			byId.set(id, prices);
@@ -387,13 +455,22 @@ function parseFlightModels(html) {
 			return mm ? flightNum(mm[1]) : null;
 		};
 
-		const prices = buildPrices({
-			input: grab('promptTextTokenPrice'),
-			output: grab('completionTextTokenPrice'),
-			cache_read: grab('cachedPromptTokenPrice'),
-			tier2_input: grab('promptTextTokenPriceLongContext'),
-			tier2_output: grab('completionTokenPriceLongContext'),
-		});
+		// Flight carries the same camelCase names as the blob, but as escaped text rather than an
+		// object, so coverage is asserted against the key names found in the block.
+		const consumed = new Set();
+		const raw = {};
+		for (const [variation, names] of Object.entries(BLOB_FIELDS)) {
+			for (const n of names) {
+				const v = grab(n);
+				if (v !== null) {
+					raw[variation] = v;
+					consumed.add(n);
+					break;
+				}
+			}
+		}
+		assertFlightPriceFieldsCovered(blk, id, consumed);
+		const prices = buildPrices(raw);
 		if (!prices) continue; // needs at least input + output
 
 		byId.set(id, prices);
@@ -412,6 +489,17 @@ function parseFlightModels(html) {
 	return rows;
 }
 
+/** assertPriceFieldsCovered for the Flight path, against escaped JSON text instead of object keys. */
+function assertFlightPriceFieldsCovered(blk, id, consumed) {
+	const keys = new Set([...blk.matchAll(/([A-Za-z]*[Pp]rice[A-Za-z]*)[\\"]*:/g)].map((m) => m[1]));
+	const unmapped = [...keys].filter((k) => !consumed.has(k) && !IGNORED_PRICE_FIELDS.has(k));
+	if (!unmapped.length) return;
+	throw new Error(
+		`xai collector (HTML/flight): model "${id}" publishes price field(s) this collector neither maps ` +
+			`nor ignores: ${unmapped.join(', ')}. Refusing to emit a partial rate card.`
+	);
+}
+
 /** Pull the (string) aliases array for a model out of its serialized block. Backslash-tolerant. */
 function extractAliases(blk, id) {
 	const am = blk.match(/aliases[\\"]*:[\\"]*\[([^\]]*)\]/);
@@ -427,19 +515,17 @@ function extractAliases(blk, id) {
 // shared helpers
 // ---------------------------------------------------------------------------
 
-/** Build a prices object (usd_per_mtok) from integer-scale fields. Returns null without input+output. */
-function buildPrices({ input, output, cache_read, tier2_input, tier2_output }) {
+/**
+ * Integer-scale fields -> usd_per_mtok, keyed by INDEX VARIATION NAME. Iterates what it is handed
+ * rather than destructuring a fixed list: the previous version named five variations, so extending
+ * the field maps alone left the new rate dropped one layer below the map. Null without input+output.
+ */
+function buildPrices(raw) {
 	const prices = {};
-	const i = toMtok(input);
-	const o = toMtok(output);
-	const cr = toMtok(cache_read);
-	const t2i = toMtok(tier2_input);
-	const t2o = toMtok(tier2_output);
-	if (i !== null) prices.input = i;
-	if (o !== null) prices.output = o;
-	if (cr !== null) prices.cache_read = cr;
-	if (t2i !== null) prices.tier2_input = t2i;
-	if (t2o !== null) prices.tier2_output = t2o;
+	for (const [variation, field] of Object.entries(raw)) {
+		const v = toMtok(field);
+		if (v !== null) prices[variation] = v;
+	}
 	if (typeof prices.input !== 'number' || typeof prices.output !== 'number') return null;
 	return prices;
 }
