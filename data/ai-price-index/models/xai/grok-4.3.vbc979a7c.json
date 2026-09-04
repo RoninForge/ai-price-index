@@ -1,26 +1,17 @@
 {
   "aliases": [
-    "grok-4.5-latest",
-    "grok-build-latest"
+    "grok-4.3-latest",
+    "grok-latest"
   ],
-  "model": "grok-4.5",
+  "model": "grok-4.3",
   "provider": "xai",
   "variations": {
     "cache_read": [
       {
         "confidence": "verified",
-        "from": "2026-07-08",
-        "last_validated": "2026-07-09",
-        "price_usd": 0.5,
-        "src": "https://docs.x.ai/docs/models",
-        "to": "2026-07-19",
-        "unit": "usd_per_mtok"
-      },
-      {
-        "confidence": "verified",
-        "from": "2026-07-19",
+        "from": "2026-06-17",
         "last_validated": "2026-07-27",
-        "price_usd": 0.3,
+        "price_usd": 0.2,
         "src": "https://docs.x.ai/developers/models",
         "to": null,
         "unit": "usd_per_mtok"
@@ -29,10 +20,10 @@
     "input": [
       {
         "confidence": "verified",
-        "from": "2026-07-08",
+        "from": "2026-05-05",
         "last_validated": "2026-07-27",
-        "price_usd": 2,
-        "src": "https://docs.x.ai/developers/models",
+        "price_usd": 1.25,
+        "src": "https://docs.x.ai/developers/models/grok-4.3",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -40,9 +31,20 @@
     "output": [
       {
         "confidence": "verified",
-        "from": "2026-07-08",
+        "from": "2026-05-05",
         "last_validated": "2026-07-27",
-        "price_usd": 6,
+        "price_usd": 2.5,
+        "src": "https://docs.x.ai/developers/models/grok-4.3",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-03",
+        "last_validated": "2026-09-03",
+        "price_usd": 0.4,
         "src": "https://docs.x.ai/developers/models",
         "to": null,
         "unit": "usd_per_mtok"
@@ -53,7 +55,7 @@
         "confidence": "verified",
         "from": "2026-07-31",
         "last_validated": "2026-07-31",
-        "price_usd": 4,
+        "price_usd": 2.5,
         "src": "https://docs.x.ai/developers/models",
         "to": null,
         "unit": "usd_per_mtok"
@@ -64,7 +66,7 @@
         "confidence": "verified",
         "from": "2026-07-31",
         "last_validated": "2026-07-31",
-        "price_usd": 12,
+        "price_usd": 5,
         "src": "https://docs.x.ai/developers/models",
         "to": null,
         "unit": "usd_per_mtok"

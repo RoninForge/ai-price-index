@@ -1,0 +1,94 @@
+{
+  "model": "gpt-6-astra",
+  "provider": "openai",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 1,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "cache_write": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 12.5,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 10,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 50,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_cache_read": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 2,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_cache_write": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 25,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_input": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 20,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "tier2_output": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-04",
+        "last_validated": "2026-09-04",
+        "price_usd": 75,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

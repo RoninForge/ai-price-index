@@ -35,6 +35,17 @@
         "unit": "usd_per_mtok"
       }
     ],
+    "tier2_cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-03",
+        "last_validated": "2026-09-03",
+        "price_usd": 1,
+        "src": "https://docs.x.ai/developers/models",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "tier2_input": [
       {
         "confidence": "verified",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-08-31",
+  "dataModified": "2026-09-04",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -196,6 +196,12 @@
       "latestRev": "53dd2802"
     },
     {
+      "id": "claude-fable-5-1",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-fable-5-1.vc7819a3d.json",
+      "latestRev": "c7819a3d"
+    },
+    {
       "id": "claude-haiku-4-5-20251001",
       "provider": "anthropic",
       "file": "models/anthropic/claude-haiku-4-5-20251001.v49c6b4f8.json",
@@ -209,6 +215,12 @@
       "provider": "anthropic",
       "file": "models/anthropic/claude-mythos-5.vfd6a94c9.json",
       "latestRev": "fd6a94c9"
+    },
+    {
+      "id": "claude-mythos-5-1",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-mythos-5-1.vdb0fa21b.json",
+      "latestRev": "db0fa21b"
     },
     {
       "id": "claude-opus-4-1-20250805",
@@ -282,8 +294,8 @@
     {
       "id": "claude-sonnet-5",
       "provider": "anthropic",
-      "file": "models/anthropic/claude-sonnet-5.vf72dcc34.json",
-      "latestRev": "f72dcc34"
+      "file": "models/anthropic/claude-sonnet-5.v20f92871.json",
+      "latestRev": "20f92871"
     },
     {
       "id": "command-a-plus",
@@ -620,6 +632,12 @@
       "latestRev": "d0aa182d"
     },
     {
+      "id": "gpt-6-astra",
+      "provider": "openai",
+      "file": "models/openai/gpt-6-astra.v0c5790b8.json",
+      "latestRev": "0c5790b8"
+    },
+    {
       "id": "o1",
       "provider": "openai",
       "file": "models/openai/o1.v48651a1c.json",
@@ -676,8 +694,8 @@
     {
       "id": "grok-4.20-0309-non-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-non-reasoning.v77120f0a.json",
-      "latestRev": "77120f0a",
+      "file": "models/xai/grok-4.20-0309-non-reasoning.v82168ce7.json",
+      "latestRev": "82168ce7",
       "aliases": [
         "grok-4.20-beta-0309-non-reasoning",
         "grok-4.20-beta-latest-non-reasoning",
@@ -692,8 +710,8 @@
     {
       "id": "grok-4.20-0309-reasoning",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-0309-reasoning.vb5938e3e.json",
-      "latestRev": "b5938e3e",
+      "file": "models/xai/grok-4.20-0309-reasoning.vfa0216bc.json",
+      "latestRev": "fa0216bc",
       "aliases": [
         "grok-4.20",
         "grok-4.20-0309",
@@ -715,8 +733,8 @@
     {
       "id": "grok-4.20-multi-agent-0309",
       "provider": "xai",
-      "file": "models/xai/grok-4.20-multi-agent-0309.vc3ac530c.json",
-      "latestRev": "c3ac530c",
+      "file": "models/xai/grok-4.20-multi-agent-0309.vcd74b8c3.json",
+      "latestRev": "cd74b8c3",
       "aliases": [
         "grok-4.20-multi-agent",
         "grok-4.20-multi-agent-beta-0309",
@@ -729,8 +747,8 @@
     {
       "id": "grok-4.3",
       "provider": "xai",
-      "file": "models/xai/grok-4.3.vaafdd7eb.json",
-      "latestRev": "aafdd7eb",
+      "file": "models/xai/grok-4.3.vbc979a7c.json",
+      "latestRev": "bc979a7c",
       "aliases": [
         "grok-4.3-latest",
         "grok-latest"
@@ -739,8 +757,8 @@
     {
       "id": "grok-4.5",
       "provider": "xai",
-      "file": "models/xai/grok-4.5.v961ac1da.json",
-      "latestRev": "961ac1da",
+      "file": "models/xai/grok-4.5.v12ba609a.json",
+      "latestRev": "12ba609a",
       "aliases": [
         "grok-4.5-latest",
         "grok-build-latest"
@@ -749,14 +767,14 @@
     {
       "id": "grok-4.6",
       "provider": "xai",
-      "file": "models/xai/grok-4.6.ve41d7047.json",
-      "latestRev": "e41d7047"
+      "file": "models/xai/grok-4.6.v6767fee6.json",
+      "latestRev": "6767fee6"
     },
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v5575a7e8.json",
-      "latestRev": "5575a7e8",
+      "file": "models/xai/grok-build-0.1.v0651fbdd.json",
+      "latestRev": "0651fbdd",
       "aliases": [
         "grok-code-fast",
         "grok-code-fast-1",
