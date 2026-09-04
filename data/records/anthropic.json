@@ -676,11 +676,11 @@
     "price_usd": 2,
     "effective_from": "2026-07-01",
     "effective_to": null,
-    "last_validated_at": "2026-07-01",
+    "last_validated_at": "2026-09-02",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+    "notes": "$2/$10 was announced at launch as introductory pricing through 2026-08-31. On 2026-09-02 Anthropic's pricing page states it is now the STANDARD price and that the previously scheduled increase to $3/$15 per MTok input/output on 2026-09-01 will not occur, so this interval stays open and unchanged. effective_from is the first first-party validation date - Anthropic's pricing page does not state a launch date."
   },
   {
     "provider": "anthropic",
@@ -690,11 +690,11 @@
     "price_usd": 10,
     "effective_from": "2026-07-01",
     "effective_to": null,
-    "last_validated_at": "2026-07-01",
+    "last_validated_at": "2026-09-02",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+    "notes": "$2/$10 was announced at launch as introductory pricing through 2026-08-31. On 2026-09-02 Anthropic's pricing page states it is now the STANDARD price and that the previously scheduled increase to $3/$15 per MTok input/output on 2026-09-01 will not occur, so this interval stays open and unchanged. effective_from is the first first-party validation date - Anthropic's pricing page does not state a launch date."
   },
   {
     "provider": "anthropic",
@@ -704,11 +704,11 @@
     "price_usd": 0.2,
     "effective_from": "2026-07-01",
     "effective_to": null,
-    "last_validated_at": "2026-07-01",
+    "last_validated_at": "2026-09-02",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+    "notes": "$2/$10 was announced at launch as introductory pricing through 2026-08-31. On 2026-09-02 Anthropic's pricing page states it is now the STANDARD price and that the previously scheduled increase to $3/$15 per MTok input/output on 2026-09-01 will not occur, so this interval stays open and unchanged. effective_from is the first first-party validation date - Anthropic's pricing page does not state a launch date."
   },
   {
     "provider": "anthropic",
@@ -718,11 +718,11 @@
     "price_usd": 2.5,
     "effective_from": "2026-07-01",
     "effective_to": null,
-    "last_validated_at": "2026-07-01",
+    "last_validated_at": "2026-09-02",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+    "notes": "$2/$10 was announced at launch as introductory pricing through 2026-08-31. On 2026-09-02 Anthropic's pricing page states it is now the STANDARD price and that the previously scheduled increase to $3/$15 per MTok input/output on 2026-09-01 will not occur, so this interval stays open and unchanged. effective_from is the first first-party validation date - Anthropic's pricing page does not state a launch date."
   },
   {
     "provider": "anthropic",
@@ -732,11 +732,11 @@
     "price_usd": 4,
     "effective_from": "2026-07-01",
     "effective_to": null,
-    "last_validated_at": "2026-07-01",
+    "last_validated_at": "2026-09-02",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Introductory pricing, in effect through 2026-08-31; standard pricing rises to $3/$15 per MTok input/output on 2026-09-01 (surfaced as a sentinel CHANGED price for a bitemporal interval edit when it lands). effective_from is the first first-party validation date - Anthropic’s pricing page does not state a launch date."
+    "notes": "$2/$10 was announced at launch as introductory pricing through 2026-08-31. On 2026-09-02 Anthropic's pricing page states it is now the STANDARD price and that the previously scheduled increase to $3/$15 per MTok input/output on 2026-09-01 will not occur, so this interval stays open and unchanged. effective_from is the first first-party validation date - Anthropic's pricing page does not state a launch date."
   },
   {
     "provider": "anthropic",
@@ -1300,5 +1300,145 @@
       "claude-haiku-4-5"
     ],
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5-1",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Fable 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5-1",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 50,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Fable 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5-1",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.25,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Cache hits and refreshes are priced at 0.025x the base input price ($0.25 per MTok), NOT the 0.1x multiplier every other Claude model uses. Anthropic's pricing page carries this as a footnote on the rate table. Consumers that DERIVE a cached rate as 0.1x input publish $1.00 for this model instead of $0.25. Claude Fable 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5-1",
+    "variation": "cache_write_5m",
+    "unit": "usd_per_mtok",
+    "price_usd": 12.5,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Fable 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-fable-5-1",
+    "variation": "cache_write_1h",
+    "unit": "usd_per_mtok",
+    "price_usd": 20,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Fable 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5-1",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Mythos 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Limited availability (Anthropic Project Glasswing); listed on the public pricing table at the same rates as Claude Fable 5.1."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5-1",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 50,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Mythos 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Limited availability (Anthropic Project Glasswing); listed on the public pricing table at the same rates as Claude Fable 5.1."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5-1",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.25,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Cache hits and refreshes are priced at 0.025x the base input price ($0.25 per MTok), NOT the 0.1x multiplier every other Claude model uses. Anthropic's pricing page carries this as a footnote on the rate table. Consumers that DERIVE a cached rate as 0.1x input publish $1.00 for this model instead of $0.25. Claude Mythos 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Limited availability (Anthropic Project Glasswing); listed on the public pricing table at the same rates as Claude Fable 5.1."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5-1",
+    "variation": "cache_write_5m",
+    "unit": "usd_per_mtok",
+    "price_usd": 12.5,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Mythos 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Limited availability (Anthropic Project Glasswing); listed on the public pricing table at the same rates as Claude Fable 5.1."
+  },
+  {
+    "provider": "anthropic",
+    "model_id": "claude-mythos-5-1",
+    "variation": "cache_write_1h",
+    "unit": "usd_per_mtok",
+    "price_usd": 20,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-02",
+    "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Claude Mythos 5.1 first observed on Anthropic's first-party pricing page on 2026-09-02; it was absent from the same page at 2026-09-01 17:06 UTC (price-sentinel run 33535755385). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Limited availability (Anthropic Project Glasswing); listed on the public pricing table at the same rates as Claude Fable 5.1."
   }
 ]
