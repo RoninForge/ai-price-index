@@ -422,6 +422,12 @@
       "latestRev": "9bf664a9"
     },
     {
+      "id": "gemini-3.8-flash",
+      "provider": "google",
+      "file": "models/google/gemini-3.8-flash.v1b64f1bf.json",
+      "latestRev": "1b64f1bf"
+    },
+    {
       "id": "llama-3.1-405b",
       "provider": "meta-llama",
       "file": "models/meta-llama/llama-3.1-405b.vf9bfd450.json",
