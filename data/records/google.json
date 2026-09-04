@@ -614,5 +614,31 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.8-flash",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.75,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-04",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-3.8-flash",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 3.75,
+    "effective_from": "2026-09-02",
+    "effective_to": null,
+    "last_validated_at": "2026-09-04",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
