@@ -663,7 +663,7 @@ async function main() {
 	 * needs_review (we never publish-as-verified something the gate could not evaluate). The thrown
 	 * message is surfaced as a reason + into report.errors. Records the verdict in report.crosscheck.
 	 */
-	const runGate = (candidate) => {
+	const runGate = (candidate, { record = true } = {}) => {
 		let result;
 		try {
 			result = crossCheck(candidate, { openrouter });
@@ -674,6 +674,15 @@ async function main() {
 			report.errors.push({ stage: 'crosscheck', provider: candidate.provider, model: candidate.model_id, error: e.message });
 			result = { verdict: 'needs_review', reasons: [`cross-check threw, defaulting to needs_review: ${e.message}`] };
 		}
+		// `record: false` lets a caller ask the gate a question without filing the answer as a finding.
+		// The upgrade path must decide whether it will draft anything BEFORE the verdict is news: a
+		// verdict on an upgrade that turns out to draft nothing is not something a human needs to
+		// review, and filing it anyway put a standing "6 need review" on a report with 0 to do.
+		if (record) recordGate(candidate, result);
+		return result;
+	};
+
+	const recordGate = (candidate, result) => {
 		report.crosscheck.items.push({
 			provider: candidate.provider,
 			model_id: candidate.model_id,
@@ -683,7 +692,6 @@ async function main() {
 		});
 		if (result.verdict === 'verified') report.crosscheck.auto_verified++;
 		else report.crosscheck.needs_review++;
-		return result;
 	};
 
 	// Every normalized id form a first-party collector surfaced this run, scoped by provider, so Part B
@@ -861,14 +869,15 @@ async function main() {
 				// drafted row an exact match for the row it was meant to supersede, so the append-time
 				// dedup dropped it and the upgrade silently became a no-op.
 				const drafted = { ...item, model_id: canonical };
-				const gate = runGate({
+				const gateCandidate = {
 					provider: item.provider,
 					model_id: canonical,
 					prices: item.prices,
 					aliases: item.aliases,
 					isNew: false,
 					prior: current.byProviderModel.get(`${item.provider}/${canonical}`) || null,
-				});
+				};
+				const gate = runGate(gateCandidate, { record: false });
 				const downgrade = gate.verdict === 'needs_review';
 				const upgradeNote =
 					`[provenance upgrade] first-party collector confirmed the published price; supersedes the ` +
@@ -884,23 +893,40 @@ async function main() {
 				// Then drop any variation the draft would not strictly improve: a cross-check downgrade can
 				// land on the provenance we already hold (a no-op supersede that re-drafts every run), or
 				// BELOW it, which would demote a row another pass had already verified.
-				const draftedProv = {
-					confidence: downgrade ? 'inferred' : item.confidence,
-					source_kind: item.source_kind,
-				};
+				// PER-VARIATION, not per-model. A collector can READ some rates and DERIVE others (alibaba
+				// reads Qwen input/output off the pricing doc and derives the cache rows from a published
+				// multiplier), and it declares that in item.variation_provenance. Comparing every variation
+				// against the ITEM-level provenance made the derived cache rows look like a first-party
+				// confirmation of an `inferred` record, so this path drafted inferred -> verified for 12
+				// derived Qwen cache prices the day after they landed. Promoting a derived number to
+				// `verified` asserts we read a price nobody publishes, which is the exact claim the
+				// per-variation split exists to prevent. Ask what THIS variation's provenance would be.
+				const perVarProv = item.variation_provenance || {};
+				const draftedProvFor = (v) => ({
+					confidence: downgrade ? 'inferred' : perVarProv[v]?.confidence || item.confidence,
+					source_kind: perVarProv[v]?.source_kind || item.source_kind,
+				});
 				const publishedVariations = Object.keys(
 					current.byProviderModel.get(`${item.provider}/${canonical}`) || {}
-				).filter((v) => isStrongerProvenance(fromProv[v], draftedProv));
+				).filter((v) => isStrongerProvenance(fromProv[v], draftedProvFor(v)));
 
-				report.upgrades.push({
-					provider: item.provider,
-					model_id: canonical,
-					from,
-					to: downgrade ? { confidence: 'inferred', source_kind: to.source_kind } : to,
-					prices: item.prices,
-					drafted_variations: publishedVariations.length,
-					crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
-				});
+				// Report an upgrade only when it actually drafts something. A no-op supersede is not news,
+				// and it repeats on EVERY run: the derived Qwen cache rows alone would have parked 12
+				// permanent "no row (already at this provenance)" lines in the report. A channel that
+				// always carries the same twelve non-findings is one nobody reads, which is the same
+				// silence as not reporting at all.
+				if (publishedVariations.length) {
+					recordGate(gateCandidate, gate);
+					report.upgrades.push({
+						provider: item.provider,
+						model_id: canonical,
+						from,
+						to: downgrade ? { confidence: 'inferred', source_kind: to.source_kind } : to,
+						prices: item.prices,
+						drafted_variations: publishedVariations.length,
+						crosscheck: { verdict: gate.verdict, reasons: gate.reasons },
+					});
+				}
 
 				if (publishedVariations.length) {
 					try {
