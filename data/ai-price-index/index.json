@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-04",
+  "dataModified": "2026-09-06",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -640,8 +640,8 @@
     {
       "id": "gpt-6-astra",
       "provider": "openai",
-      "file": "models/openai/gpt-6-astra.v0c5790b8.json",
-      "latestRev": "0c5790b8"
+      "file": "models/openai/gpt-6-astra.v5dbccf92.json",
+      "latestRev": "5dbccf92"
     },
     {
       "id": "o1",
