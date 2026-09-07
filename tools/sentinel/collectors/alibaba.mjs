@@ -45,6 +45,41 @@ const PRICING_NODE_ID = '2987148';
 const CONTENT_API = `https://www.alibabacloud.com/help/json/document_detail.json?nodeId=${PRICING_NODE_ID}&website=intl&language=en`;
 const SOURCE_URL = 'https://www.alibabacloud.com/help/en/model-studio/model-pricing';
 
+// --- Context Cache ------------------------------------------------------------------------------
+// Alibaba does NOT publish a per-model cache price. The model-pricing doc says outright that "the
+// input prices in the tables below do not include cache prices" and points at the Context Cache doc,
+// which prices caching only as MULTIPLIERS of the standard input price:
+//     explicit cache creation = 125% of input, explicit cache hit = 10% of input, implicit hit = 20%.
+// So the cache rows we publish are DERIVED, not read, and they carry their own provenance
+// (`inferred`, sourced to the cache doc) via item.variation_provenance. See run.mjs draftRecordsFor.
+//
+// WE PARSE THE MULTIPLIERS OUT OF THE DOC RATHER THAN HARDCODING THEM. A constant would freeze
+// today's rule into the collector and keep deriving from it silently after Alibaba changed it, which
+// is the exact failure this dataset has now hit three times (anthropic cache_read column rename, xai
+// tier2_cache_read, the Fable 5.1 0.025x break of the "universal" 0.1x rule). If the sentence moves,
+// this throws instead of quietly publishing stale arithmetic.
+//
+// THE NAMED EXCEPTIONS ARE NOT DERIVABLE AND WE DO NOT GUESS THEM. The doc says the explicit cache
+// hit price for qwen3.8-max, qwen3.8-max-0902, qwen3.8-flash and qwen3.8-2.4t-a95b "is not 10% of the
+// standard input token price. For specific pricing, see the Model Studio console." The console is
+// authenticated, so those rates are simply not public. They get NO record and a standing notice, so
+// the gap stays visible rather than being papered over with a number the vendor contradicts.
+const CACHE_NODE_ID = '2862577';
+const CACHE_API = `https://www.alibabacloud.com/help/json/document_detail.json?nodeId=${CACHE_NODE_ID}&website=intl&language=en`;
+const CACHE_SOURCE_URL = 'https://www.alibabacloud.com/help/en/model-studio/context-cache';
+
+// Sentences that carry the multipliers. Each MUST match or the collector throws.
+const MULT_PATTERNS = {
+	cache_read: /cache hits are typically billed at only (\d+(?:\.\d+)?)% of that price/i,
+	cache_write: /Content used to create a new cache is billed at (\d+(?:\.\d+)?)% of the standard input token price/i,
+};
+// Read for the record notes only: the automatic cache a caller gets without markers.
+const IMPLICIT_PATTERN =
+	/portion of the input served from the cache is typically billed at (\d+(?:\.\d+)?)% of the standard input token price/i;
+// The sentence that names the models whose rate is NOT the published multiplier.
+const EXCEPTION_PATTERN = /is not \d+% of the standard input token price\. For specific pricing, see the Model Studio console/i;
+
+
 // The Qwen flagship/mainline models the dataset tracks. Matched against the FIRST whitespace-delimited
 // token of the "Model ID" cell, so dated snapshots (qwen3.7-max-2026-05-20) and look-alikes
 // (qwen-plus-character) never match. Third-party models Bailian also hosts (glm-*, deepseek-*) are
@@ -76,6 +111,10 @@ const TRACKED = [
 const UNTRACKED_RULES = [
 	[/^(?!qwen)/, 'third-party model hosted on Bailian; belongs to its own provider, not alibaba'],
 	[/-\d{4}-\d{2}-\d{2}$/, 'dated snapshot of a tracked family'],
+	// Alibaba uses BOTH -YYYY-MM-DD and a bare -MMDD for snapshots (qwen3.8-max-0902). Only the first
+	// form was covered, so -MMDD ids nagged as "untracked" every run from 2026-09-03. Month-bounded so
+	// it cannot swallow a real id that happens to end in four digits.
+	[/-(0[1-9]|1[0-2])\d{2}$/, 'dated snapshot (-MMDD form) of a tracked family'],
 	[/-(preview|latest)$/, 'preview/latest alias, not a stable priced id'],
 	[/-(us|intl|cn)$/, 'regional deployment variant of a tracked id'],
 	[/(^|-)\d+(\.\d+)?[bt](-a\d+(\.\d+)?b)?(-|$)/, 'open-weight size SKU, not a mainline API model'],
@@ -156,6 +195,65 @@ export function getNotices() {
  * Returns an array of { provider, model_id, display_name, prices:{input,output}, unit, source_url,
  * source_kind, confidence, known_mapping, notes }. Throws on structural drift; reports missing models.
  */
+/**
+ * Read the Context Cache doc and return the multipliers, the International-scope explicit-cache
+ * support list, and the models the doc declares are NOT on the published multiplier.
+ * Throws on any structural drift: a missing multiplier sentence means we cannot derive honestly.
+ */
+async function fetchCacheRules() {
+	const doc = await fetchJson(CACHE_API);
+	const content = doc && doc.data && doc.data.content;
+	if (!content || typeof content !== 'string')
+		throw new Error(
+			`alibaba collector (cache): content API responded (code=${doc && doc.code}) but carried no doc ` +
+				`body for nodeId ${CACHE_NODE_ID}, so cache rates were NOT checked. See ${CACHE_SOURCE_URL}.`
+		);
+	const text = content.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
+
+	const multipliers = {};
+	for (const [variation, re] of Object.entries(MULT_PATTERNS)) {
+		const m = text.match(re);
+		if (!m)
+			throw new Error(
+				`alibaba collector (cache): could not read the ${variation} multiplier from the Context Cache ` +
+					`doc. The sentence this collector derives from has moved or been reworded, so every derived ` +
+					`cache rate would be stale arithmetic. Refusing to emit. Re-read ${CACHE_SOURCE_URL}.`
+			);
+		const pct = parseFloat(m[1]);
+		if (!Number.isFinite(pct) || pct <= 0 || pct > 500)
+			throw new Error(`alibaba collector (cache): implausible ${variation} multiplier ${m[1]}%.`);
+		multipliers[variation] = pct / 100;
+	}
+	const im = text.match(IMPLICIT_PATTERN);
+	const implicitPct = im ? parseFloat(im[1]) : null;
+
+	// Models the doc explicitly removes from the multiplier rule. Collected from every exception
+	// sentence, so a newly-named model drops out of derivation on the next run without a code change.
+	const exceptions = new Set();
+	for (const m of text.matchAll(new RegExp('([a-z0-9.,\\-\\s]{0,160}?)' + EXCEPTION_PATTERN.source, 'gi'))) {
+		for (const id of (m[1] || '').match(/qwen[0-9a-z.\-]+|deepseek-[0-9a-z.\-]+|glm-[0-9a-z.\-]+/gi) || [])
+			exceptions.add(id.replace(/[.,]$/, '').toLowerCase());
+	}
+	if (!exceptions.size)
+		throw new Error(
+			'alibaba collector (cache): the Context Cache doc carries no parseable exception list. It has ' +
+				'named per-model exceptions to the multiplier since 2026-09; reading none means the parse ' +
+				'drifted, and deriving for every model would price the exceptions wrong. Refusing to emit.'
+		);
+
+	// International-scope explicit-cache support list.
+	const intl = text.match(/following models are available in the International deployment scope\.(.{0,1400})/i);
+	const supported = new Set(
+		((intl && intl[1]) || '').match(/qwen[0-9a-z.\-]+/gi)?.map((x) => x.toLowerCase()) || []
+	);
+	if (!supported.size)
+		throw new Error(
+			'alibaba collector (cache): could not read the International-scope explicit-cache model list.'
+		);
+
+	return { multipliers, implicitPct, exceptions, supported };
+}
+
 export async function collect() {
 	notices = [];
 	const doc = await fetchJson(CONTENT_API);
@@ -231,6 +329,19 @@ export async function collect() {
 		});
 	}
 
+	const cache = await fetchCacheRules();
+	const cachePct = (v) => `${Math.round(cache.multipliers[v] * 1000) / 10}%`;
+	const derivedNote =
+		`DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices ` +
+		`explicit caching as a multiplier of the standard input price (hit ${cachePct('cache_read')}, ` +
+		`creation ${cachePct('cache_write')}), and this rate is that multiplier applied to the input price ` +
+		`recorded from the pricing doc on the same day` +
+		(cache.implicitPct
+			? `. Implicit (automatic) caching is billed at ${cache.implicitPct}% of input instead and is not ` +
+				`recorded separately; these rows are the EXPLICIT cache-marker rates`
+			: '') +
+		`. Recheck if either the multiplier or the input price moves.`;
+
 	const results = [];
 	for (const model_id of TRACKED) {
 		const prices = found.get(model_id);
@@ -241,7 +352,8 @@ export async function collect() {
 					`alibaba collector: ${model_id} ${k}=${v} out of sanity bounds [${PRICE_MIN}, ${PRICE_MAX}]. Refusing to emit.`
 				);
 		}
-		results.push({
+
+		const out = {
 			provider: PROVIDER,
 			model_id,
 			display_name: model_id,
@@ -252,7 +364,33 @@ export async function collect() {
 			confidence: 'verified',
 			known_mapping: true,
 			notes: 'International deployment scope (intl USD), Model Studio "Model inference pricing"; base/standard tier.',
-		});
+		};
+
+		// Derive the cache rows only where the doc's own rule actually applies.
+		if (cache.exceptions.has(model_id)) {
+			// The vendor states this model is NOT on the multiplier and prices it only in an
+			// authenticated console. Publishing the derived number would contradict the source, and
+			// publishing nothing silently would let a consumer re-derive the same wrong number, so the
+			// gap is stated out loud on every run instead.
+			notices.push({
+				kind: 'unpriced_variation',
+				provider: PROVIDER,
+				model_id,
+				display_name: model_id,
+				source_url: CACHE_SOURCE_URL,
+				message:
+					`${model_id}: Alibaba's Context Cache doc states its cache-hit price is NOT the published ` +
+					`multiplier and gives the rate only in the authenticated Model Studio console, so no ` +
+					`cache_read/cache_write row can be published first-party. Deriving one would contradict ` +
+					`the vendor. This stays unpriced until Alibaba publishes it or we hold a key.`,
+			});
+		} else if (cache.supported.has(model_id)) {
+			out.prices.cache_read = round6(prices.input * cache.multipliers.cache_read);
+			out.prices.cache_write = round6(prices.input * cache.multipliers.cache_write);
+			const prov = { confidence: 'inferred', source_url: CACHE_SOURCE_URL, notes: derivedNote };
+			out.variation_provenance = { cache_read: prov, cache_write: prov };
+		}
+		results.push(out);
 	}
 	return results;
 }

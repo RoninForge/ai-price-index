@@ -120,10 +120,22 @@ function draftRecordsFor(item, { confidenceOverride, notesPrefix, onlyVariations
 	let notes = item.notes;
 	if (notesPrefix) notes = notes ? `${notesPrefix} ${notes}` : notesPrefix;
 	const wanted = onlyVariations ? new Set(onlyVariations) : null;
+	// PER-VARIATION PROVENANCE (optional). One model can carry rates of genuinely different provenance:
+	// alibaba READS input/output off the pricing doc but DERIVES the cache rates by applying a
+	// multiplier that doc publishes ("cache hits are billed at 10% of the standard input token price").
+	// Those are not the same claim and must not share one confidence: grading the whole model `verified`
+	// would assert we read a cache price nobody published, and grading it `inferred` would demote
+	// input/output we did read. A collector may therefore attach
+	//   item.variation_provenance = { <variation>: { confidence?, source_kind?, source_url?, notes? } }
+	// and only the named variations take the override. An explicit confidenceOverride from the
+	// cross-check gate still wins, because a downgrade is a safety decision about the whole draft.
+	const perVar = item.variation_provenance || {};
 	for (const variation of RECORD_VARIATIONS) {
 		if (wanted && !wanted.has(variation)) continue;
 		const price = item.prices[variation];
 		if (typeof price !== 'number') continue;
+		const ov = perVar[variation] || {};
+		const varNotes = ov.notes ? (notes ? `${ov.notes} ${notes}` : ov.notes) : notes;
 		recs.push(
 			makeRecord({
 				provider: item.provider,
@@ -134,11 +146,11 @@ function draftRecordsFor(item, { confidenceOverride, notesPrefix, onlyVariations
 				effective_from,
 				effective_to: null,
 				last_validated_at: today(),
-				source_url: item.source_url,
-				source_kind: item.source_kind,
-				confidence,
+				source_url: ov.source_url || item.source_url,
+				source_kind: ov.source_kind || item.source_kind,
+				confidence: confidenceOverride || ov.confidence || item.confidence,
 				aliases: item.aliases,
-				notes,
+				notes: varNotes,
 			})
 		);
 	}
@@ -273,6 +285,7 @@ function renderReportMd(report, written) {
 		`Summary: ${report.new_models.length} new model(s), ${report.price_changes.length} price change(s), ` +
 			`${report.missing_variations.length} model(s) with missing variation(s), ` +
 			`${report.untracked_models.length} untracked model(s) on a provider page, ` +
+			`${report.unpriced_variations.length} unpriced variation(s) the provider will not publish, ` +
 			`${report.upgrades.length} provenance upgrade(s), ${cc.needs_review} cross-check item(s) needing review, ` +
 			`${broken.length} broken collector(s), ` +
 			`${report.pending_first_party.length} detected awaiting ` +
@@ -441,6 +454,31 @@ function renderReportMd(report, written) {
 		L.push('');
 	}
 
+	// Rates the provider CHARGES but does not publish. Distinct from an untracked model (which we
+	// could price and choose not to) and from a missing variation (which we can read and simply had
+	// not recorded). Here the number is real, affects bills, and is only behind an authenticated
+	// console, so the honest artifact is a dated statement of the gap rather than a derived guess.
+	L.push('## Unpriced variations (the provider charges it but will not publish it)');
+	L.push('');
+	if (report.unpriced_variations.length) {
+		L.push(
+			'The provider states a rate exists and is NOT the rule it publishes for everything else, but ' +
+				'gives the number only behind authentication. No record is drafted: deriving one would ' +
+				'contradict the vendor, and publishing nothing silently would let a consumer re-derive the ' +
+				'same wrong number. This section is the record of the gap.'
+		);
+		L.push('');
+		L.push('| Provider | Model | What is unpriced | Source |');
+		L.push('|---|---|---|---|');
+		for (const uv of report.unpriced_variations) {
+			L.push(`| \`${uv.provider}\` | \`${uv.model_id}\` | ${uv.message} | ${uv.source_url} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
 	// Detected, awaiting first-party price (Part B). NOT published - first-party-pure.
 	// Scoped to GENUINELY-NEW model families: the long tail of open-weight size/quant SKUs and
 	// dated/variant snapshots of tracked families is filtered out (report.pending_filtered_out).
@@ -595,6 +633,7 @@ async function main() {
 		price_changes: [],
 		missing_variations: [],
 		untracked_models: [],
+		unpriced_variations: [],
 		upgrades: [],
 		pending_first_party: [],
 		pending_filtered_out: 0,
@@ -691,6 +730,9 @@ async function main() {
 		if (typeof c.getNotices === 'function') {
 			for (const n of c.getNotices()) {
 				if (n && n.kind === 'untracked_model') report.untracked_models.push(n);
+				// A rate the provider charges but does not publish. Routed like untracked_model, because a
+				// notice a collector emits and run.mjs drops is the same silence the notice existed to break.
+				else if (n && n.kind === 'unpriced_variation') report.unpriced_variations.push(n);
 			}
 		}
 		for (const item of items) {
