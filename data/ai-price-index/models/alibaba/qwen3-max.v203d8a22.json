@@ -2,6 +2,28 @@
   "model": "qwen3-max",
   "provider": "alibaba",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-07",
+        "last_validated": "2026-09-07",
+        "price_usd": 0.12,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "cache_write": [
+      {
+        "confidence": "inferred",
+        "from": "2026-09-07",
+        "last_validated": "2026-09-07",
+        "price_usd": 1.5,
+        "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "verified",

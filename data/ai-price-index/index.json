@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-06",
+  "dataModified": "2026-09-07",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -18,8 +18,8 @@
     {
       "id": "qwen-flash",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen-flash.v617dbacb.json",
-      "latestRev": "617dbacb"
+      "file": "models/alibaba/qwen-flash.v9dba2945.json",
+      "latestRev": "9dba2945"
     },
     {
       "id": "qwen-max",
@@ -30,8 +30,8 @@
     {
       "id": "qwen-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen-plus.v79970484.json",
-      "latestRev": "79970484"
+      "file": "models/alibaba/qwen-plus.vf05f0dd8.json",
+      "latestRev": "f05f0dd8"
     },
     {
       "id": "qwen-turbo",
@@ -42,8 +42,8 @@
     {
       "id": "qwen3-coder-flash",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-coder-flash.v54092dc6.json",
-      "latestRev": "54092dc6"
+      "file": "models/alibaba/qwen3-coder-flash.v2fa9d7ad.json",
+      "latestRev": "2fa9d7ad"
     },
     {
       "id": "qwen3-coder-next",
@@ -54,56 +54,56 @@
     {
       "id": "qwen3-coder-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-coder-plus.v453e128a.json",
-      "latestRev": "453e128a"
+      "file": "models/alibaba/qwen3-coder-plus.vd92a2ceb.json",
+      "latestRev": "d92a2ceb"
     },
     {
       "id": "qwen3-max",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-max.v070c616b.json",
-      "latestRev": "070c616b"
+      "file": "models/alibaba/qwen3-max.v203d8a22.json",
+      "latestRev": "203d8a22"
     },
     {
       "id": "qwen3.5-flash",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.5-flash.vd6e08778.json",
-      "latestRev": "d6e08778"
+      "file": "models/alibaba/qwen3.5-flash.ve940ebce.json",
+      "latestRev": "e940ebce"
     },
     {
       "id": "qwen3.5-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.5-plus.vc18720f4.json",
-      "latestRev": "c18720f4"
+      "file": "models/alibaba/qwen3.5-plus.v9fdfedd4.json",
+      "latestRev": "9fdfedd4"
     },
     {
       "id": "qwen3.6-flash",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.6-flash.v47c7e8cd.json",
-      "latestRev": "47c7e8cd"
+      "file": "models/alibaba/qwen3.6-flash.vaeaa8af7.json",
+      "latestRev": "aeaa8af7"
     },
     {
       "id": "qwen3.6-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.6-plus.v20c94886.json",
-      "latestRev": "20c94886"
+      "file": "models/alibaba/qwen3.6-plus.v7c83032f.json",
+      "latestRev": "7c83032f"
     },
     {
       "id": "qwen3.7-flash",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.7-flash.vd0080932.json",
-      "latestRev": "d0080932"
+      "file": "models/alibaba/qwen3.7-flash.v5ad191e4.json",
+      "latestRev": "5ad191e4"
     },
     {
       "id": "qwen3.7-max",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.7-max.ved935789.json",
-      "latestRev": "ed935789"
+      "file": "models/alibaba/qwen3.7-max.v7966edea.json",
+      "latestRev": "7966edea"
     },
     {
       "id": "qwen3.7-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3.7-plus.vefd9631d.json",
-      "latestRev": "efd9631d"
+      "file": "models/alibaba/qwen3.7-plus.v168fb921.json",
+      "latestRev": "168fb921"
     },
     {
       "id": "qwen3.8-flash",
