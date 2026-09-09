@@ -9,10 +9,13 @@
 //   flat:       "$0.30 (text / image / video) $1.00 (audio)"    (first $ = text input; audio is NOT a tier)
 //
 // Mapping (PAID tier only, text chat models we track):
-//   standard input  -> input          first "$" in the Input-price paid cell
-//   standard output -> output         first "$" in the Output-price paid cell
-//   >200k input     -> tier2_input    second "$", ONLY when the cell marks a ">200k" / "200,000" tier
-//   >200k output    -> tier2_output   ditto
+//   standard input  -> input            first "$" in the Input-price paid cell
+//   standard output -> output           first "$" in the Output-price paid cell
+//   cached input    -> cache_read       first "$" in the Context-caching-price paid cell, AFTER the
+//                                       per-hour storage clause is stripped (that cell carries both)
+//   >200k input     -> tier2_input      second "$", ONLY when the cell marks a ">200k" / "200,000" tier
+//   >200k output    -> tier2_output     ditto
+//   >200k cached    -> tier2_cache_read ditto
 // All prices are per 1M tokens -> usd_per_mtok. Image / video / TTS / embedding / Live models are
 // skipped (we only emit a heading that maps to a tracked text model, OR a "Gemini ... Pro/Flash"
 // heading that is plainly a text chat model; the long tail of media models is filtered by NAME).
@@ -175,6 +178,16 @@ function slugify(name) {
 	return name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+// A Context-caching cell carries TWO different prices: the per-token cache-read rate and a per-hour
+// storage rate ("$1.00 / 1,000,000 tokens per hour (storage price)"). Storage is not a token rate, so
+// it is stripped before parsing rather than risked as a positional match.
+const STORAGE_CLAUSE_RE = /\$\s*[0-9]+(?:\.[0-9]+)?\s*\/\s*1,?000,?000 tokens per hour[^$]*/gi;
+
+// Row labels under a tracked text model that are deliberately not token prices: per-request grounding
+// add-ons and the data-use policy row. Anything outside this set AND unconsumed is reported, so a new
+// pricing dimension surfaces instead of being dropped on the floor.
+const IGNORED_ROW_LABEL_RE = /^(grounding with google|used to improve our products|context caching \(storage\)|tuning price|google search)/i;
+
 /** From a Paid-Tier cell, return { std, tier2 } prices. tier2 only when the cell marks a >200k tier. */
 function parseTierCell(cell) {
 	const nums = allPrices(cell);
@@ -237,6 +250,7 @@ export async function collect() {
 
 	const byModel = new Map(); // canonical -> { display, known, prices }
 	let sawAnyInputRow = false;
+	const unknownRowLabels = new Set();
 
 	for (const t of tables) {
 		const head = nearestModelHeading(t.idx);
@@ -258,7 +272,9 @@ export async function collect() {
 		let input = null,
 			output = null,
 			tier2_input = null,
-			tier2_output = null;
+			tier2_output = null,
+			cache_read = null,
+			tier2_cache_read = null;
 		for (const r of rows) {
 			const cells = [...r[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((m) => cleanCell(m[1]));
 			if (cells.length < 2) continue;
@@ -277,16 +293,33 @@ export async function collect() {
 					output = parsed.std;
 					tier2_output = parsed.tier2;
 				}
+			} else if (/^context caching price/.test(label)) {
+				const parsed = parseTierCell(paid.replace(STORAGE_CLAUSE_RE, ' '));
+				if (parsed) {
+					cache_read = parsed.std;
+					tier2_cache_read = parsed.tier2;
+				}
+			} else if (cells[0] && !IGNORED_ROW_LABEL_RE.test(cells[0])) {
+				unknownRowLabels.add(cells[0]);
 			}
 		}
 
 		if (typeof input !== 'number' || typeof output !== 'number') continue;
 		const prices = { input, output };
+		if (typeof cache_read === 'number') prices.cache_read = cache_read;
 		if (typeof tier2_input === 'number') prices.tier2_input = tier2_input;
 		if (typeof tier2_output === 'number') prices.tier2_output = tier2_output;
+		if (typeof tier2_cache_read === 'number') prices.tier2_cache_read = tier2_cache_read;
 
 		byModel.set(canonical, { display: heading, known: Boolean(NAME_TO_CANONICAL[norm]), prices });
 	}
+
+	// A row label we have never seen is a new pricing dimension, not noise: report it rather than
+	// let it vanish the way the cached-input row did.
+	if (unknownRowLabels.size)
+		console.warn(
+			`google collector: unrecognised pricing row label(s), not collected: ${[...unknownRowLabels].map((l) => JSON.stringify(l)).join(', ')}`
+		);
 
 	if (!sawAnyInputRow)
 		throw new Error(
