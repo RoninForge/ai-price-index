@@ -1,13 +1,24 @@
 {
-  "model": "gemini-3.5-flash",
+  "model": "gemini-3.1-flash-lite",
   "provider": "google",
   "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-09",
+        "last_validated": "2026-09-09",
+        "price_usd": 0.025,
+        "src": "https://ai.google.dev/gemini-api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "verified",
-        "from": "2026-05-19",
+        "from": "2026-05-07",
         "last_validated": "2026-06-15",
-        "price_usd": 1.5,
+        "price_usd": 0.25,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -16,9 +27,9 @@
     "output": [
       {
         "confidence": "verified",
-        "from": "2026-05-19",
+        "from": "2026-05-07",
         "last_validated": "2026-06-15",
-        "price_usd": 9,
+        "price_usd": 1.5,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
