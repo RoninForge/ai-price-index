@@ -58,11 +58,12 @@ export const PROVIDER = 'deepseek';
 const SOURCE_URL = 'https://api-docs.deepseek.com/quick_start/pricing/';
 
 // Canonical model id (as it appears in the MODEL row of the authoritative table) -> aliases we carry.
-// Neither current model carries one: the retired flash names are canonical ids with their own price
-// history, and the index's alias namespace is global, so an alias may never equal a model_id.
-// Unknown ids slugify -> NEW.
+// deepseek-flash carries the version-stamped form the model card and the resellers use, which is what
+// the tripwires see; without it they report V4.1 Flash as awaiting a first-party price we publish.
+// The RETIRED flash names are deliberately absent: they are canonical ids with their own price history,
+// and the alias namespace is global, so an alias may never equal a model_id. Unknown ids slugify -> NEW.
 const ID_TO_ALIASES = {
-	'deepseek-flash': undefined,
+	'deepseek-flash': ['deepseek-v4.1-flash'],
 	'deepseek-v4-pro': undefined,
 };
 
