@@ -324,8 +324,11 @@
     {
       "id": "deepseek-flash",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-flash.v79f49525.json",
-      "latestRev": "79f49525"
+      "file": "models/deepseek/deepseek-flash.v04d6a2a3.json",
+      "latestRev": "04d6a2a3",
+      "aliases": [
+        "deepseek-v4.1-flash"
+      ]
     },
     {
       "id": "deepseek-v4-flash",
