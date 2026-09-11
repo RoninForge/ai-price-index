@@ -53,6 +53,12 @@ checks) is defined in [`schema/price-record.schema.json`](schema/price-record.sc
 | `effective_from`, `effective_to` | the dates this price was in effect (`effective_to: null` = current) |
 | `last_validated_at` | when this price was last confirmed against its source |
 | `source_url`, `source_kind`, `confidence` | the first-party proof and how sure we are |
+| `announced_change` | optional: a dated price change the vendor has published but which has not started yet |
+
+`announced_change` never changes what you read. `price_usd` on an open record is always what the
+model costs today, so an announced rise rides alongside it rather than replacing it. It carries the
+vendor's own wording verbatim, and validation fails once its date arrives, so an announcement cannot
+sit there unreconciled after it takes effect.
 
 The published, served form is one file per model (`schema/model-series.schema.json`) plus a thin
 `index.json` (`schema/index.schema.json`); a client binary-searches a model's interval array by date.

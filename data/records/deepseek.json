@@ -167,7 +167,14 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $1.32/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record."
+    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $1.32/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record.",
+    "announced_change": {
+      "price_usd": 0.15,
+      "effective_from": "2026-09-14",
+      "source_url": "https://api-docs.deepseek.com/updates/",
+      "quote": "After 12:00 Beijing Time on September 14, 2026, and until the future release of V4.1 Pro, all requests to deepseek-v4-pro will be routed to V4.1 Flash and billed at the V4.1 Flash price.",
+      "notes": "DeepSeek states the change as a RULE (\"billed at the V4.1 Flash price\"), not a number. $0.15 is the deepseek-flash input rate published on the same pricing page and read 2026-09-11; if DeepSeek moves the flash rate before the 14th, this figure follows it."
+    }
   },
   {
     "provider": "deepseek",
@@ -181,7 +188,14 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $0.044/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record."
+    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $0.044/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record.",
+    "announced_change": {
+      "price_usd": 0.003,
+      "effective_from": "2026-09-14",
+      "source_url": "https://api-docs.deepseek.com/updates/",
+      "quote": "After 12:00 Beijing Time on September 14, 2026, and until the future release of V4.1 Pro, all requests to deepseek-v4-pro will be routed to V4.1 Flash and billed at the V4.1 Flash price.",
+      "notes": "DeepSeek states the change as a RULE (\"billed at the V4.1 Flash price\"), not a number. $0.003 is the deepseek-flash cache_read rate published on the same pricing page and read 2026-09-11; if DeepSeek moves the flash rate before the 14th, this figure follows it."
+    }
   },
   {
     "provider": "deepseek",
@@ -195,7 +209,14 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $3.96/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record."
+    "notes": "DeepSeek split every rate into OFF-PEAK / PEAK on 2026-08-16 and raised both. This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC) is exactly 2x at $3.96/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\" and OpenRouter resells this model at the off-peak number. effective_from is the page last-modified stamp (Sun, 16 Aug 2026 16:00:13 GMT), which falls inside our observation window: the 2026-08-16 13:25 UTC sentinel run still read the prior rate and the 2026-08-17 02:16 UTC run did not. The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record.",
+    "announced_change": {
+      "price_usd": 0.6,
+      "effective_from": "2026-09-14",
+      "source_url": "https://api-docs.deepseek.com/updates/",
+      "quote": "After 12:00 Beijing Time on September 14, 2026, and until the future release of V4.1 Pro, all requests to deepseek-v4-pro will be routed to V4.1 Flash and billed at the V4.1 Flash price.",
+      "notes": "DeepSeek states the change as a RULE (\"billed at the V4.1 Flash price\"), not a number. $0.6 is the deepseek-flash output rate published on the same pricing page and read 2026-09-11; if DeepSeek moves the flash rate before the 14th, this figure follows it."
+    }
   },
   {
     "provider": "deepseek",
