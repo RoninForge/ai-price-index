@@ -19,10 +19,10 @@
       {
         "confidence": "verified",
         "from": "2026-08-16",
-        "last_validated": "2026-08-17",
+        "last_validated": "2026-09-11",
         "price_usd": 0.007,
         "src": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "to": null,
+        "to": "2026-09-10",
         "unit": "usd_per_mtok"
       }
     ],
@@ -39,10 +39,10 @@
       {
         "confidence": "verified",
         "from": "2026-08-16",
-        "last_validated": "2026-08-17",
+        "last_validated": "2026-09-11",
         "price_usd": 0.22,
         "src": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "to": null,
+        "to": "2026-09-10",
         "unit": "usd_per_mtok"
       }
     ],
@@ -59,10 +59,10 @@
       {
         "confidence": "verified",
         "from": "2026-08-16",
-        "last_validated": "2026-08-17",
+        "last_validated": "2026-09-11",
         "price_usd": 0.66,
         "src": "https://api-docs.deepseek.com/quick_start/pricing/",
-        "to": null,
+        "to": "2026-09-10",
         "unit": "usd_per_mtok"
       }
     ]

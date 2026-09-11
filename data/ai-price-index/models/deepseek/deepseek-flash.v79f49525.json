@@ -1,0 +1,39 @@
+{
+  "model": "deepseek-flash",
+  "provider": "deepseek",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-10",
+        "last_validated": "2026-09-11",
+        "price_usd": 0.003,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-10",
+        "last_validated": "2026-09-11",
+        "price_usd": 0.15,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-10",
+        "last_validated": "2026-09-11",
+        "price_usd": 0.6,
+        "src": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

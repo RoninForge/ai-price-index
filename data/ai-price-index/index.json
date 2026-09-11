@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-09",
+  "dataModified": "2026-09-11",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -322,10 +322,16 @@
       "latestRev": "a43078de"
     },
     {
+      "id": "deepseek-flash",
+      "provider": "deepseek",
+      "file": "models/deepseek/deepseek-flash.v79f49525.json",
+      "latestRev": "79f49525"
+    },
+    {
       "id": "deepseek-v4-flash",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-flash.vec876f25.json",
-      "latestRev": "ec876f25",
+      "file": "models/deepseek/deepseek-v4-flash.vf57d08ee.json",
+      "latestRev": "f57d08ee",
       "aliases": [
         "deepseek-chat",
         "deepseek-reasoner"
@@ -334,8 +340,8 @@
     {
       "id": "deepseek-v4-flash-vision-exp",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-flash-vision-exp.vc02fbc85.json",
-      "latestRev": "c02fbc85"
+      "file": "models/deepseek/deepseek-v4-flash-vision-exp.v8b73bf69.json",
+      "latestRev": "8b73bf69"
     },
     {
       "id": "deepseek-v4-pro",
