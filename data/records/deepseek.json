@@ -251,6 +251,9 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
+    "aliases": [
+      "deepseek-v4.1-flash"
+    ],
     "notes": "Cache-miss (standard, non-cached) input. Serves DeepSeek-V4.1-Flash, released 2026-09-10, when DeepSeek renamed the API model to the version-less deepseek-flash and cut prices (from $0.22 input / $0.66 output / $0.007 cache_read). effective_from is the date of DeepSeek's own change-log entry, which states \"API prices have been reduced accordingly\". This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday) is exactly 2x at $0.3/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\". The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record. DeepSeek still accepts the retired names deepseek-v4-flash and deepseek-v4-flash-vision-exp and bills them at this price, but they are not carried as aliases: both are canonical model ids in their own right in this index, with their own closed price history."
   },
   {
@@ -265,6 +268,9 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
+    "aliases": [
+      "deepseek-v4.1-flash"
+    ],
     "notes": "Cache-hit (discounted cached read) input. Serves DeepSeek-V4.1-Flash, released 2026-09-10, when DeepSeek renamed the API model to the version-less deepseek-flash and cut prices (from $0.22 input / $0.66 output / $0.007 cache_read). effective_from is the date of DeepSeek's own change-log entry, which states \"API prices have been reduced accordingly\". This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday) is exactly 2x at $0.006/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\". The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record. DeepSeek still accepts the retired names deepseek-v4-flash and deepseek-v4-flash-vision-exp and bills them at this price, but they are not carried as aliases: both are canonical model ids in their own right in this index, with their own closed price history."
   },
   {
@@ -279,6 +285,9 @@
     "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
+    "aliases": [
+      "deepseek-v4.1-flash"
+    ],
     "notes": "Output tokens. Serves DeepSeek-V4.1-Flash, released 2026-09-10, when DeepSeek renamed the API model to the version-less deepseek-flash and cut prices (from $0.22 input / $0.66 output / $0.007 cache_read). effective_from is the date of DeepSeek's own change-log entry, which states \"API prices have been reduced accordingly\". This row is the OFF-PEAK rate, which covers 17 of 24 hours; peak (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday) is exactly 2x at $1.2/mtok. Off-peak is published as the standard rate because the page defines the split as \"off-peak rates are half of the peak rates\". The schema has no variation for a time-of-day rate, so the peak rate is not carried as a record. DeepSeek still accepts the retired names deepseek-v4-flash and deepseek-v4-flash-vision-exp and bills them at this price, but they are not carried as aliases: both are canonical model ids in their own right in this index, with their own closed price history."
   }
 ]
