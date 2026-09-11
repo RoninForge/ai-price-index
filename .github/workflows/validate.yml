@@ -8,6 +8,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Daily, so an announced_change that reaches its effective_from fails here on the day even if
+  # nobody pushes. Without this the expiry depends on unrelated traffic happening to land.
+  schedule:
+    - cron: '20 6 * * *'
   workflow_dispatch:
 
 permissions:

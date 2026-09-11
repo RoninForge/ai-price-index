@@ -28,6 +28,14 @@ on date D." A correction closes the prior assertion and inserts a new one, so no
 The published per-model files are the resolved, currently-believed valid-time series; the bitemporal
 bookkeeping lives in the system of record, not in what you download.
 
+A vendor sometimes publishes today's price and its successor together ("$0.75 through December 31,
+2026. $1.50 starting January 1, 2027"). That successor is a dated first-party fact, but it is not yet
+a price: opening a future-dated row would publish it early, because a consumer reads the current price
+as the row whose `effective_to` is empty. So it is recorded as `announced_change` on the open record,
+alongside the price in force, with the vendor's wording quoted. Validation fails on the day it takes
+effect, which forces the actual change to be recorded rather than letting the announcement quietly
+become a claim about the past that nobody re-read.
+
 ## Source tiers
 
 - **Tier 1, official machine-readable.** Cloud marketplaces that publish a price API (for example

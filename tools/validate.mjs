@@ -61,6 +61,51 @@ function parse(file) {
 	}
 }
 
+/**
+ * A vendor sometimes publishes today's price AND its successor in one cell, e.g. Google's
+ * "$0.75 through December 31, 2026. $1.50 starting January 1, 2027". That successor is a real,
+ * dated, first-party fact, but it is NOT a price record: `price_usd` on an open row means what the
+ * model costs TODAY, and consumers read the current price as the row whose effective_to is empty.
+ * Opening a future-dated row would therefore publish the 2027 price four months early.
+ *
+ * So the announcement rides ALONGSIDE the current price instead of replacing it. It changes nothing
+ * a consumer reads unless that consumer opts in.
+ *
+ * It also states its own expiry. Once the announced date arrives, this record is a claim about the
+ * past that nobody re-read, so validation FAILS until the actual change is recorded and the
+ * announcement cleared. Two fields in this venture have already rotted exactly that way by being a
+ * future date nothing revisited (copilot promo.endsOn, twice). This one cannot.
+ */
+function validateAnnouncedChange(file, at, r) {
+	const a = r.announced_change;
+	if (a === undefined) return;
+	if (typeof a !== 'object' || a === null) return err(file, at, 'announced_change must be an object');
+
+	if (typeof a.price_usd !== 'number' || Number.isNaN(a.price_usd))
+		err(file, at, 'announced_change.price_usd must be a number');
+	else if (a.price_usd < 0 || a.price_usd > 100000)
+		err(file, at, `announced_change.price_usd ${a.price_usd} out of bounds [0, 100000]`);
+
+	if (!isDate(a.effective_from)) {
+		err(file, at, `announced_change.effective_from not an ISO date: "${a.effective_from}"`);
+	} else if (a.effective_from <= TODAY) {
+		err(file, at,
+			`announced_change.effective_from ${a.effective_from} has arrived (today ${TODAY}); ` +
+			'record the actual price change and remove the announcement, or correct it if the vendor withdrew it');
+	}
+
+	if ((r.effective_to ?? null) !== null)
+		err(file, at, 'announced_change belongs on the open (current) record, not a closed one');
+
+	if (typeof a.source_url !== 'string' || !/^https?:\/\//.test(a.source_url))
+		err(file, at, 'announced_change.source_url required (first-party http(s) URL)');
+	if (typeof a.quote !== 'string' || !a.quote.trim())
+		err(file, at, 'announced_change.quote required: the vendor wording that states the change, verbatim');
+
+	const allowedA = new Set(['price_usd', 'effective_from', 'source_url', 'quote', 'notes']);
+	for (const k of Object.keys(a)) if (!allowedA.has(k)) err(file, at, `unknown announced_change field "${k}"`);
+}
+
 function validateRecord(file, i, r) {
 	const at = `record[${i}]`;
 	if (typeof r !== 'object' || r === null) return err(file, at, 'not an object');
@@ -112,9 +157,12 @@ function validateRecord(file, i, r) {
 		}
 	}
 
+	validateAnnouncedChange(file, at, r);
+
 	const allowed = new Set([
 		'provider', 'model_id', 'variation', 'unit', 'price_usd', 'effective_from', 'effective_to',
-		'last_validated_at', 'source_url', 'source_kind', 'source_snapshot_ts', 'confidence', 'notes', 'aliases'
+		'last_validated_at', 'source_url', 'source_kind', 'source_snapshot_ts', 'confidence', 'notes', 'aliases',
+		'announced_change'
 	]);
 	for (const k of Object.keys(r)) if (!allowed.has(k)) err(file, at, `unknown field "${k}"`);
 

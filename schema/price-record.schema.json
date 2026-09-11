@@ -72,7 +72,10 @@
       "description": "Valid-time start (inclusive): the date this price took effect in the real world."
     },
     "effective_to": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
       "description": "Valid-time end (exclusive); null means still current."
     },
@@ -90,7 +93,13 @@
     },
     "source_kind": {
       "type": "string",
-      "enum": ["provider_live", "wayback", "changelog", "aggregator", "manual"]
+      "enum": [
+        "provider_live",
+        "wayback",
+        "changelog",
+        "aggregator",
+        "manual"
+      ]
     },
     "source_snapshot_ts": {
       "type": "string",
@@ -99,7 +108,12 @@
     },
     "confidence": {
       "type": "string",
-      "enum": ["verified", "archived", "inferred", "estimated"],
+      "enum": [
+        "verified",
+        "archived",
+        "inferred",
+        "estimated"
+      ],
       "description": "verified = confirmed against the live first-party page; archived = a dated archive capture; inferred = derived from a changelog/announcement; estimated = best effort, clearly labelled."
     },
     "notes": {
@@ -108,9 +122,52 @@
     },
     "aliases": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true,
       "description": "Optional alternate model ids that resolve to this canonical model_id (e.g. an undated short form Claude Code emits). Series metadata only; does not alter pricing."
+    },
+    "announced_change": {
+      "type": "object",
+      "description": "Optional: a dated price change the vendor has PUBLISHED but which is not yet in effect. It rides alongside the current price and never replaces it, so a consumer reading price_usd still gets what the model costs today. Only valid on the open record (effective_to null), and validation FAILS once effective_from arrives, which forces the real change to be recorded rather than letting the announcement rot.",
+      "required": [
+        "price_usd",
+        "effective_from",
+        "source_url",
+        "quote"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "price_usd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "The announced future price in USD for one unit, in the same `unit` as the record."
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "The date the vendor says the new price starts. Must be in the future when written."
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://",
+          "description": "First-party page or change log stating the change."
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The vendor's own wording that states the change, verbatim, so the claim is checkable."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional caveat (e.g. the announced price is stated as a rule rather than a number)."
+        }
+      }
     }
   }
 }
