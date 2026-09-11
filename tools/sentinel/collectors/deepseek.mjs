@@ -14,14 +14,14 @@
 // every cell is a <td>. DeepSeek split every price row into OFF-PEAK / PEAK on 2026-08-16; each
 // label cell now carries rowspan="2" and the PEAK values live on the FOLLOWING <tr>:
 //
-//   | MODEL                            | deepseek-v4-flash(1) | deepseek-v4-pro |
+//   | MODEL                            | deepseek-flash(1)    | deepseek-v4-pro |
 //   | ...                              | ...                  | ...             |
-//   | PRICING | 1M INPUT TOKENS (CACHE HIT)  | OFF-PEAK | $0.007 | $0.022 |
-//   |         |                              | PEAK     | $0.014 | $0.044 |
-//   |         | 1M INPUT TOKENS (CACHE MISS) | OFF-PEAK | $0.22  | $0.66  |
-//   |         |                              | PEAK     | $0.44  | $1.32  |
-//   |         | 1M OUTPUT TOKENS             | OFF-PEAK | $0.66  | $1.98  |
-//   |         |                              | PEAK     | $1.32  | $3.96  |
+//   | PRICING | 1M INPUT TOKENS (CACHE HIT)  | OFF-PEAK | $0.003 | $0.022 |
+//   |         |                              | PEAK     | $0.006 | $0.044 |
+//   |         | 1M INPUT TOKENS (CACHE MISS) | OFF-PEAK | $0.15  | $0.66  |
+//   |         |                              | PEAK     | $0.3   | $1.32  |
+//   |         | 1M OUTPUT TOKENS             | OFF-PEAK | $0.6   | $1.98  |
+//   |         |                              | PEAK     | $1.2   | $3.96  |
 //
 // We publish the OFF-PEAK rate as the standard input/output/cache_read. The page defines the split
 // as "Off-peak rates are half of the peak rates", and off-peak covers 17 of 24 hours (peak is
@@ -37,10 +37,12 @@
 //   1M OUTPUT TOKENS             -> output
 // Prices are already per 1M tokens -> usd_per_mtok as-is.
 //
-// Model ids deepseek-v4-flash / deepseek-v4-pro ARE the canonical ids we track. The live API ids
-// deepseek-chat (non-thinking) and deepseek-reasoner (thinking) BOTH route to deepseek-v4-flash and
-// share its pricing, so they are carried as aliases of v4-flash (NOT of v4-pro). v4-pro is a
-// separate, explicitly-selected model with no legacy alias.
+// Model ids deepseek-flash / deepseek-v4-pro ARE the canonical ids we track. DeepSeek renamed the
+// flash column to the version-less deepseek-flash on 2026-09-10 (it now serves DeepSeek-V4.1-Flash).
+// The retired names deepseek-v4-flash and deepseek-v4-flash-vision-exp are still accepted and billed
+// at the flash price; that routing is recorded in the records' notes, not as an alias. v4-pro is
+// explicitly selected; its own reroute to flash is announced for 2026-09-14 12:00 Beijing, and until
+// it happens v4-pro keeps its own published prices.
 //
 // NOTE on the secondary page https://api-docs.deepseek.com/quick_start/pricing-details-usd : it lists
 // LEGACY deprecated rows for deepseek-chat ($0.27 miss / $1.10 output) and deepseek-reasoner
@@ -56,10 +58,11 @@ export const PROVIDER = 'deepseek';
 const SOURCE_URL = 'https://api-docs.deepseek.com/quick_start/pricing/';
 
 // Canonical model id (as it appears in the MODEL row of the authoritative table) -> aliases we carry.
-// deepseek-chat + deepseek-reasoner both route to v4-flash and share its pricing (they deprecate
-// 2026-07-24); v4-pro is explicitly selected and has no legacy alias. Unknown ids slugify -> NEW.
+// Neither current model carries one: the retired flash names are canonical ids with their own price
+// history, and the index's alias namespace is global, so an alias may never equal a model_id.
+// Unknown ids slugify -> NEW.
 const ID_TO_ALIASES = {
-	'deepseek-v4-flash': ['deepseek-chat', 'deepseek-reasoner'],
+	'deepseek-flash': undefined,
 	'deepseek-v4-pro': undefined,
 };
 
@@ -71,11 +74,11 @@ const LABEL_TO_VARIATION = [
 	[/1m output tokens/i, 'output'], //                     output
 ];
 
-// Correctness pins (USD per 1M tokens, OFF-PEAK, verified against the authoritative page 2026-08-17).
+// Correctness pins (USD per 1M tokens, OFF-PEAK, verified against the authoritative page 2026-09-11).
 // If the live page disagrees beyond EPS, THROW so a real change surfaces for human review instead of
 // silently flipping the dataset.
 const PIN = {
-	'deepseek-v4-flash': { input: 0.22, cache_read: 0.007, output: 0.66 },
+	'deepseek-flash': { input: 0.15, cache_read: 0.003, output: 0.6 },
 	'deepseek-v4-pro': { input: 0.66, cache_read: 0.022, output: 1.98 },
 };
 const EPS = 1e-6;
