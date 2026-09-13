@@ -5,7 +5,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-09-12",
+      "last_seen": "2026-09-13",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -19,13 +19,41 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-09-12",
+      "last_seen": "2026-09-13",
       "litellm_usd_per_mtok": 3.96,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
       "our_last_validated": "2026-08-17",
       "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
       "our_usd_per_mtok": 1.98,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-09-13",
+      "last_seen": "2026-09-13",
+      "litellm_usd_per_mtok": 0.3,
+      "model": "deepseek-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-09-11",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 0.15,
+      "provider": "deepseek",
+      "resolved": null,
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-09-13",
+      "last_seen": "2026-09-13",
+      "litellm_usd_per_mtok": 1.2,
+      "model": "deepseek-flash",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-09-11",
+      "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "our_usd_per_mtok": 0.6,
       "provider": "deepseek",
       "resolved": null,
       "variation": "output"
@@ -201,15 +229,15 @@
   ],
   "summary": {
     "confirmed_open_count": 0,
-    "generated": "2026-09-12",
+    "generated": "2026-09-13",
     "oldest_open": {
       "first_detected": "2026-08-17",
       "model": "deepseek-v4-pro",
       "provider": "deepseek",
       "variation": "input"
     },
-    "oldest_open_days": 26,
-    "open_count": 2,
+    "oldest_open_days": 27,
+    "open_count": 4,
     "resolved_count": 12
   }
 }
