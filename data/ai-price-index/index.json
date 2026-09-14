@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-11",
+  "dataModified": "2026-09-14",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -349,8 +349,8 @@
     {
       "id": "deepseek-v4-pro",
       "provider": "deepseek",
-      "file": "models/deepseek/deepseek-v4-pro.v482a3d70.json",
-      "latestRev": "482a3d70"
+      "file": "models/deepseek/deepseek-v4-pro.vd271f685.json",
+      "latestRev": "d271f685"
     },
     {
       "id": "gemini-1.5-flash",
