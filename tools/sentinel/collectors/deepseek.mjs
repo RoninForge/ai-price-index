@@ -41,8 +41,8 @@
 // flash column to the version-less deepseek-flash on 2026-09-10 (it now serves DeepSeek-V4.1-Flash).
 // The retired names deepseek-v4-flash and deepseek-v4-flash-vision-exp are still accepted and billed
 // at the flash price; that routing is recorded in the records' notes, not as an alias. v4-pro is
-// explicitly selected; its own reroute to flash is announced for 2026-09-14 12:00 Beijing, and until
-// it happens v4-pro keeps its own published prices.
+// explicitly selected and keeps its own published prices: the reroute to flash announced for
+// 2026-09-14 was withdrawn on the day, "in response to user demand", with billing unchanged.
 //
 // NOTE on the secondary page https://api-docs.deepseek.com/quick_start/pricing-details-usd : it lists
 // LEGACY deprecated rows for deepseek-chat ($0.27 miss / $1.10 output) and deepseek-reasoner
