@@ -116,12 +116,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 2,
     "effective_from": "2025-06-10",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Reasoning model. Price from live mistral.ai/pricing (USD). Date is the original Magistral launch (mistral.ai/news/magistral, 2025-06-10); the live SKU reflects the later 1.2 lineage."
+    "notes": "Reasoning model. Price from live mistral.ai/pricing (USD). Date is the original Magistral launch (mistral.ai/news/magistral, 2025-06-10); the live SKU reflects the later 1.2 lineage. Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Magistral Medium 1.2 | magistral-medium-2509 | 5/22/2026 7/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -130,11 +130,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 5,
     "effective_from": "2025-06-10",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Magistral Medium 1.2 | magistral-medium-2509 | 5/22/2026 7/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -143,12 +144,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.5,
     "effective_from": "2025-06-10",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Reasoning model. Price from live mistral.ai/pricing (USD). Date = original Magistral launch (2025-06-10); live SKU reflects 1.2 lineage."
+    "notes": "Reasoning model. Price from live mistral.ai/pricing (USD). Date = original Magistral launch (2025-06-10); live SKU reflects 1.2 lineage. Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Magistral Small 1.2 | magistral-small-2509 | 4/30/2026 7/31/2026 | Mistral Small 4\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -157,11 +158,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.5,
     "effective_from": "2025-06-10",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Magistral Small 1.2 | magistral-small-2509 | 4/30/2026 7/31/2026 | Mistral Small 4\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -197,12 +199,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.4,
     "effective_from": "2025-12-09",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Agentic code model. Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/devstral-2-vibe-cli (2025-12-09)."
+    "notes": "Agentic code model. Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/devstral-2-vibe-cli (2025-12-09). Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Devstral 2 | devstral-2512 | 5/22/2026 7/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -211,11 +213,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 2,
     "effective_from": "2025-12-09",
-    "effective_to": null,
+    "effective_to": "2026-07-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-07-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Devstral 2 | devstral-2512 | 5/22/2026 7/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -224,12 +227,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.1,
     "effective_from": "2025-12-09",
-    "effective_to": null,
+    "effective_to": "2026-03-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/devstral-2-vibe-cli (2025-12-09)."
+    "notes": "Price from live mistral.ai/pricing (USD). Date from mistral.ai/news/devstral-2-vibe-cli (2025-12-09). Retired 2026-03-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Devstral Small 2 | labs-devstral-small-2512 | 2/27/2026 3/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
@@ -238,11 +241,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.3,
     "effective_from": "2025-12-09",
-    "effective_to": null,
+    "effective_to": "2026-03-31",
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-03-31 per docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-09-17): \"Devstral Small 2 | labs-devstral-small-2512 | 2/27/2026 3/31/2026 | Mistral Medium 3.5\" (deprecation, retirement, alternative). Absent from mistral.ai/pricing/api on 2026-09-17."
   },
   {
     "provider": "mistral",
