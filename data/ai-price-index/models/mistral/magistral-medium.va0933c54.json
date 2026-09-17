@@ -1,5 +1,5 @@
 {
-  "model": "magistral-small",
+  "model": "magistral-medium",
   "provider": "mistral",
   "variations": {
     "input": [
@@ -7,9 +7,9 @@
         "confidence": "verified",
         "from": "2025-06-10",
         "last_validated": "2026-06-15",
-        "price_usd": 0.5,
+        "price_usd": 2,
         "src": "https://mistral.ai/pricing",
-        "to": null,
+        "to": "2026-07-31",
         "unit": "usd_per_mtok"
       }
     ],
@@ -18,9 +18,9 @@
         "confidence": "verified",
         "from": "2025-06-10",
         "last_validated": "2026-06-15",
-        "price_usd": 1.5,
+        "price_usd": 5,
         "src": "https://mistral.ai/pricing",
-        "to": null,
+        "to": "2026-07-31",
         "unit": "usd_per_mtok"
       }
     ]

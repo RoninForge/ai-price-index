@@ -475,26 +475,26 @@
     {
       "id": "devstral-2",
       "provider": "mistral",
-      "file": "models/mistral/devstral-2.v8a4f0794.json",
-      "latestRev": "8a4f0794"
+      "file": "models/mistral/devstral-2.v85a05b93.json",
+      "latestRev": "85a05b93"
     },
     {
       "id": "devstral-small-2",
       "provider": "mistral",
-      "file": "models/mistral/devstral-small-2.vc299041a.json",
-      "latestRev": "c299041a"
+      "file": "models/mistral/devstral-small-2.vb20ee2fb.json",
+      "latestRev": "b20ee2fb"
     },
     {
       "id": "magistral-medium",
       "provider": "mistral",
-      "file": "models/mistral/magistral-medium.vfbab096f.json",
-      "latestRev": "fbab096f"
+      "file": "models/mistral/magistral-medium.va0933c54.json",
+      "latestRev": "a0933c54"
     },
     {
       "id": "magistral-small",
       "provider": "mistral",
-      "file": "models/mistral/magistral-small.v7d10fe36.json",
-      "latestRev": "7d10fe36"
+      "file": "models/mistral/magistral-small.v8fd7153e.json",
+      "latestRev": "8fd7153e"
     },
     {
       "id": "ministral-3-14b",
