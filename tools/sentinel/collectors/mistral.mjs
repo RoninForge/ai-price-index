@@ -42,11 +42,36 @@ const NAME_TO_CANONICAL = {
 
 // A line that looks like a Mistral model NAME (heading), not prose. Anchored to the known families so
 // a descriptive sentence ("For coding: Mistral Medium 3.5.") is not mistaken for a heading.
-// NB: the Ministral cards render as "Ministral 3 - 3B" (hyphen-separated size), so the Ministral
-// alternative must tolerate a hyphen; the canonical lookup below collapses " - " so the existing
-// "ministral 3 3b" keys still match.
+// Ministral cards render as "Ministral 3 (3B)" (earlier "Ministral 3 - 3B"); both forms are accepted
+// and collapsed to the "ministral 3 3b" keys below.
 const NAME_LINE_RE =
-	/^(Mistral (?:Large|Medium|Small)(?: \d[\d.]*)?|Magistral (?:Medium|Small)|Ministral [\dA-Za-z. -]+|Devstral(?: Small)?(?: \d)?|Codestral|Pixtral[\w. ]*)$/;
+	/^(Mistral (?:Large|Medium|Small)(?: \d[\d.]*)?|Magistral (?:Medium|Small)|Ministral [\dA-Za-z. ()-]+|Devstral(?: Small)?(?: \d)?|Codestral|Pixtral[\w. ]*)$/;
+
+// Every id we publish as current; collect() throws if one is not parsed.
+const TRACKED = new Set([
+	'codestral-25.08',
+	'ministral-3-14b',
+	'ministral-3-3b',
+	'ministral-3-8b',
+	'mistral-large-3',
+	'mistral-medium-3.5',
+	'mistral-small-4',
+]);
+
+// A priced card whose title is not a Mistral model name: skipped if a rule matches, else reported via
+// getNotices().
+const UNTRACKED_RULES = [
+	[(card) => /(^|\n)Third-party\b/.test(card.text), 'third-party model resold on the Mistral API; belongs to its own provider'],
+	[(card) => /^Classifier API model\b/.test(card.title), 'fine-tuned classifier SKU, not a general chat model'],
+];
+const TITLE_RE = /<p class="text-h5 font-mistral[^"]*">([^<]+)<\/p>/g;
+
+let notices = [];
+
+/** Read by run.mjs after a successful collect(); see tools/sentinel/README.md. */
+export function getNotices() {
+	return notices;
+}
 
 function parsePrice(s) {
 	const m = String(s).match(/\$\s*([0-9]+(?:\.[0-9]+)?)/);
@@ -73,6 +98,15 @@ export async function collect() {
 		.replace(/&amp;/g, '&')
 		.replace(/&#x27;|&apos;/g, "'");
 	const lines = text.split('\n').map((s) => s.trim()).filter(Boolean);
+	notices = [];
+
+	const titles = new Set(
+		[...html.matchAll(TITLE_RE)].map((m) => m[1].replace(/&amp;/g, '&').replace(/&#x27;|&apos;/g, "'").trim())
+	);
+	if (!titles.size)
+		throw new Error(
+			'mistral collector: no card titles (<p class="text-h5 font-mistral">) found - markup drifted. Refusing to guess.'
+		);
 
 	// indices of "Input (/M tokens)" and "Output (/M tokens)" anchor lines
 	const inputAnchors = [];
@@ -107,17 +141,37 @@ export async function collect() {
 		}
 		if (output === null) continue; // input-only card (e.g. embeddings) - skip
 
-		// walk back to the nearest model-name heading
-		let display = null;
+		// walk back to this card's own title, then decide whether that title is a Mistral model
+		let titleAt = -1;
 		for (let j = ai - 1; j >= Math.max(0, ai - 14); j--) {
-			if (NAME_LINE_RE.test(lines[j])) {
-				display = lines[j];
+			if (titles.has(lines[j])) {
+				titleAt = j;
 				break;
 			}
 		}
-		if (!display) continue;
+		const title = titleAt >= 0 ? lines[titleAt] : null;
+		if (!title || !NAME_LINE_RE.test(title)) {
+			const card = { title: title ?? '(untitled card)', text: lines.slice(titleAt + 1, ai).join('\n') };
+			if (UNTRACKED_RULES.some(([match]) => match(card))) continue;
+			if (!notices.some((n) => n.display_name === card.title)) {
+				notices.push({
+					kind: 'untracked_model',
+					provider: PROVIDER,
+					model_id: slugify(card.title),
+					display_name: card.title,
+					source_url: SOURCE_URL,
+					message:
+						`"${card.title}" is priced per-1M-tokens ($${input} in / $${output} out) on Mistral's own API ` +
+						`pricing page but is not a recognised Mistral model name and matches no UNTRACKED_RULES entry. ` +
+						`Add it to NAME_TO_CANONICAL + TRACKED to start recording it, or add a rule with a reason to ` +
+						`keep ignoring it.`,
+				});
+			}
+			continue;
+		}
+		const display = title;
 
-		const norm = display.toLowerCase().replace(/\s*-\s*/g, ' ').replace(/\s+/g, ' ').trim();
+		const norm = display.toLowerCase().replace(/[()]/g, ' ').replace(/\s*-\s*/g, ' ').replace(/\s+/g, ' ').trim();
 		const canonical = NAME_TO_CANONICAL[norm] || slugify(display);
 		// first card wins per model (the page lists a model once in the API table; later duplicate
 		// marketing cards, if any, are ignored).
@@ -147,6 +201,13 @@ export async function collect() {
 
 	if (!results.length)
 		throw new Error('mistral collector: found price anchors but extracted zero model rows - structure drift.');
+	const missing = [...TRACKED].filter((id) => !byModel.has(id));
+	if (missing.length)
+		throw new Error(
+			`mistral collector: tracked model(s) not parsed from the pricing page: ${missing.join(', ')}. ` +
+				`Either the page markup drifted or the model left the page (record the retirement and remove it ` +
+				`from TRACKED). Refusing to report partial coverage as success.`
+		);
 	return results;
 }
 

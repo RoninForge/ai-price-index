@@ -101,7 +101,14 @@ model is not "detected and skipped", it is **invisible**: an unknown name is dro
 That is how OpenAI's entire `gpt-5.6` family (sol / terra / luna) shipped, sat on the vendor's own
 pricing page, and never entered the index.
 
-A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`); it must also be
+`mistral` gates on a heading **name** pattern rather than an id list, with the same blind spot: a
+priced card whose title did not match was dropped without a trace. When Mistral restyled
+"Ministral 3 - 3B" as "Ministral 3 (3B)" in 2026-09, all three Ministral 3 models fell out of
+monitoring while the collector reported success on 4 of 7. It now attributes each price to the card's
+own title (`<p class="text-h5 font-mistral">`) and routes any priced card that is not a Mistral model
+through `UNTRACKED_RULES` or a notice.
+
+A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`, `mistral`); it must also be
 wired into the `COLLECTORS` registry in `run.mjs`, which reads `getNotices` per entry - exporting it
 from the collector alone is silently ignored. `run.mjs` reads it after a
 successful collect and files each `untracked_model` notice into `report.untracked_models`, which gets
@@ -129,6 +136,14 @@ Two guards now make that shape of drift loud. The column layout is read from the
 `Long context` group) rather than assumed by position, and an unrecognised column or group throws
 instead of shifting every value one place left. Coverage is then asserted over the result. A
 collector that quietly covers less than it claims is worse than one that fails.
+
+`mistral.mjs` asserts coverage the same way over its own `TRACKED` set.
+
+Coverage only protects what is in `TRACKED`, so a model we publish that no collector reads is not
+covered at all. `gpt-5.3-codex` was in that state from 2026-07-10: it lives in OpenAI's separate
+Specialized-models table (a `GroupedPricingTable` island inside the `specialized-pricing` content
+switcher), which nothing parsed. `openai.mjs` now reads that table's `standard` pane by its own
+headings. To find the next one, compare every current index model against what the collectors emit.
 
 ### `effective_from` for new models
 
@@ -159,14 +174,14 @@ It does **not** auto-edit existing records for CHANGED prices.
 | `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift. |
 | `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." |
 | `amazon` | AWS Bedrock Price List API | first-party (`provider_live`, `verified`) | Machine-readable bulk JSON, no auth. Nova text models; per-1K -> per-MTok. **Throws** on usagetype-scheme drift. |
-| `mistral` | first-party Mistral pricing | first-party | See `collectors/mistral.mjs`. |
+| `mistral` | `mistral.ai/pricing/api/` | first-party (`provider_live`, `verified`) | Cards, not a table; each price is attributed to its card title. **Asserts coverage** of `TRACKED` and reports priced cards that are neither tracked nor excluded by `UNTRACKED_RULES`. |
 | `deepseek` | first-party DeepSeek pricing | first-party | See `collectors/deepseek.mjs`. |
 | `google` | first-party Gemini pricing | first-party | See `collectors/google.mjs`. May intermittently drift; lands in `errors[]`, never crashes the run. |
 | `alibaba` | first-party Qwen pricing | first-party | See `collectors/alibaba.mjs`. |
 | `xai` | `api.x.ai/v1/language-models` | first-party (`provider_live`) | **Requires `XAI_API_KEY`** (free). Without it: a loud `xai BLOCKED: ...` error in `errors[]`, never a crash. |
 | OpenRouter | `openrouter.ai/api/v1/models` | **tripwire only** | Keyless. Reseller per-token prices, used as a new/changed signal + the `effective_from` launch-date source, never published. |
 | HuggingFace | `huggingface.co/api/models?author=<org>` | **tripwire only** | Keyless. Flags freshly-published open weights from meta-llama / mistralai / deepseek-ai / Qwen. No price implied. |
-| `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
+| `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Also reads the Specialized-models table (Codex, ChatGPT, Search, Embedding), standard pane only, by its own headings. Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
 | `cohere` | first-party Cohere pricing | first-party | See `collectors/cohere.mjs`. Also allow-list gated. |
 | `ai21` | (deferred) | — | Add as `collectors/<provider>.mjs` and one line in the `COLLECTORS` registry in `run.mjs`. |
 
