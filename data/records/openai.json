@@ -422,11 +422,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.1,
     "effective_from": "2024-09-12",
-    "effective_to": null,
+    "effective_to": "2025-10-27",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2025-10-27 per developers.openai.com/api/docs/deprecations (\"2025-04-28: o1-preview and o1-mini\" table, read 2026-09-21): \"2025-10-27 | o1-mini | o4-mini\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -435,11 +436,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 4.4,
     "effective_from": "2024-09-12",
-    "effective_to": null,
+    "effective_to": "2025-10-27",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2025-10-27 per developers.openai.com/api/docs/deprecations (\"2025-04-28: o1-preview and o1-mini\" table, read 2026-09-21): \"2025-10-27 | o1-mini | o4-mini\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -605,12 +607,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 10,
     "effective_from": "2025-06-26",
-    "effective_to": null,
+    "effective_to": "2026-07-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Standard (synchronous) tier."
+    "notes": "Standard (synchronous) tier. Retired 2026-07-23 per developers.openai.com/api/docs/deprecations (\"2026-04-22: Legacy GPT model snapshots (July 2026 shutdown)\" table, read 2026-09-21): \"July 23, 2026 | o3-deep-research-2025-06-26 | o3-deep-research | gpt-5.6-sol\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -619,11 +621,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 40,
     "effective_from": "2025-06-26",
-    "effective_to": null,
+    "effective_to": "2026-07-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-07-23 per developers.openai.com/api/docs/deprecations (\"2026-04-22: Legacy GPT model snapshots (July 2026 shutdown)\" table, read 2026-09-21): \"July 23, 2026 | o3-deep-research-2025-06-26 | o3-deep-research | gpt-5.6-sol\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -632,12 +635,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 2,
     "effective_from": "2025-06-26",
-    "effective_to": null,
+    "effective_to": "2026-07-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Standard (synchronous) tier."
+    "notes": "Standard (synchronous) tier. Retired 2026-07-23 per developers.openai.com/api/docs/deprecations (\"2026-04-22: Legacy GPT model snapshots (July 2026 shutdown)\" table, read 2026-09-21): \"July 23, 2026 | o4-mini-deep-research-2025-06-26 | o4-mini-deep-research | gpt-5.6-sol\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -646,11 +649,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 8,
     "effective_from": "2025-06-26",
-    "effective_to": null,
+    "effective_to": "2026-07-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-07-23 per developers.openai.com/api/docs/deprecations (\"2026-04-22: Legacy GPT model snapshots (July 2026 shutdown)\" table, read 2026-09-21): \"July 23, 2026 | o4-mini-deep-research-2025-06-26 | o4-mini-deep-research | gpt-5.6-sol\" (shutdown date, model, recommended replacement). Absent from the pricing page on 2026-09-21."
   },
   {
     "provider": "openai",
@@ -949,48 +953,6 @@
     "variation": "cache_read",
     "unit": "usd_per_mtok",
     "price_usd": 0.55,
-    "effective_from": "2026-07-31",
-    "effective_to": null,
-    "last_validated_at": "2026-07-31",
-    "source_url": "https://developers.openai.com/api/docs/pricing",
-    "source_kind": "provider_live",
-    "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
-  },
-  {
-    "provider": "openai",
-    "model_id": "o1-mini",
-    "variation": "cache_read",
-    "unit": "usd_per_mtok",
-    "price_usd": 0.55,
-    "effective_from": "2026-07-31",
-    "effective_to": null,
-    "last_validated_at": "2026-07-31",
-    "source_url": "https://developers.openai.com/api/docs/pricing",
-    "source_kind": "provider_live",
-    "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
-  },
-  {
-    "provider": "openai",
-    "model_id": "o3-deep-research",
-    "variation": "cache_read",
-    "unit": "usd_per_mtok",
-    "price_usd": 2.5,
-    "effective_from": "2026-07-31",
-    "effective_to": null,
-    "last_validated_at": "2026-07-31",
-    "source_url": "https://developers.openai.com/api/docs/pricing",
-    "source_kind": "provider_live",
-    "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
-  },
-  {
-    "provider": "openai",
-    "model_id": "o4-mini-deep-research",
-    "variation": "cache_read",
-    "unit": "usd_per_mtok",
-    "price_usd": 0.5,
     "effective_from": "2026-07-31",
     "effective_to": null,
     "last_validated_at": "2026-07-31",
@@ -1942,5 +1904,19 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.3-codex",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.175,
+    "effective_from": "2026-09-21",
+    "effective_to": null,
+    "last_validated_at": "2026-09-21",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
   }
 ]

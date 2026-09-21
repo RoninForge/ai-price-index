@@ -62,7 +62,7 @@ const COLLECTORS = [
 	{ provider: 'anthropic', collect: anthropic.collect },
 	{ provider: 'meta-llama', collect: llama.collect },
 	{ provider: 'amazon', collect: amazon.collect },
-	{ provider: 'mistral', collect: mistral.collect },
+	{ provider: 'mistral', collect: mistral.collect, getNotices: mistral.getNotices },
 	{ provider: 'deepseek', collect: deepseek.collect },
 	{ provider: 'google', collect: google.collect },
 	{ provider: 'alibaba', collect: alibaba.collect, getNotices: alibaba.getNotices },

@@ -32,6 +32,10 @@
 // layout is read from the table's own HEADER rather than assumed by position, and COVERAGE is
 // asserted (see assertCoverage) so "tracked but not emitted" fails loudly instead of passing quietly.
 //
+// SPECIALIZED MODELS (Codex, ChatGPT, Search, ...) live in a GroupedPricingTable island inside the
+// `specialized-pricing` content switcher. It has no tier prop; the tier is the enclosing pane
+// (data-value="standard" vs "fast"). Its props carry their own headings, so it is parsed by label.
+//
 // TIERS - WE TAKE THE STANDARD TIER ONLY, and we now select it EXPLICITLY by the island's
 // `props.tier === 'standard'` rather than by "first tuple in document order wins". The other tiers
 // (batch/flex ~50% off, fast with a surcharge) are never parsed.
@@ -79,6 +83,7 @@ const TRACKED = new Set([
 	'gpt-5.1',
 	'gpt-5.2',
 	'gpt-5.2-pro',
+	'gpt-5.3-codex',
 	'gpt-5.4',
 	'gpt-5.4-mini',
 	'gpt-5.4-nano',
@@ -90,14 +95,11 @@ const TRACKED = new Set([
 	'gpt-5.6-terra',
 	'gpt-6-astra',
 	'o1',
-	'o1-mini',
 	'o1-pro',
 	'o3',
-	'o3-deep-research',
 	'o3-mini',
 	'o3-pro',
 	'o4-mini',
-	'o4-mini-deep-research',
 	// gpt-4 + gpt-4-turbo are tracked but the page only has dated snapshots; see PAGE_ABSENT.
 ]);
 
@@ -108,9 +110,6 @@ const TRACKED = new Set([
 const PAGE_ABSENT = new Map([
 	['gpt-4', 'page carries only dated snapshots (gpt-4-0613); we do not map snapshot -> bare id'],
 	['gpt-4-turbo', 'page carries only dated snapshots (gpt-4-turbo-2024-04-09)'],
-	['o1-mini', 'off the pricing page as of 2026-07-31; retirement not yet confirmed'],
-	['o3-deep-research', 'off the pricing page as of 2026-07-31; retirement not yet confirmed'],
-	['o4-mini-deep-research', 'off the pricing page as of 2026-07-31; retirement not yet confirmed'],
 ]);
 
 // Models on the standard page we deliberately do not track, with the reason. Anything on the page that
@@ -132,6 +131,14 @@ const KNOWN_UNTRACKED = new Map([
 	['gpt-5-mini', 'current model, not yet in our tracked set'],
 	['gpt-5-nano', 'current model, not yet in our tracked set'],
 	['gpt-5-pro', 'current model, not yet in our tracked set'],
+	// Specialized-models table (see parseSpecializedRows).
+	['chat-latest', 'moving alias for the current ChatGPT model, not a stable priced id'],
+	['gpt-rosalind-research', 'access limited to approved research; the page says billing begins 2026-10-05'],
+	['gpt-5-search-api', 'search-specialized model billed per token plus per-call search fees; not a general text model'],
+	['text-embedding-3-small', 'embedding model; the index tracks text generation models'],
+	['text-embedding-3-large', 'embedding model; the index tracks text generation models'],
+	['text-embedding-ada-002', 'embedding model; the index tracks text generation models'],
+	['omni-moderation-latest', 'moderation endpoint, published as free'],
 ]);
 
 // PIN: gpt-4o is present on the page AND in current.json and is rock-stable. If the standard tuple ever
@@ -163,6 +170,15 @@ const PAYLOAD_LAYOUTS = new Map([
 	[4, ['input', 'cache_read', 'cache_write', 'output']],
 	[3, ['input', 'cache_read', 'output']],
 ]);
+
+// Column label -> variation for the Specialized-models table. Its first two headings are the group
+// ("Category") and the row name ("Model"); an unrecognised price heading throws.
+const SPECIALIZED_COLUMNS = {
+	input: 'input',
+	'cached input': 'cache_read',
+	'cache writes': 'cache_write',
+	output: 'output',
+};
 
 // Out-of-band findings for the caller (run.mjs), reset at the start of each collect().
 let notices = [];
@@ -423,6 +439,75 @@ function parsePayloadRows(props) {
 }
 
 /**
+ * Parse the STANDARD pane of the Specialized-models switcher.
+ * Returns Map(rawDisplayName -> { variation: price }), labelled by the island's own headings.
+ */
+function parseSpecializedRows(rawHtml) {
+	const sw = rawHtml.indexOf('data-content-switcher-id="specialized-pricing"');
+	if (sw === -1)
+		throw new Error('openai collector: specialized-pricing switcher not found - page structure drifted. Refusing to guess.');
+
+	const paneRe = /<[a-z]+\b[^>]*\bdata-content-switcher-pane="true"[^>]*>/g;
+	paneRe.lastIndex = sw;
+	const first = paneRe.exec(rawHtml);
+	const firstValue = first && /\bdata-value="([^"]*)"/.exec(first[0])?.[1];
+	if (firstValue !== 'standard')
+		throw new Error(
+			`openai collector: first specialized-pricing pane is "${firstValue ?? 'missing'}", not "standard". Refusing to guess the tier.`
+		);
+	const paneStart = first.index + first[0].length;
+	const next = paneRe.exec(rawHtml);
+	const paneEnd = next ? next.index : rawHtml.length;
+
+	const tagRe = /<astro-island\b[^>]*?component-export="GroupedPricingTable"[^>]*?>/g;
+	tagRe.lastIndex = paneStart;
+	const m = tagRe.exec(rawHtml);
+	if (!m || m.index >= paneEnd)
+		throw new Error('openai collector: no GroupedPricingTable island in the standard specialized pane. Refusing to guess.');
+	const propsAttr = /\sprops="([^"]*)"/.exec(m[0]);
+	let props;
+	try {
+		props = JSON.parse(unescape(propsAttr ? propsAttr[1] : ''));
+	} catch (e) {
+		throw new Error(`openai collector: specialized island props are not valid JSON (${e.message}). Refusing to guess.`);
+	}
+
+	const headings = (Array.isArray(props.headings) ? props.headings[1] : []).map((h) =>
+		String(Array.isArray(h) ? h[1] : h).trim().toLowerCase()
+	);
+	if (headings[0] !== 'category' || headings[1] !== 'model')
+		throw new Error(`openai collector: specialized table headings drifted (${headings.join(' | ')}). Refusing to guess.`);
+	const layout = headings.slice(2).map((h) => {
+		const v = SPECIALIZED_COLUMNS[h];
+		if (!v) throw new Error(`openai collector: unrecognised specialized-table column "${h}". Map it deliberately.`);
+		return v;
+	});
+
+	const out = new Map();
+	const groups = Array.isArray(props.groups) ? props.groups[1] : [];
+	for (const g of groups) {
+		const group = Array.isArray(g) ? g[1] : g;
+		const rows = Array.isArray(group?.rows) ? group.rows[1] : [];
+		for (const row of rows) {
+			const values = (Array.isArray(row) ? row[1] : []).map((cell) => (Array.isArray(cell) ? cell[1] : cell));
+			if (values.length !== layout.length + 1)
+				throw new Error(
+					`openai collector: specialized row "${values[0]}" has ${values.length - 1} price cells for ` +
+						`${layout.length} headings. Refusing to read values off by one.`
+				);
+			const prices = {};
+			layout.forEach((variation, i) => {
+				const v = parseSlot(values[i + 1]);
+				if (typeof v === 'number') prices[variation] = v;
+			});
+			out.set(String(values[0]).trim(), prices);
+		}
+	}
+	if (!out.size) throw new Error('openai collector: specialized table parsed to zero rows. Refusing to guess.');
+	return out;
+}
+
+/**
  * Map a raw page display name to its bare canonical id.
  * Strips a trailing " (<272K context length)" / " (< ... )" suffix (the STANDARD tier) so the base id
  * is recovered. A ">" / "> ... context length" suffix would be a long-context ROW rather than a
@@ -509,6 +594,7 @@ export async function collect() {
 
 	const tableRows = parseRenderedTable(inner);
 	const payloadRows = parsePayloadRows(props);
+	const specializedRows = parseSpecializedRows(rawHtml);
 
 	// canonical id -> { display, prices }. The rendered table is consulted FIRST and wins where the two
 	// overlap: it is labelled, and it is the only source for the long-context tier.
@@ -518,6 +604,7 @@ export async function collect() {
 	for (const [source, rows] of [
 		['table', tableRows],
 		['payload', payloadRows],
+		['specialized', specializedRows],
 	]) {
 		for (const [rawName, prices] of rows) {
 			const canonical = canonicalFromName(rawName);
@@ -530,8 +617,8 @@ export async function collect() {
 
 			const existing = byId.get(canonical);
 			if (existing) {
-				// The table was parsed first, so this is the payload confirming it.
-				if (source === 'payload') crossCheck(canonical, existing.prices, prices);
+				// The table was parsed first, so this is the payload (or the specialized table) confirming it.
+				if (source !== 'table') crossCheck(canonical, existing.prices, prices);
 				continue;
 			}
 
