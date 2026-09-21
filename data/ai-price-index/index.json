@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-14",
+  "dataModified": "2026-09-21",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -589,8 +589,8 @@
     {
       "id": "gpt-5.3-codex",
       "provider": "openai",
-      "file": "models/openai/gpt-5.3-codex.v3d2031e4.json",
-      "latestRev": "3d2031e4"
+      "file": "models/openai/gpt-5.3-codex.va25eb24c.json",
+      "latestRev": "a25eb24c"
     },
     {
       "id": "gpt-5.4",
@@ -661,8 +661,8 @@
     {
       "id": "o1-mini",
       "provider": "openai",
-      "file": "models/openai/o1-mini.v5c6842ee.json",
-      "latestRev": "5c6842ee"
+      "file": "models/openai/o1-mini.v202ed7a6.json",
+      "latestRev": "202ed7a6"
     },
     {
       "id": "o1-pro",
@@ -679,8 +679,8 @@
     {
       "id": "o3-deep-research",
       "provider": "openai",
-      "file": "models/openai/o3-deep-research.v6379c8ed.json",
-      "latestRev": "6379c8ed"
+      "file": "models/openai/o3-deep-research.va918877a.json",
+      "latestRev": "a918877a"
     },
     {
       "id": "o3-mini",
@@ -703,8 +703,8 @@
     {
       "id": "o4-mini-deep-research",
       "provider": "openai",
-      "file": "models/openai/o4-mini-deep-research.v41306cb2.json",
-      "latestRev": "41306cb2"
+      "file": "models/openai/o4-mini-deep-research.v232fb483.json",
+      "latestRev": "232fb483"
     },
     {
       "id": "grok-4.20-0309-non-reasoning",
