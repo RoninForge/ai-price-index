@@ -786,6 +786,12 @@
       "latestRev": "6767fee6"
     },
     {
+      "id": "grok-4.7",
+      "provider": "xai",
+      "file": "models/xai/grok-4.7.v1a4fcddb.json",
+      "latestRev": "1a4fcddb"
+    },
+    {
       "id": "grok-build-0.1",
       "provider": "xai",
       "file": "models/xai/grok-build-0.1.v0651fbdd.json",
