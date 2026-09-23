@@ -12,8 +12,7 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
-      "grok-4.3-latest",
-      "grok-latest"
+      "grok-4.3-latest"
     ],
     "notes": "Flagship, 1M context. Price from docs.x.ai. Cached input is $0.20/Mtok (recorded separately since 2026-07-27). Date from xAI's \"Grok 4.3 is now live on the xAI API\" post (2026-05-05)."
   },
@@ -30,8 +29,7 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
-      "grok-4.3-latest",
-      "grok-latest"
+      "grok-4.3-latest"
     ]
   },
   {
@@ -468,8 +466,7 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
-      "grok-4.3-latest",
-      "grok-latest"
+      "grok-4.3-latest"
     ],
     "notes": "Cache-read rate. effective_from is the earliest date we have first-party evidence for it: the 2026-06-17 validation of this model observed \"$0.20/Mtok cached input\" and said so in the input row's note, but never wrote the row. Re-confirmed on the xAI models page 2026-07-27 and recorded here. NOT a known change date; the rate may be older. xAI publishes no dated price history and Wayback captures of this page do not archive its embedded price payload, so no earlier evidence exists."
   },
@@ -745,8 +742,7 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
-      "grok-4.3-latest",
-      "grok-latest"
+      "grok-4.3-latest"
     ],
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
   },
@@ -763,8 +759,7 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "aliases": [
-      "grok-4.3-latest",
-      "grok-latest"
+      "grok-4.3-latest"
     ],
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
   },
