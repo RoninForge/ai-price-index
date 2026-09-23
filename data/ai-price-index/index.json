@@ -780,11 +780,10 @@
     {
       "id": "grok-4.3",
       "provider": "xai",
-      "file": "models/xai/grok-4.3.vbc979a7c.json",
-      "latestRev": "bc979a7c",
+      "file": "models/xai/grok-4.3.v7eda7e6d.json",
+      "latestRev": "7eda7e6d",
       "aliases": [
-        "grok-4.3-latest",
-        "grok-latest"
+        "grok-4.3-latest"
       ]
     },
     {
