@@ -1452,7 +1452,8 @@
     "last_validated_at": "2026-09-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Claude Opus 5.5 first observed on Anthropic's first-party pricing page on 2026-09-22; it was absent from the same page at 2026-09-22 05:44 UTC (price-sentinel run 35691874576). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Cache hits and refreshes bill at 0.05x base input ($0.20 per MTok), an exception the page states in a footnote; every other model uses the standard 0.1x except Claude Fable 5.1 and Claude Mythos 5.1 at 0.025x."
   },
   {
     "provider": "anthropic",
@@ -1465,7 +1466,8 @@
     "last_validated_at": "2026-09-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Claude Opus 5.5 first observed on Anthropic's first-party pricing page on 2026-09-22; it was absent from the same page at 2026-09-22 05:44 UTC (price-sentinel run 35691874576). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Cache hits and refreshes bill at 0.05x base input ($0.20 per MTok), an exception the page states in a footnote; every other model uses the standard 0.1x except Claude Fable 5.1 and Claude Mythos 5.1 at 0.025x."
   },
   {
     "provider": "anthropic",
@@ -1478,7 +1480,8 @@
     "last_validated_at": "2026-09-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Claude Opus 5.5 first observed on Anthropic's first-party pricing page on 2026-09-22; it was absent from the same page at 2026-09-22 05:44 UTC (price-sentinel run 35691874576). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Cache hits and refreshes bill at 0.05x base input ($0.20 per MTok), an exception the page states in a footnote; every other model uses the standard 0.1x except Claude Fable 5.1 and Claude Mythos 5.1 at 0.025x."
   },
   {
     "provider": "anthropic",
@@ -1491,7 +1494,8 @@
     "last_validated_at": "2026-09-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Claude Opus 5.5 first observed on Anthropic's first-party pricing page on 2026-09-22; it was absent from the same page at 2026-09-22 05:44 UTC (price-sentinel run 35691874576). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Cache hits and refreshes bill at 0.05x base input ($0.20 per MTok), an exception the page states in a footnote; every other model uses the standard 0.1x except Claude Fable 5.1 and Claude Mythos 5.1 at 0.025x."
   },
   {
     "provider": "anthropic",
@@ -1504,6 +1508,7 @@
     "last_validated_at": "2026-09-22",
     "source_url": "https://docs.claude.com/en/docs/about-claude/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Claude Opus 5.5 first observed on Anthropic's first-party pricing page on 2026-09-22; it was absent from the same page at 2026-09-22 05:44 UTC (price-sentinel run 35691874576). effective_from is that first first-party observation date, NOT a stated launch date - Anthropic's pricing page does not publish one. Cache hits and refreshes bill at 0.05x base input ($0.20 per MTok), an exception the page states in a footnote; every other model uses the standard 0.1x except Claude Fable 5.1 and Claude Mythos 5.1 at 0.025x."
   }
 ]
