@@ -94,6 +94,8 @@ const TRACKED = new Set([
 	'gpt-5.6-sol',
 	'gpt-5.6-terra',
 	'gpt-6-astra',
+	'gpt-6-luna',
+	'gpt-6-sol',
 	'o1',
 	'o1-pro',
 	'o3',
