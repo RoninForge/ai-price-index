@@ -9,6 +9,15 @@
         "last_validated": "2026-06-17",
         "price_usd": 0.2,
         "src": "https://www.ai21.com/pricing/",
+        "to": "2026-09-24",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-09-24",
+        "last_validated": "2026-09-24",
+        "price_usd": 0.2,
+        "src": "https://www.ai21.com/pricing/",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -18,6 +27,15 @@
         "confidence": "inferred",
         "from": "2026-01-01",
         "last_validated": "2026-06-17",
+        "price_usd": 0.4,
+        "src": "https://www.ai21.com/pricing/",
+        "to": "2026-09-24",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-09-24",
+        "last_validated": "2026-09-24",
         "price_usd": 0.4,
         "src": "https://www.ai21.com/pricing/",
         "to": null,

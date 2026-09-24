@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-23",
+  "dataModified": "2026-09-24",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -12,8 +12,8 @@
     {
       "id": "jamba-mini",
       "provider": "ai21",
-      "file": "models/ai21/jamba-mini.vefba1809.json",
-      "latestRev": "efba1809"
+      "file": "models/ai21/jamba-mini.v7c970644.json",
+      "latestRev": "7c970644"
     },
     {
       "id": "qwen-flash",
