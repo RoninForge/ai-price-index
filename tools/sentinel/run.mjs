@@ -55,9 +55,10 @@ import * as alibaba from './collectors/alibaba.mjs';
 import * as xai from './collectors/xai.mjs';
 import * as openai from './collectors/openai.mjs';
 import * as cohere from './collectors/cohere.mjs';
+import * as ai21 from './collectors/ai21.mjs';
 
 // provider -> collector. Provider slugs MUST match what each collector emits AND our dataset:
-// anthropic, meta-llama, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere.
+// anthropic, meta-llama, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere, ai21.
 const COLLECTORS = [
 	{ provider: 'anthropic', collect: anthropic.collect },
 	{ provider: 'meta-llama', collect: llama.collect },
@@ -69,6 +70,7 @@ const COLLECTORS = [
 	{ provider: 'xai', collect: xai.collect },
 	{ provider: 'openai', collect: openai.collect, getNotices: openai.getNotices },
 	{ provider: 'cohere', collect: cohere.collect },
+	{ provider: 'ai21', collect: ai21.collect, getNotices: ai21.getNotices },
 ];
 
 // Which extracted variations become contribution records (in this order).

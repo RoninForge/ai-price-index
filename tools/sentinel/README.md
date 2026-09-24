@@ -27,6 +27,9 @@ node tools/sentinel/collectors/mistral.mjs
 node tools/sentinel/collectors/deepseek.mjs
 node tools/sentinel/collectors/google.mjs
 node tools/sentinel/collectors/alibaba.mjs
+node tools/sentinel/collectors/openai.mjs
+node tools/sentinel/collectors/cohere.mjs
+node tools/sentinel/collectors/ai21.mjs
 XAI_API_KEY=... node tools/sentinel/collectors/xai.mjs   # xai needs a free key; BLOCKED without one
 ```
 
@@ -108,7 +111,7 @@ monitoring while the collector reported success on 4 of 7. It now attributes eac
 own title (`<p class="text-h5 font-mistral">`) and routes any priced card that is not a Mistral model
 through `UNTRACKED_RULES` or a notice.
 
-A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`, `mistral`); it must also be
+A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`, `mistral`, `ai21`); it must also be
 wired into the `COLLECTORS` registry in `run.mjs`, which reads `getNotices` per entry - exporting it
 from the collector alone is silently ignored. `run.mjs` reads it after a
 successful collect and files each `untracked_model` notice into `report.untracked_models`, which gets
@@ -183,7 +186,7 @@ It does **not** auto-edit existing records for CHANGED prices.
 | HuggingFace | `huggingface.co/api/models?author=<org>` | **tripwire only** | Keyless. Flags freshly-published open weights from meta-llama / mistralai / deepseek-ai / Qwen. No price implied. |
 | `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Also reads the Specialized-models table (Codex, ChatGPT, Search, Embedding), standard pane only, by its own headings. Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
 | `cohere` | first-party Cohere pricing | first-party | See `collectors/cohere.mjs`. Also allow-list gated. |
-| `ai21` | (deferred) | — | Add as `collectors/<provider>.mjs` and one line in the `COLLECTORS` registry in `run.mjs`. |
+| `ai21` | `ai21.com/pricing/` | first-party (`provider_live`, `verified`) | Server-rendered WordPress cards. Anchored on the `b-cards--type-models` block, because the same page prices the plans ("Free Trial - $10 credits") and a bare `$` scraper would publish a trial credit as a token price. Each figure read by its own label (`/ 1M input tokens`). **Asserts coverage** of `TRACKED` and reports untracked cards. |
 
 Adding a provider: write `collectors/<provider>.mjs` exporting `async function collect()` (return per-model
 `{ provider, model_id, prices, unit, source_url, source_kind, confidence, aliases? }`), then add one line
@@ -209,7 +212,7 @@ to the `COLLECTORS` array in `run.mjs`. The provider slug must match both what t
   policy for new models), and `makeRecord()` (throws on anything invalid).
 - `tripwire.mjs` - `findCandidates()` over OpenRouter + the 4 HF orgs, mapped to our provider slugs.
 - `collectors/*.mjs` - first-party collectors: `anthropic`, `llama` (Together reference), `amazon`,
-  `mistral`, `deepseek`, `google`, `alibaba`, `xai`.
+  `mistral`, `deepseek`, `google`, `alibaba`, `xai`, `openai`, `cohere`, `ai21`.
 - `run.mjs` - the orchestrator CLI (default dry-run; `--apply` to draft + write the report).
 
 ## CI workflow
@@ -228,4 +231,5 @@ straight to main; opens no PRs).
 
 ## Where this is going
 
-Phase 2 adds the headless-rendered pages (OpenAI, Cohere) and `ai21`.
+Phase 2 is complete: OpenAI, Cohere and `ai21` all have first-party collectors, so every provider in
+`data/records/` is now price-checked on every run.
