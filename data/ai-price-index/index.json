@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-24",
+  "dataModified": "2026-09-30",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -302,6 +302,12 @@
       "provider": "anthropic",
       "file": "models/anthropic/claude-sonnet-5.v20f92871.json",
       "latestRev": "20f92871"
+    },
+    {
+      "id": "claude-sonnet-5-5",
+      "provider": "anthropic",
+      "file": "models/anthropic/claude-sonnet-5-5.v3ac5279e.json",
+      "latestRev": "3ac5279e"
     },
     {
       "id": "command-a-plus",
@@ -669,6 +675,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6-sol.v06520a7a.json",
       "latestRev": "06520a7a"
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "provider": "openai",
+      "file": "models/openai/gpt-6.1-sol.vfe3efaf9.json",
+      "latestRev": "fe3efaf9"
     },
     {
       "id": "o1",
