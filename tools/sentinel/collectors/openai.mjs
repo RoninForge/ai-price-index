@@ -97,6 +97,7 @@ const TRACKED = new Set([
 	'gpt-6-luna',
 	'gpt-6-sol',
 	'gpt-6.1-sol',
+	'gpt-rosalind-research',
 	'o1',
 	'o1-pro',
 	'o3',
@@ -136,7 +137,6 @@ const KNOWN_UNTRACKED = new Map([
 	['gpt-5-pro', 'current model, not yet in our tracked set'],
 	// Specialized-models table (see parseSpecializedRows).
 	['chat-latest', 'moving alias for the current ChatGPT model, not a stable priced id'],
-	['gpt-rosalind-research', 'access limited to approved research; the page says billing begins 2026-10-05'],
 	['gpt-5-search-api', 'search-specialized model billed per token plus per-call search fees; not a general text model'],
 	['text-embedding-3-small', 'embedding model; the index tracks text generation models'],
 	['text-embedding-3-large', 'embedding model; the index tracks text generation models'],
