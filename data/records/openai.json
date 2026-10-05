@@ -2254,5 +2254,45 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "gpt-6.1-sol first observed on OpenAI's first-party pricing page on 2026-09-29 (price-sentinel run 36611872692, 18:24 UTC); the page carried no such row at 2026-09-29 06:30 UTC (price-sentinel run 36531444224). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Same input, cache-write and output rates as gpt-6-sol, but cached input is $0.10 short-context and $0.20 long-context, half of gpt-6-sol's, so do not re-derive it from gpt-6-sol or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-rosalind-research",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-10-05",
+    "effective_to": null,
+    "last_validated_at": "2026-10-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-rosalind-research is listed in the Specialized models table on OpenAI's first-party pricing page, which states that billing for it begins on October 5, 2026; effective_from is that stated billing start. Verified 2026-10-05 two ways: the collector's parse and a direct read of the rendered table and its embedded payload, both $5 input / $0.50 cached input / $25 output. The page says cache-write pricing does not apply to this model, so no cache_write row exists by design. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price. No independent aggregator lists it, which is why the automated cross-check could not corroborate it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-rosalind-research",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-10-05",
+    "effective_to": null,
+    "last_validated_at": "2026-10-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-rosalind-research",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-10-05",
+    "effective_to": null,
+    "last_validated_at": "2026-10-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
