@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-09-30",
+  "dataModified": "2026-10-05",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -681,6 +681,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6.1-sol.vfe3efaf9.json",
       "latestRev": "fe3efaf9"
+    },
+    {
+      "id": "gpt-rosalind-research",
+      "provider": "openai",
+      "file": "models/openai/gpt-rosalind-research.vb3ff4b1d.json",
+      "latestRev": "b3ff4b1d"
     },
     {
       "id": "o1",
