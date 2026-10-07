@@ -107,9 +107,11 @@ pricing page, and never entered the index.
 `mistral` gates on a heading **name** pattern rather than an id list, with the same blind spot: a
 priced card whose title did not match was dropped without a trace. When Mistral restyled
 "Ministral 3 - 3B" as "Ministral 3 (3B)" in 2026-09, all three Ministral 3 models fell out of
-monitoring while the collector reported success on 4 of 7. It now attributes each price to the card's
-own title (`<p class="text-h5 font-mistral">`) and routes any priced card that is not a Mistral model
-through `UNTRACKED_RULES` or a notice.
+monitoring while the collector reported success on 4 of 7. In 2026-10 Mistral moved API pricing to
+real `<table>`s at `docs.mistral.ai/inference/pricing`; the collector now reads each cell by its column
+label (`Input` / `Cached input` / `Output`), skips sections by id with a stated reason, emits the sale
+price when a cell is struck through and reports the list price as `list_prices`, and routes any priced
+row that is not a Mistral model through `UNTRACKED_RULES` or a notice.
 
 A collector may now export `getNotices()` alongside `collect()` (`openai`, `alibaba`, `mistral`, `ai21`); it must also be
 wired into the `COLLECTORS` registry in `run.mjs`, which reads `getNotices` per entry - exporting it
@@ -177,7 +179,7 @@ It does **not** auto-edit existing records for CHANGED prices.
 | `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift. |
 | `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." |
 | `amazon` | AWS Bedrock Price List API | first-party (`provider_live`, `verified`) | Machine-readable bulk JSON, no auth. Nova text models; per-1K -> per-MTok. **Throws** on usagetype-scheme drift. |
-| `mistral` | `mistral.ai/pricing/api/` | first-party (`provider_live`, `verified`) | Cards, not a table; each price is attributed to its card title. **Asserts coverage** of `TRACKED` and reports priced cards that are neither tracked nor excluded by `UNTRACKED_RULES`. |
+| `mistral` | `docs.mistral.ai/inference/pricing` | first-party (`provider_live`, `verified`) | One table per `<section>`, each cell read by its column label; an unknown header throws. A sale cell emits the sale price and reports the struck list price. **Asserts coverage** of `TRACKED` and reports priced cards that are neither tracked nor excluded by `UNTRACKED_RULES`. |
 | `deepseek` | first-party DeepSeek pricing | first-party | See `collectors/deepseek.mjs`. |
 | `google` | first-party Gemini pricing | first-party | See `collectors/google.mjs`. May intermittently drift; lands in `errors[]`, never crashes the run. |
 | `alibaba` | first-party Qwen pricing | first-party | See `collectors/alibaba.mjs`. |
