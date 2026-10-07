@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-05",
+  "dataModified": "2026-10-07",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -481,8 +481,8 @@
     {
       "id": "codestral-25.08",
       "provider": "mistral",
-      "file": "models/mistral/codestral-25.08.vfb1036e4.json",
-      "latestRev": "fb1036e4"
+      "file": "models/mistral/codestral-25.08.v7b8cc85f.json",
+      "latestRev": "7b8cc85f"
     },
     {
       "id": "devstral-2",
@@ -511,38 +511,44 @@
     {
       "id": "ministral-3-14b",
       "provider": "mistral",
-      "file": "models/mistral/ministral-3-14b.vd6e48f37.json",
-      "latestRev": "d6e48f37"
+      "file": "models/mistral/ministral-3-14b.vde7d59a0.json",
+      "latestRev": "de7d59a0"
     },
     {
       "id": "ministral-3-3b",
       "provider": "mistral",
-      "file": "models/mistral/ministral-3-3b.v7e8e2c18.json",
-      "latestRev": "7e8e2c18"
+      "file": "models/mistral/ministral-3-3b.v572c51d1.json",
+      "latestRev": "572c51d1"
     },
     {
       "id": "ministral-3-8b",
       "provider": "mistral",
-      "file": "models/mistral/ministral-3-8b.va2eeeec1.json",
-      "latestRev": "a2eeeec1"
+      "file": "models/mistral/ministral-3-8b.veb7ef80b.json",
+      "latestRev": "eb7ef80b"
     },
     {
       "id": "mistral-large-3",
       "provider": "mistral",
-      "file": "models/mistral/mistral-large-3.v85c4b698.json",
-      "latestRev": "85c4b698"
+      "file": "models/mistral/mistral-large-3.v3426edae.json",
+      "latestRev": "3426edae"
+    },
+    {
+      "id": "mistral-large-4",
+      "provider": "mistral",
+      "file": "models/mistral/mistral-large-4.vac8c0f79.json",
+      "latestRev": "ac8c0f79"
     },
     {
       "id": "mistral-medium-3.5",
       "provider": "mistral",
-      "file": "models/mistral/mistral-medium-3.5.v30db77a2.json",
-      "latestRev": "30db77a2"
+      "file": "models/mistral/mistral-medium-3.5.va99555c7.json",
+      "latestRev": "a99555c7"
     },
     {
       "id": "mistral-small-4",
       "provider": "mistral",
-      "file": "models/mistral/mistral-small-4.vbc4f851e.json",
-      "latestRev": "bc4f851e"
+      "file": "models/mistral/mistral-small-4.v7a1e65c4.json",
+      "latestRev": "7a1e65c4"
     },
     {
       "id": "gpt-4",
