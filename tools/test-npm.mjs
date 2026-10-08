@@ -45,6 +45,13 @@ for (const v of vectors.vectors) {
 	);
 }
 
+// 1b. A recorded cache_read rate wins over the 0.1x multiplier: Claude Fable 5.1 is priced at 0.025x
+//     input ($0.25 on $10), so 1M cache-read tokens cost $0.25, not $1.
+{
+	const { usd, modelKnown } = usdForRollupRaw({ cache_read: 1_000_000 }, 'anthropic', 'claude-fable-5-1', '2026-10-01');
+	ok('recorded cache_read wins (fable-5-1 0.025x)', modelKnown && Math.abs(usd - 0.25) < 1e-9, `usd=${usd}`);
+}
+
 // 2. API shape smoke checks.
 const opus = current('claude-opus-4-8');
 ok('current resolves opus-4-8', opus && opus.provider === 'anthropic' && opus.input.price_usd === 5);
