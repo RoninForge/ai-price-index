@@ -87,7 +87,10 @@ acceptable; silently back-dated is not.
 
 A related drop lived one layer down: `RECORD_VARIATIONS` in `run.mjs` omitted `tier2_input` /
 `tier2_output`, so long-context tiers were dropped even for NEW models. Both are now in the list,
-along with `cache_write`, `tier2_cache_read` and `tier2_cache_write`.
+along with `cache_write`, `tier2_cache_read` and `tier2_cache_write`. `tier2_cache_write_5m` /
+`tier2_cache_write_1h` followed on 2026-10-08 for Anthropic's first prompt-length-tiered model
+(Claude Haiku 5.5), whose "for prompts over 100,000 tokens" row the collector used to slug into a
+fake model id; it now folds that row into the base model as tier2_* rates.
 
 `cache_write` is the **untimed** cache-write rate: OpenAI publishes a single "Cache writes" column
 with no TTL dimension. It is deliberately separate from Anthropic's `cache_write_5m` /
@@ -176,7 +179,7 @@ It does **not** auto-edit existing records for CHANGED prices.
 
 | Provider | Source | Kind | Notes |
 | --- | --- | --- | --- |
-| `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift. |
+| `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift, including an orphaned prompt-length tier row. |
 | `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." |
 | `amazon` | AWS Bedrock Price List API | first-party (`provider_live`, `verified`) | Machine-readable bulk JSON, no auth. Nova text models; per-1K -> per-MTok. **Throws** on usagetype-scheme drift. |
 | `mistral` | `docs.mistral.ai/inference/pricing` | first-party (`provider_live`, `verified`) | One table per `<section>`, each cell read by its column label; an unknown header throws. A sale cell emits the sale price and reports the struck list price. **Asserts coverage** of `TRACKED` and reports priced cards that are neither tracked nor excluded by `UNTRACKED_RULES`. |
