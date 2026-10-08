@@ -12,6 +12,11 @@
 //   Output Tokens          -> output
 // All prices are usd_per_mtok. Batch / Fast-mode are SEPARATE tables further down and are ignored here.
 //
+// Prompt-length tiers: a model priced by prompt length renders as TWO rows, "Claude Haiku 5.5 (for
+// prompts up to 100,000 tokens)" and "Claude Haiku 5.5 (for prompts over 100,000 tokens)". Both fold
+// into ONE model; the "over" row's columns map to the tier2_* variations (tier2_cache_write_5m /
+// tier2_cache_write_1h keep the TTL, same rule as the base columns).
+//
 // Fail loud: if the header row above is not found, THROW. Never emit a guessed number.
 
 import { fetchText, today } from '../lib.mjs';
@@ -144,6 +149,28 @@ function extractPricingWindow(name) {
 	return { base: name.slice(0, m.index).trim(), window: date ? { kind: m[1].toLowerCase(), date } : null };
 }
 
+const TIER2_VARIATION = {
+	input: 'tier2_input',
+	output: 'tier2_output',
+	cache_read: 'tier2_cache_read',
+	cache_write_5m: 'tier2_cache_write_5m',
+	cache_write_1h: 'tier2_cache_write_1h',
+};
+
+/**
+ * Peel a trailing prompt-length tier qualifier off a model name: "(for prompts up to 100,000 tokens)"
+ * or "(for prompts over 100,000 tokens)". Returns { base, tier } where tier is
+ * { kind: 'up to'|'over', threshold: number } or null when the row is not tiered.
+ */
+function extractPromptTier(name) {
+	const m = name.match(/\s*\(\s*for prompts\s+(up to|over)\s+([0-9][0-9,]*)\s+tokens\s*\)\s*$/i);
+	if (!m) return { base: name, tier: null };
+	return {
+		base: name.slice(0, m.index).trim(),
+		tier: { kind: m[1].toLowerCase(), threshold: Number(m[2].replace(/,/g, '')) },
+	};
+}
+
 /** Is a pricing window in effect on `todayStr`? A row with no window (the normal case) is always in effect. */
 function windowEffectiveToday(window, todayStr) {
 	if (!window) return true;
@@ -234,7 +261,8 @@ export async function collect() {
 		if (!cells.length) continue;
 		// Strip inline links first (the intro row hides its date qualifier inside a markdown link), then
 		// peel off any promotional-window qualifier so both rows of a promo normalize to one model name.
-		const { base, window } = extractPricingWindow(stripInlineLinks(cells[0]));
+		const { base: untiered, tier } = extractPromptTier(stripInlineLinks(cells[0]));
+		const { base, window } = extractPricingWindow(untiered);
 		const display = cleanModelName(base);
 		if (!display || !/claude/i.test(display)) continue; // skip non-model footnote rows
 
@@ -263,7 +291,29 @@ export async function collect() {
 			confidence: 'verified',
 			known_mapping: Boolean(mapping),
 			_effectiveToday: windowEffectiveToday(window, t),
+			_tier: tier,
+			_windowKey: window ? `${window.kind}:${window.date}` : '',
 		});
+	}
+
+	// Fold each "over N tokens" row into its "up to N tokens" sibling as tier2_* rates. An orphaned tier
+	// row, or a threshold mismatch, is structure drift: throw rather than publish half a price table.
+	const tier2Rows = results.filter((r) => r._tier && r._tier.kind === 'over');
+	const baseRows = results.filter((r) => !r._tier || r._tier.kind === 'up to');
+	for (const over of tier2Rows) {
+		const under = baseRows.find(
+			(r) => r.model_id === over.model_id && r._windowKey === over._windowKey && r._tier
+		);
+		if (!under || under._tier.threshold !== over._tier.threshold)
+			throw new Error(
+				`anthropic collector: "${over.display_name}" has a prompt-length tier over ` +
+					`${over._tier.threshold} tokens with no matching "up to" row. Structure drift - refusing to guess.`
+			);
+		for (const [v, price] of Object.entries(over.prices)) {
+			if (!TIER2_VARIATION[v])
+				throw new Error(`anthropic collector: no tier2 variation for "${v}" on "${over.display_name}".`);
+			under.prices[TIER2_VARIATION[v]] = price;
+		}
 	}
 
 	// Collapse a promotional intro/standard split (two rows, one model) to the row whose window covers
@@ -271,7 +321,7 @@ export async function collect() {
 	// model's "current" price. The scheduled future row is dropped here; when its window opens the
 	// sentinel re-surfaces it as a CHANGED price for a human bitemporal interval edit.
 	const byId = new Map();
-	for (const item of results) {
+	for (const item of baseRows) {
 		const prev = byId.get(item.model_id);
 		if (!prev) {
 			byId.set(item.model_id, item);
@@ -279,7 +329,7 @@ export async function collect() {
 		}
 		if (item._effectiveToday && !prev._effectiveToday) byId.set(item.model_id, item);
 	}
-	const deduped = [...byId.values()].map(({ _effectiveToday, ...rest }) => rest);
+	const deduped = [...byId.values()].map(({ _effectiveToday, _tier, _windowKey, ...rest }) => rest);
 
 	if (!deduped.length)
 		throw new Error('anthropic collector: located the table but extracted zero Claude rows - structure drift.');

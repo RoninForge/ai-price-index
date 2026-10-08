@@ -81,7 +81,8 @@ const COLLECTORS = [
 // `cache_write` is the UNTIMED cache-write rate (OpenAI publishes one "Cache writes" column with no
 // TTL dimension). It is deliberately NOT folded into cache_write_5m/cache_write_1h, which are
 // Anthropic's two TTL-specific rates: collapsing them would assert a TTL the vendor never stated.
-// tier2_cache_read / tier2_cache_write are the same rates under a long-context tier.
+// tier2_cache_read / tier2_cache_write / tier2_cache_write_5m / tier2_cache_write_1h are the same rates
+// under a long-context tier, with the same TTL rule.
 const RECORD_VARIATIONS = [
 	'input',
 	'output',
@@ -93,6 +94,8 @@ const RECORD_VARIATIONS = [
 	'tier2_output',
 	'tier2_cache_read',
 	'tier2_cache_write',
+	'tier2_cache_write_5m',
+	'tier2_cache_write_1h',
 ];
 
 /**
