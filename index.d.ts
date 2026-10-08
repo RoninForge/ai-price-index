@@ -112,7 +112,7 @@ export function rateAt(
 	provider: string,
 	model: string,
 	date: string
-): { inputPerM: number; outputPerM: number } | null;
+): { inputPerM: number; outputPerM: number; cacheReadPerM: number } | null;
 
 export function usdForRollup(
 	tokens: TokenRollup,
