@@ -90,6 +90,7 @@ const TRACKED = new Set([
 	'gpt-5.4-pro',
 	'gpt-5.5',
 	'gpt-5.5-pro',
+	'gpt-5.6-cyber',
 	'gpt-5.6-luna',
 	'gpt-5.6-sol',
 	'gpt-5.6-terra',
@@ -97,6 +98,7 @@ const TRACKED = new Set([
 	'gpt-6-luna',
 	'gpt-6-sol',
 	'gpt-6.1-sol',
+	'gpt-rosalind-discovery',
 	'gpt-rosalind-research',
 	'o1',
 	'o1-pro',
@@ -137,6 +139,8 @@ const KNOWN_UNTRACKED = new Map([
 	['gpt-5-pro', 'current model, not yet in our tracked set'],
 	// Specialized-models table (see parseSpecializedRows).
 	['chat-latest', 'moving alias for the current ChatGPT model, not a stable priced id'],
+	// Cyber models section, hidden behind its expander.
+	['gpt-5.5-cyber', 'previous Daybreak Red model, kept as a hidden row behind gpt-5.6-cyber'],
 	['gpt-5-search-api', 'search-specialized model billed per token plus per-call search fees; not a general text model'],
 	['text-embedding-3-small', 'embedding model; the index tracks text generation models'],
 	['text-embedding-3-large', 'embedding model; the index tracks text generation models'],
@@ -172,6 +176,27 @@ const GROUP_COLUMNS = {
 const PAYLOAD_LAYOUTS = new Map([
 	[4, ['input', 'cache_read', 'cache_write', 'output']],
 	[3, ['input', 'cache_read', 'output']],
+]);
+
+// Every <h2 class="anchor-heading"> section on the page, and whether we read it. A section not in this
+// map throws. OpenAI has twice moved priced text models into a section this collector did not read:
+// gpt-5.6-cyber sat in "Cyber models" unseen, and gpt-rosalind-research moved from Specialized models
+// into "Life sciences models", which surfaced only because it was already tracked. MODEL_SECTIONS are
+// parsed through their rendered table (same labelled header shape as the main table).
+const MODEL_SECTIONS = ['cyber-models', 'life-sciences-models'];
+const KNOWN_SECTIONS = new Map([
+	['text-tokens', 'main tables, parsed via the standard TextTokenPricingTables island'],
+	['cyber-models', 'parsed (MODEL_SECTIONS)'],
+	['life-sciences-models', 'parsed (MODEL_SECTIONS)'],
+	['image-tokens', 'image token rates; the index tracks text token rates'],
+	['live-session-duration', 'per-minute voice sessions, not per-token'],
+	['audio-tokens', 'realtime/audio modality rates, not tracked'],
+	['image-generation', 'per-image pricing, not tracked'],
+	['transcription-and-speech', 'audio models, not tracked'],
+	['built-in-tools', 'per-call tool fees, not model rates'],
+	['specialized-models', 'parsed via parseSpecializedRows'],
+	['fine-tuning', 'training and fine-tuned inference rates, not tracked'],
+	['cloud-platforms', 'third-party cloud listings, not first-party rates'],
 ]);
 
 // Column label -> variation for the Specialized-models table. Its first two headings are the group
@@ -510,6 +535,95 @@ function parseSpecializedRows(rawHtml) {
 	return out;
 }
 
+/** Every top-level section anchor on the page, in order, with its offset. */
+function sectionAnchors(rawHtml) {
+	const out = [];
+	const re = /<h2\b[^>]*\bid="([^"]+)"[^>]*\bclass="anchor-heading"/g;
+	let m;
+	while ((m = re.exec(rawHtml))) out.push({ id: m[1], index: m.index });
+	return out;
+}
+
+/** Throw on a section we have not classified, so a new home for priced models cannot go unread. */
+function assertKnownSections(anchors) {
+	const unknown = anchors.map((a) => a.id).filter((id) => !KNOWN_SECTIONS.has(id));
+	if (unknown.length)
+		throw new Error(
+			`openai collector: unclassified pricing section(s) on the page: ${unknown.join(', ')}. Add each to ` +
+				`KNOWN_SECTIONS (and to MODEL_SECTIONS if it prices text models). Refusing to skip a section unread.`
+		);
+}
+
+/**
+ * Map one GroupedPricingTable heading to a variation. Section tables flatten the context group into the
+ * label ("Short context cached input", "Long context output"); a bare label is short context.
+ */
+function groupedHeadingVariation(label) {
+	const m = /^(short context|long context)\s+(.+)$/.exec(label);
+	const [group, column] = m ? [m[1], m[2]] : ['short context', label];
+	const v = GROUP_COLUMNS[group][column];
+	if (!v) throw new Error(`openai collector: unrecognised section-table column "${label}". Map it deliberately.`);
+	return v;
+}
+
+/**
+ * Parse one model section (Cyber models, Life sciences models), bounded by the next section heading.
+ * Reads the GroupedPricingTable island's props, which carry every model INCLUDING the ones hidden behind
+ * the section's expander (hiddenModels, e.g. gpt-5.5-cyber), and cross-checks them against the rendered
+ * table wherever both list a model. Returns Map(rawDisplayName -> { variation: price }).
+ */
+function parseSectionTable(rawHtml, anchors, id) {
+	const i = anchors.findIndex((a) => a.id === id);
+	if (i === -1) throw new Error(`openai collector: section "${id}" not found - page structure drifted. Refusing to guess.`);
+	const end = i + 1 < anchors.length ? anchors[i + 1].index : rawHtml.length;
+	const section = rawHtml.slice(anchors[i].index, end);
+
+	const tag = /<astro-island\b[^>]*?component-export="GroupedPricingTable"[^>]*?>/.exec(section);
+	if (!tag) throw new Error(`openai collector: no GroupedPricingTable island in section "${id}". Refusing to guess.`);
+	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);
+	let props;
+	try {
+		props = JSON.parse(unescape(propsAttr ? propsAttr[1] : ''));
+	} catch (e) {
+		throw new Error(`openai collector: section "${id}" island props are not valid JSON (${e.message}). Refusing to guess.`);
+	}
+	const headings = (Array.isArray(props.headings) ? props.headings[1] : []).map((h) =>
+		String(Array.isArray(h) ? h[1] : h).trim().toLowerCase()
+	);
+	if (headings[0] !== 'model')
+		throw new Error(`openai collector: section "${id}" headings drifted (${headings.join(' | ')}). Refusing to guess.`);
+	const layout = headings.slice(1).map(groupedHeadingVariation);
+
+	const out = new Map();
+	for (const g of Array.isArray(props.groups) ? props.groups[1] : []) {
+		const group = Array.isArray(g) ? g[1] : g;
+		const name = String(Array.isArray(group?.model) ? group.model[1] : group?.model ?? '').trim();
+		const rows = Array.isArray(group?.rows) ? group.rows[1] : [];
+		if (!name || rows.length !== 1)
+			throw new Error(`openai collector: section "${id}" group "${name}" has ${rows.length} rows, expected 1. Refusing to guess.`);
+		const values = (Array.isArray(rows[0]) ? rows[0][1] : []).map((cell) => (Array.isArray(cell) ? cell[1] : cell));
+		if (values.length !== layout.length)
+			throw new Error(
+				`openai collector: section "${id}" row "${name}" has ${values.length} price cells for ` +
+					`${layout.length} headings. Refusing to read values off by one.`
+			);
+		const prices = {};
+		layout.forEach((variation, j) => {
+			const v = parseSlot(values[j]);
+			if (typeof v === 'number') prices[variation] = v;
+		});
+		out.set(name, prices);
+	}
+	if (!out.size) throw new Error(`openai collector: section "${id}" parsed to zero rows. Refusing to guess.`);
+
+	for (const [name, rendered] of parseRenderedTable(section)) {
+		if (!out.has(name))
+			throw new Error(`openai collector: section "${id}" renders "${name}" but its props do not carry it. Refusing to guess.`);
+		crossCheck(name, rendered, out.get(name));
+	}
+	return out;
+}
+
 /**
  * Map a raw page display name to its bare canonical id.
  * Strips a trailing " (<272K context length)" / " (< ... )" suffix (the STANDARD tier) so the base id
@@ -598,6 +712,9 @@ export async function collect() {
 	const tableRows = parseRenderedTable(inner);
 	const payloadRows = parsePayloadRows(props);
 	const specializedRows = parseSpecializedRows(rawHtml);
+	const anchors = sectionAnchors(rawHtml);
+	assertKnownSections(anchors);
+	const sectionRows = MODEL_SECTIONS.map((id) => [id, parseSectionTable(rawHtml, anchors, id)]);
 
 	// canonical id -> { display, prices }. The rendered table is consulted FIRST and wins where the two
 	// overlap: it is labelled, and it is the only source for the long-context tier.
@@ -608,6 +725,7 @@ export async function collect() {
 		['table', tableRows],
 		['payload', payloadRows],
 		['specialized', specializedRows],
+		...sectionRows,
 	]) {
 		for (const [rawName, prices] of rows) {
 			const canonical = canonicalFromName(rawName);
@@ -620,7 +738,7 @@ export async function collect() {
 
 			const existing = byId.get(canonical);
 			if (existing) {
-				// The table was parsed first, so this is the payload (or the specialized table) confirming it.
+				// The table was parsed first, so this is the payload (or a later table) confirming it.
 				if (source !== 'table') crossCheck(canonical, existing.prices, prices);
 				continue;
 			}
