@@ -1,0 +1,50 @@
+{
+  "model": "gpt-5.6-cyber",
+  "provider": "openai",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-10-12",
+        "price_usd": 1.25,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "cache_write": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-10-12",
+        "price_usd": 15.625,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-10-12",
+        "price_usd": 12.5,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-10-12",
+        "price_usd": 75,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

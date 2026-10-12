@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-08",
+  "dataModified": "2026-10-12",
   "license": "CC-BY-4.0",
   "prices": [
     {
@@ -3065,6 +3065,46 @@
     },
     {
       "provider": "openai",
+      "model": "gpt-5.6-cyber",
+      "variation": "cache_read",
+      "price_usd": 1.25,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-cyber",
+      "variation": "cache_write",
+      "price_usd": 15.625,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-cyber",
+      "variation": "input",
+      "price_usd": 12.5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-cyber",
+      "variation": "output",
+      "price_usd": 75,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
       "model": "gpt-5.6-luna",
       "variation": "cache_read",
       "price_usd": 0.02,
@@ -3620,6 +3660,36 @@
       "price_usd": 15,
       "unit": "usd_per_mtok",
       "last_validated": "2026-09-30",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-rosalind-discovery",
+      "variation": "cache_read",
+      "price_usd": 0.5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-rosalind-discovery",
+      "variation": "input",
+      "price_usd": 5,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
+      "confidence": "verified",
+      "src": "https://developers.openai.com/api/docs/pricing"
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-rosalind-discovery",
+      "variation": "output",
+      "price_usd": 25,
+      "unit": "usd_per_mtok",
+      "last_validated": "2026-10-12",
       "confidence": "verified",
       "src": "https://developers.openai.com/api/docs/pricing"
     },
