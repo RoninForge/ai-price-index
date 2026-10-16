@@ -6,12 +6,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.2,
     "effective_from": "2026-01-23",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "qwen3-max-2026-01-23. International (Singapore), base input tier (<=32K)."
+    "notes": "qwen3-max-2026-01-23. International (Singapore), base input tier (<=32K). Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-max. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -20,11 +20,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 6,
     "effective_from": "2026-01-23",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-max. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -168,12 +169,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.05,
     "effective_from": "2025-04-28",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "qwen-turbo-2025-04-28. Non-thinking output; deprecated (Alibaba recommends qwen-flash)."
+    "notes": "qwen-turbo-2025-04-28. Non-thinking output; deprecated (Alibaba recommends qwen-flash). Retired 2026-10-10 per Alibaba Cloud service notice 1841 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1841), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement the latest Qwen3.6/Qwen3.7 series. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -182,11 +183,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.2,
     "effective_from": "2025-04-28",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-10-10 per Alibaba Cloud service notice 1841 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1841), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement the latest Qwen3.6/Qwen3.7 series. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -195,12 +197,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1,
     "effective_from": "2025-07-22",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "qwen3-coder-plus. Base input tier (<=32K)."
+    "notes": "qwen3-coder-plus. Base input tier (<=32K). Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -209,11 +211,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 5,
     "effective_from": "2025-07-22",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-06-17",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -418,12 +421,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.3,
     "effective_from": "2026-08-21",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-08-22",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate. Retired 2026-10-10 per Alibaba Cloud service notice 1949 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1949), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -432,12 +435,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.5,
     "effective_from": "2026-08-21",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-08-22",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate."
+    "notes": "International deployment, base context band (0 to 32K tokens); Alibaba prices higher bands separately and the Global/mainland rows are cheaper ($0.144 / $0.574). effective_from is our observation date, not an Alibaba effective date: the collector allowlist hid this model until 2026-08-21, so we cannot attest any earlier reading. OpenRouter resells it below this rate, which is normal for Qwen (third-party hosts, not Alibaba International) and matches how qwen3-coder-plus already sits against its $1 / $5 first-party rate. Retired 2026-10-10 per Alibaba Cloud service notice 1949 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1949), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -474,12 +477,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.12,
     "effective_from": "2026-09-07",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-09-07",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-max. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -488,12 +491,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.5,
     "effective_from": "2026-09-07",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-09-07",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-max. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -558,12 +561,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.1,
     "effective_from": "2026-09-07",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-09-07",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",
@@ -572,12 +575,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.25,
     "effective_from": "2026-09-07",
-    "effective_to": null,
+    "effective_to": "2026-10-10",
     "last_validated_at": "2026-09-07",
     "source_url": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
     "source_kind": "provider_live",
     "confidence": "inferred",
-    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier."
+    "notes": "DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices explicit caching as a multiplier of the standard input price (hit 10%, creation 125%), and this rate is that multiplier applied to the input price recorded from the pricing doc on the same day. Implicit (automatic) caching is billed at 20% of input instead and is not recorded separately; these rows are the EXPLICIT cache-marker rates. Recheck if either the multiplier or the input price moves. [missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. International deployment scope (intl USD), Model Studio \"Model inference pricing\"; base/standard tier. Retired 2026-10-10 per Alibaba Cloud service notice 1950 (https://www.alibabacloud.com/notice/detail?_p_lc=1&id=1950), \"Affected Time: 2026-10-10 00:00:00 (UTC+08)\"; recommended replacement qwen3.7-plus. The notice states calls to retired models fail; no alias routing. Absent from the International pricing doc by 2026-10-16."
   },
   {
     "provider": "alibaba",

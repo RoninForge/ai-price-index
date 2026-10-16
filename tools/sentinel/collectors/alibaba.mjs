@@ -28,8 +28,8 @@
 // sentinel drafts them as NEW for human verification before publish.
 //
 // FAIL LOUD on structural drift: throws if the content API returns no body, the doc has no <table>, the
-// "International" scope is absent, or ZERO tracked models resolve. A handful of individually-missing tracked
-// models are reported (not invented, not thrown) so one removed model never kills the rest of the run.
+// "International" scope is absent, ZERO tracked models resolve, or ANY tracked model is missing (a retired
+// model must be removed from TRACKED by a human; the throw only takes down this one collector).
 //
 // Contract (same as the other collectors): an array of
 //   { provider:"alibaba", model_id, display_name, prices:{ input, output } (usd_per_mtok),
@@ -84,15 +84,14 @@ const EXCEPTION_PATTERN = /is not \d+% of the standard input token price\. For s
 // token of the "Model ID" cell, so dated snapshots (qwen3.7-max-2026-05-20) and look-alikes
 // (qwen-plus-character) never match. Third-party models Bailian also hosts (glm-*, deepseek-*) are
 // intentionally excluded - they belong to their own providers, not alibaba.
+// Retired 2026-10-10 (Alibaba service notices 1841, 1949, 1950) and removed from TRACKED: qwen3-max,
+// qwen-turbo, qwen3-coder-plus, qwen3-coder-next. Their records close at that date.
 const TRACKED = [
-	'qwen3-max',
 	'qwen3.5-plus',
 	'qwen3.5-flash',
-	'qwen3-coder-plus',
 	'qwen-plus',
 	'qwen-flash',
 	'qwen-max',
-	'qwen-turbo',
 	// New flagships surfaced by the tripwire, now first-party-priced from this doc:
 	'qwen3.6-flash',
 	'qwen3.6-plus',
@@ -102,7 +101,6 @@ const TRACKED = [
 	'qwen3.8-flash',
 	'qwen3.8-max',
 	'qwen3-coder-flash',
-	'qwen3-coder-next',
 ];
 
 // Ids that ARE priced per-Mtok at International scope on this doc but that we deliberately do not
@@ -342,10 +340,19 @@ export async function collect() {
 			: '') +
 		`. Recheck if either the multiplier or the input price moves.`;
 
+	// Nothing downstream reports a tracked id that silently vanished (four retirements went unseen for
+	// six days that way), so a missing one fails this collector until it is retired or re-tracked.
+	const missing = TRACKED.filter((id) => !found.has(id));
+	if (missing.length)
+		throw new Error(
+			`alibaba collector: tracked model(s) not on the International pricing doc: ${missing.join(', ')}. ` +
+				`Check Alibaba's retirement notices, then close the records and remove the id from TRACKED.`
+		);
+
 	const results = [];
 	for (const model_id of TRACKED) {
 		const prices = found.get(model_id);
-		if (!prices) continue; // missing -> reported by the CLI/run layer, never invented
+		if (!prices) continue;
 		for (const [k, v] of Object.entries(prices)) {
 			if (typeof v !== 'number' || !Number.isFinite(v) || v < PRICE_MIN || v > PRICE_MAX)
 				throw new Error(
