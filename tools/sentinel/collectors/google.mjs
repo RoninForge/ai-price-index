@@ -17,8 +17,9 @@
 //   >200k output    -> tier2_output     ditto
 //   >200k cached    -> tier2_cache_read ditto
 // All prices are per 1M tokens -> usd_per_mtok. Image / video / TTS / embedding / Live models are
-// skipped (we only emit a heading that maps to a tracked text model, OR a "Gemini ... Pro/Flash"
-// heading that is plainly a text chat model; the long tail of media models is filtered by NAME).
+// skipped (we only emit a heading that maps to a tracked text model, OR any versioned "Gemini <n> <Name>"
+// heading not caught by NON_TEXT_RE; the long tail of media models is filtered by NAME). A Pro/Flash-only
+// heading allowlist hid Gemini 4 Argon (GA 2026-10-13) until a manual coverage diff on 2026-10-16.
 //
 // Fail loud: if no model heading with an "Input price" row is found, THROW (page went JS-only/drifted).
 //
@@ -102,6 +103,7 @@ async function fetchEnglishPricingHtml() {
 
 // Lower-cased model heading -> canonical id we publish. Unknown text headings slug + surface as NEW.
 const NAME_TO_CANONICAL = {
+	'gemini 4 argon': 'gemini-4-argon',
 	'gemini 3.5 flash': 'gemini-3.5-flash',
 	'gemini 3.1 flash-lite': 'gemini-3.1-flash-lite',
 	'gemini 3.1 pro preview': 'gemini-3.1-pro-preview',
@@ -145,10 +147,10 @@ function isDeprecationAside(innerHtml) {
 }
 
 // A heading that is a TEXT chat model worth pricing. Excludes image (🍌/Image), video, TTS, Live,
-// Translate, embedding, Audio, Computer Use, Robotics, etc. We keep "Gemini <ver> Pro/Flash[-Lite]".
-const TEXT_MODEL_HEADING_RE = /^Gemini [\d.]+ (?:Pro|Flash)(?:-Lite| Preview| Lite)?$/i;
+// Translate, Transcribe, embedding, Audio, Computer Use, Robotics, etc. We keep any "Gemini <ver> <Name>[-Lite]".
+const TEXT_MODEL_HEADING_RE = /^Gemini [\d.]+ [A-Za-z]+(?:-Lite| Preview| Lite)?$/i;
 // media/non-text heading words to hard-exclude even if the above ever loosened
-const NON_TEXT_RE = /(image|video|tts|live|translate|embedding|audio|nano banana|robotics|computer use|guard|🍌)/i;
+const NON_TEXT_RE = /(image|video|tts|live|translate|transcribe|embedding|audio|nano banana|robotics|computer use|guard|🍌)/i;
 
 function cleanCell(s) {
 	return s

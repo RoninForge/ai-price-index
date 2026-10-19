@@ -263,12 +263,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.5,
     "effective_from": "2026-05-19",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-06-15",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Gemini 3.5 Flash (GA). Flat text price; cached input is $0.15/Mtok (not recorded). Date from the Gemini API changelog (Google I/O 2026)."
+    "notes": "Gemini 3.5 Flash (GA). Flat text price; cached input is $0.15/Mtok (not recorded). Date from the Gemini API changelog (Google I/O 2026). Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.5-flash is deprecated and has been replaced by gemini-3.6-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.6-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -277,11 +277,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 9,
     "effective_from": "2026-05-19",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-06-15",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.5-flash is deprecated and has been replaced by gemini-3.6-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.6-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -410,18 +411,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.75,
     "effective_from": "2026-08-13",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-08-17",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$0.75 through December 31, 2026. $1.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $0.38, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from.",
-    "announced_change": {
-      "price_usd": 1.5,
-      "effective_from": "2027-01-01",
-      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
-      "quote": "$0.75 through December 31, 2026. $1.50 starting January 1, 2027."
-    }
+    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$0.75 through December 31, 2026. $1.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $0.38, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from. Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.7-flash is deprecated and has been replaced by gemini-3.8-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.8-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -430,18 +425,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 3.75,
     "effective_from": "2026-08-13",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-08-17",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$3.75 through December 31, 2026. $7.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $1.88, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from.",
-    "announced_change": {
-      "price_usd": 7.5,
-      "effective_from": "2027-01-01",
-      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
-      "quote": "$3.75 through December 31, 2026. $7.50 starting January 1, 2027."
-    }
+    "notes": "New model. Verified against the English first-party pricing page on 2026-08-17: \"$3.75 through December 31, 2026. $7.50 starting January 1, 2027.\" The sentinel cross-check flag (OpenRouter quotes $1.88, below first-party) was reviewed and rejected as grounds to withhold; the first-party page is authoritative for this dataset. The scheduled 2027-01-01 increase is not carried as a record because the schema forbids a future effective_from. Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.7-flash is deprecated and has been replaced by gemini-3.8-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.8-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -706,18 +695,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.075,
     "effective_from": "2026-09-09",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-09-09",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start.",
-    "announced_change": {
-      "price_usd": 0.15,
-      "effective_from": "2027-01-01",
-      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
-      "quote": "$0.075 through December 31, 2026. $0.15 starting January 1, 2027."
-    }
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.7-flash is deprecated and has been replaced by gemini-3.8-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.8-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -746,12 +729,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.15,
     "effective_from": "2026-09-09",
-    "effective_to": null,
+    "effective_to": "2026-10-08",
     "last_validated_at": "2026-09-09",
     "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Deprecated 2026-10-08 per the Gemini API release notes (\"gemini-3.5-flash is deprecated and has been replaced by gemini-3.6-flash\"); the endpoint is not shut down and API requests to it are automatically routed to gemini-3.6-flash. Removed from the pricing page by 2026-10-16. effective_to is the deprecation date, not a shutdown date."
   },
   {
     "provider": "google",
@@ -878,5 +861,65 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-argon",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 2,
+    "effective_from": "2026-10-13",
+    "effective_to": null,
+    "last_validated_at": "2026-10-16",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Gemini 4 Argon, GA 2026-10-13 per the Gemini API release notes. Standard paid tier; not available on the Free tier. Implicit caching only (explicit caching is not supported). Announced increase: Google's pricing page states this rate applies through 2026-11-30 and doubles on 2026-12-01 ($4.00 input / $20.00 output / $0.20 cached). Recorded in announced_change, not yet as a price. Re-check on 2026-12-01.",
+    "announced_change": {
+      "price_usd": 4,
+      "effective_from": "2026-12-01",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "quote": "$2.00 through November 30, 2026. $4.00 starting December 1, 2026."
+    }
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-argon",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-10-13",
+    "effective_to": null,
+    "last_validated_at": "2026-10-16",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Gemini 4 Argon, GA 2026-10-13 per the Gemini API release notes. Standard paid tier; not available on the Free tier. Implicit caching only (explicit caching is not supported). Announced increase: Google's pricing page states this rate applies through 2026-11-30 and doubles on 2026-12-01 ($4.00 input / $20.00 output / $0.20 cached). Recorded in announced_change, not yet as a price. Re-check on 2026-12-01.",
+    "announced_change": {
+      "price_usd": 20,
+      "effective_from": "2026-12-01",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "quote": "$10.00 through November 30, 2026. $20.00 starting December 1, 2026."
+    }
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-argon",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.1,
+    "effective_from": "2026-10-13",
+    "effective_to": null,
+    "last_validated_at": "2026-10-16",
+    "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "Gemini 4 Argon, GA 2026-10-13 per the Gemini API release notes. Standard paid tier; not available on the Free tier. Implicit caching only (explicit caching is not supported). Announced increase: Google's pricing page states this rate applies through 2026-11-30 and doubles on 2026-12-01 ($4.00 input / $20.00 output / $0.20 cached). Recorded in announced_change, not yet as a price. Re-check on 2026-12-01.",
+    "announced_change": {
+      "price_usd": 0.2,
+      "effective_from": "2026-12-01",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "quote": "$0.10 through November 30, 2026. $0.20 starting December 1, 2026."
+    }
   }
 ]
