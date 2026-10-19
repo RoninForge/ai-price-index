@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-12",
+  "dataModified": "2026-10-16",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -427,8 +427,8 @@
     {
       "id": "gemini-3.5-flash",
       "provider": "google",
-      "file": "models/google/gemini-3.5-flash.v0258c0e6.json",
-      "latestRev": "0258c0e6"
+      "file": "models/google/gemini-3.5-flash.va0789891.json",
+      "latestRev": "a0789891"
     },
     {
       "id": "gemini-3.5-flash-lite",
@@ -445,14 +445,20 @@
     {
       "id": "gemini-3.7-flash",
       "provider": "google",
-      "file": "models/google/gemini-3.7-flash.vb6fa493c.json",
-      "latestRev": "b6fa493c"
+      "file": "models/google/gemini-3.7-flash.v80a95e35.json",
+      "latestRev": "80a95e35"
     },
     {
       "id": "gemini-3.8-flash",
       "provider": "google",
       "file": "models/google/gemini-3.8-flash.v079c965b.json",
       "latestRev": "079c965b"
+    },
+    {
+      "id": "gemini-4-argon",
+      "provider": "google",
+      "file": "models/google/gemini-4-argon.v2745c446.json",
+      "latestRev": "2745c446"
     },
     {
       "id": "llama-3.1-405b",

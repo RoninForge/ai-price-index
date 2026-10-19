@@ -1,13 +1,13 @@
 {
-  "model": "gemini-3.7-flash",
+  "model": "gemini-4-argon",
   "provider": "google",
   "variations": {
     "cache_read": [
       {
         "confidence": "verified",
-        "from": "2026-09-09",
-        "last_validated": "2026-09-09",
-        "price_usd": 0.075,
+        "from": "2026-10-13",
+        "last_validated": "2026-10-16",
+        "price_usd": 0.1,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -16,9 +16,9 @@
     "input": [
       {
         "confidence": "verified",
-        "from": "2026-08-13",
-        "last_validated": "2026-08-17",
-        "price_usd": 0.75,
+        "from": "2026-10-13",
+        "last_validated": "2026-10-16",
+        "price_usd": 2,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -27,9 +27,9 @@
     "output": [
       {
         "confidence": "verified",
-        "from": "2026-08-13",
-        "last_validated": "2026-08-17",
-        "price_usd": 3.75,
+        "from": "2026-10-13",
+        "last_validated": "2026-10-16",
+        "price_usd": 10,
         "src": "https://ai.google.dev/gemini-api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
