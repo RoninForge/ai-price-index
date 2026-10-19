@@ -1,5 +1,5 @@
 {
-  "model": "qwen3-coder-plus",
+  "model": "qwen3-max",
   "provider": "alibaba",
   "variations": {
     "cache_read": [
@@ -7,9 +7,9 @@
         "confidence": "inferred",
         "from": "2026-09-07",
         "last_validated": "2026-09-07",
-        "price_usd": 0.1,
+        "price_usd": 0.12,
         "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
-        "to": null,
+        "to": "2026-10-10",
         "unit": "usd_per_mtok"
       }
     ],
@@ -18,31 +18,31 @@
         "confidence": "inferred",
         "from": "2026-09-07",
         "last_validated": "2026-09-07",
-        "price_usd": 1.25,
+        "price_usd": 1.5,
         "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache",
-        "to": null,
+        "to": "2026-10-10",
         "unit": "usd_per_mtok"
       }
     ],
     "input": [
       {
         "confidence": "verified",
-        "from": "2025-07-22",
+        "from": "2026-01-23",
         "last_validated": "2026-06-17",
-        "price_usd": 1,
+        "price_usd": 1.2,
         "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-        "to": null,
+        "to": "2026-10-10",
         "unit": "usd_per_mtok"
       }
     ],
     "output": [
       {
         "confidence": "verified",
-        "from": "2025-07-22",
+        "from": "2026-01-23",
         "last_validated": "2026-06-17",
-        "price_usd": 5,
+        "price_usd": 6,
         "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-        "to": null,
+        "to": "2026-10-10",
         "unit": "usd_per_mtok"
       }
     ]
