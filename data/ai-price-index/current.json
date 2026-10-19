@@ -145,26 +145,6 @@
     },
     {
       "provider": "alibaba",
-      "model": "qwen-turbo",
-      "variation": "input",
-      "price_usd": 0.05,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen-turbo",
-      "variation": "output",
-      "price_usd": 0.2,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
       "model": "qwen3-coder-flash",
       "variation": "cache_read",
       "price_usd": 0.03,
@@ -200,106 +180,6 @@
       "price_usd": 1.5,
       "unit": "usd_per_mtok",
       "last_validated": "2026-08-22",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-next",
-      "variation": "input",
-      "price_usd": 0.3,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-08-22",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-next",
-      "variation": "output",
-      "price_usd": 1.5,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-08-22",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-plus",
-      "variation": "cache_read",
-      "price_usd": 0.1,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-09-07",
-      "confidence": "inferred",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-plus",
-      "variation": "cache_write",
-      "price_usd": 1.25,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-09-07",
-      "confidence": "inferred",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-plus",
-      "variation": "input",
-      "price_usd": 1,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-coder-plus",
-      "variation": "output",
-      "price_usd": 5,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-max",
-      "variation": "cache_read",
-      "price_usd": 0.12,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-09-07",
-      "confidence": "inferred",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-max",
-      "variation": "cache_write",
-      "price_usd": 1.5,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-09-07",
-      "confidence": "inferred",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/context-cache"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-max",
-      "variation": "input",
-      "price_usd": 1.2,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
-      "confidence": "verified",
-      "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
-    },
-    {
-      "provider": "alibaba",
-      "model": "qwen3-max",
-      "variation": "output",
-      "price_usd": 6,
-      "unit": "usd_per_mtok",
-      "last_validated": "2026-06-17",
       "confidence": "verified",
       "src": "https://www.alibabacloud.com/help/en/model-studio/model-pricing"
     },

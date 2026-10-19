@@ -36,8 +36,8 @@
     {
       "id": "qwen-turbo",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen-turbo.v640da853.json",
-      "latestRev": "640da853"
+      "file": "models/alibaba/qwen-turbo.vfd56236f.json",
+      "latestRev": "fd56236f"
     },
     {
       "id": "qwen3-coder-flash",
@@ -48,20 +48,20 @@
     {
       "id": "qwen3-coder-next",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-coder-next.v86a66781.json",
-      "latestRev": "86a66781"
+      "file": "models/alibaba/qwen3-coder-next.vad49a75c.json",
+      "latestRev": "ad49a75c"
     },
     {
       "id": "qwen3-coder-plus",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-coder-plus.vd92a2ceb.json",
-      "latestRev": "d92a2ceb"
+      "file": "models/alibaba/qwen3-coder-plus.v7c0ed7e5.json",
+      "latestRev": "7c0ed7e5"
     },
     {
       "id": "qwen3-max",
       "provider": "alibaba",
-      "file": "models/alibaba/qwen3-max.v203d8a22.json",
-      "latestRev": "203d8a22"
+      "file": "models/alibaba/qwen3-max.ved8ea618.json",
+      "latestRev": "ed8ea618"
     },
     {
       "id": "qwen3.5-flash",
