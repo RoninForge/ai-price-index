@@ -35,7 +35,7 @@
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "import": "./lib/index.js"
+      "default": "./lib/index.js"
     },
     "./bundle": "./lib/data.json",
     "./package.json": "./package.json"
