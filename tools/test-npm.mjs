@@ -106,5 +106,14 @@ ok('cli: --json is valid JSON', (() => {
 ok('cli: unknown model exits 1', cli(['totally-not-a-model']).code === 1);
 ok('cli: --version exits 0', cli(['--version']).code === 0);
 
+// 4. CommonJS consumers: require() of the package root must resolve (Node >=20.19 loads sync ESM).
+{
+	const out = execFileSync('node', ['-e', "process.stdout.write(typeof require('ai-price-index').current)"], {
+		cwd: ROOT,
+		encoding: 'utf8'
+	});
+	ok('cjs: require() resolves the package root', out === 'function', out);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
