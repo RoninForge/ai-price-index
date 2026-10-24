@@ -2,12 +2,11 @@
 // First-party Mistral price collector.
 //
 // Source: https://docs.mistral.ai/inference/pricing - server-rendered HTML. (mistral.ai/pricing/api/
-// now 301s here; it was a card layout until 2026-10, when the per-model API prices moved into real
-// <table>s on the docs site.) The page has one <section id="..."> per family, each holding one table:
-//     flagship            Model | Input | Cached input | Output     (per M tokens)
-//     specialized         OCR / audio / moderation, priced per page / minute / chars -> skipped
-//     third-party-hosted  models Mistral resells (Z.ai GLM)                       -> skipped
-//     code                Codestral (+ Codestral Embed, input-only)
+// now 301s here.) The page has one <section id="..."> per family, each holding one table:
+//     generalist-models         Model | Input | Cached input | Output     (per M tokens; also lists Z.ai GLM)
+//     code-models               Codestral
+//     ocr-models, audio-models, embedding-models, moderation-safety-models, time-series-models,
+//     voice-agents              priced per page / minute / char, free, self-hosted -> skipped
 // Every cell is read by its COLUMN LABEL, never by position, and a header we do not recognise throws.
 //
 // The SSR table is the default view: "Regional inference" unchecked, tier "Standard" pressed. Batch,
@@ -59,8 +58,12 @@ const TRACKED = new Set([
 
 // Sections that are never per-M-token chat models, with the reason. Any other section is read.
 const SKIP_SECTIONS = {
-	specialized: 'OCR, audio and moderation SKUs priced per page / minute / character, not per token',
-	'third-party-hosted': 'third-party models resold on the Mistral API; they belong to their own provider',
+	'ocr-models': 'OCR SKUs priced per page',
+	'audio-models': 'audio SKUs priced per minute / character',
+	'embedding-models': 'embedding SKUs are input-only',
+	'moderation-safety-models': 'moderation is free or self-hosted',
+	'time-series-models': 'self-hosted open weights, no price',
+	'voice-agents': 'priced per minute, different table shape',
 };
 
 // Column label (lower-cased) -> variation. Model is the name column.
@@ -74,6 +77,7 @@ const COLUMNS = {
 // A priced row whose name is not a Mistral model: skipped if a rule matches, else reported via
 // getNotices().
 const UNTRACKED_RULES = [
+	[(row) => /^Z\.ai /.test(row.title), 'third-party model resold on the Mistral API; belongs to its own provider'],
 	[(row) => /^Classifier API model\b/.test(row.title), 'fine-tuned classifier SKU, not a general chat model'],
 ];
 
@@ -131,8 +135,8 @@ export async function collect() {
 	notices = [];
 
 	const sections = [...html.matchAll(/<section id="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)];
-	if (!sections.some(([, id]) => id === 'flagship'))
-		throw new Error('mistral collector: no <section id="flagship"> found - markup drifted. Refusing to guess.');
+	if (!sections.some(([, id]) => id === 'generalist-models'))
+		throw new Error('mistral collector: no <section id="generalist-models"> found - markup drifted. Refusing to guess.');
 
 	const byModel = new Map(); // canonical -> { display, known, prices, list_prices }
 	for (const [, sectionId, body] of sections) {
