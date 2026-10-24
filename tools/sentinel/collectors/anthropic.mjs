@@ -105,7 +105,8 @@ function cleanModelName(cell) {
 	s = s.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
 	// drop parenthetical status notes such as "(deprecated)" / "(retired ...)" /
 	// "(limited availability)" / "(preview)" left after link strip - they are not part of the name
-	s = s.replace(/\((?:deprecated|retired|limited[^)]*|preview|legacy|new)[^)]*\)/gi, '');
+	// One level of nesting is allowed: "(retired, except on Claude Models on Google Cloud (Google managed))".
+	s = s.replace(/\((?:deprecated|retired|limited|preview|legacy|new)(?:[^()]|\([^()]*\))*\)/gi, '');
 	// drop any leftover bare parens content that is purely a status note
 	s = s.replace(/\(\s*\)/g, '');
 	// collapse whitespace, strip markdown emphasis + stray backticks

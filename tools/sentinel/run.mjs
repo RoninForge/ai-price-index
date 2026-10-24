@@ -78,9 +78,10 @@ const COLLECTORS = [
 // 2026-07-31, so collectors extracted them and drafting silently dropped them on the floor - the same
 // discard-what-we-read bug as the missing-variation gap below, one layer further down.
 //
-// `cache_write` is the UNTIMED cache-write rate (OpenAI publishes one "Cache writes" column with no
-// TTL dimension). It is deliberately NOT folded into cache_write_5m/cache_write_1h, which are
-// Anthropic's two TTL-specific rates: collapsing them would assert a TTL the vendor never stated.
+// `cache_write` is OpenAI's default cache-write rate: published as an untimed "Cache writes" column
+// until 2026-10-24, then as "30m write" beside a new "12h write" that the schema does not hold yet
+// (reported as unrecorded_variation). It is deliberately NOT folded into cache_write_5m/cache_write_1h,
+// which are Anthropic's two TTL-specific rates.
 // tier2_cache_read / tier2_cache_write / tier2_cache_write_5m / tier2_cache_write_1h are the same rates
 // under a long-context tier, with the same TTL rule.
 const RECORD_VARIATIONS = [
@@ -291,6 +292,7 @@ function renderReportMd(report, written) {
 			`${report.missing_variations.length} model(s) with missing variation(s), ` +
 			`${report.untracked_models.length} untracked model(s) on a provider page, ` +
 			`${report.unpriced_variations.length} unpriced variation(s) the provider will not publish, ` +
+			`${report.unrecorded_variations.length} published rate(s) the schema cannot record, ` +
 			`${report.upgrades.length} provenance upgrade(s), ${cc.needs_review} cross-check item(s) needing review, ` +
 			`${broken.length} broken collector(s), ` +
 			`${report.pending_first_party.length} detected awaiting ` +
@@ -484,6 +486,26 @@ function renderReportMd(report, written) {
 		L.push('');
 	}
 
+	L.push('## Published rates the schema cannot record');
+	L.push('');
+	if (report.unrecorded_variations.length) {
+		L.push(
+			'The provider publishes these first-party rates, but the record schema has no variation for them, ' +
+				'so the index does not carry them. Adding the variation is a schema decision; until then this ' +
+				'section is the record of the gap.'
+		);
+		L.push('');
+		L.push('| Provider | Model | Variation | Price (per MTok) | Source |');
+		L.push('|---|---|---|---|---|');
+		for (const uv of report.unrecorded_variations) {
+			L.push(`| \`${uv.provider}\` | \`${uv.model_id}\` | \`${uv.variation}\` | $${uv.price_usd} | ${uv.source_url} |`);
+		}
+		L.push('');
+	} else {
+		L.push('None.');
+		L.push('');
+	}
+
 	// Detected, awaiting first-party price (Part B). NOT published - first-party-pure.
 	// Scoped to GENUINELY-NEW model families: the long tail of open-weight size/quant SKUs and
 	// dated/variant snapshots of tracked families is filtered out (report.pending_filtered_out).
@@ -639,6 +661,7 @@ async function main() {
 		missing_variations: [],
 		untracked_models: [],
 		unpriced_variations: [],
+		unrecorded_variations: [],
 		upgrades: [],
 		pending_first_party: [],
 		pending_filtered_out: 0,
@@ -746,6 +769,7 @@ async function main() {
 				// A rate the provider charges but does not publish. Routed like untracked_model, because a
 				// notice a collector emits and run.mjs drops is the same silence the notice existed to break.
 				else if (n && n.kind === 'unpriced_variation') report.unpriced_variations.push(n);
+				else if (n && n.kind === 'unrecorded_variation') report.unrecorded_variations.push(n);
 			}
 		}
 		for (const item of items) {

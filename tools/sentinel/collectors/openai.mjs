@@ -12,15 +12,17 @@
 // shapes, and neither shape alone is sufficient:
 //
 //   1. A server-rendered <table> - LABELLED but PARTIAL. It covers only the newest models
-//      (9 as of 2026-07-31) and is the ONLY place the long-context tier appears. Its header is
-//      self-describing: a group row (Short context | Long context) over a column row
-//      (Model | Input | Cached input | Cache writes | Output | ...repeated per group).
+//      (3 as of 2026-10-24). Its header is self-describing: a caption row (Prompt caching) over a
+//      column row (Model | Input | Output | Cached input | 30m write | 12h write). Until 2026-10-24
+//      the caption row was a context split (Short context | Long context) instead.
 //   2. The island's `props.rows` payload - COMPLETE but POSITIONAL. It carries every model on the
-//      tier (36 as of 2026-07-31) as bare value tuples with no column labels, short context only.
+//      tier (36 as of 2026-10-24) as bare value tuples with no column labels, short context only.
 //
-// So: the rendered table is authoritative where it overlaps (it has labels AND long context), and
-// the payload supplies the tail of older models. Where both describe a model, the payload's values
-// are CROSS-CHECKED against the table's short-context values and a mismatch throws.
+// So: the rendered table is authoritative where it overlaps (it has labels), and the payload supplies
+// the tail of older models. Where both describe a model, the payload's values are CROSS-CHECKED
+// against the table's values and a mismatch throws. Since 2026-10-24 the long-context (>272K) rates
+// are a client-side toggle: they live in the island's JS bundle (parseLongContextBundle), or for a
+// model section in its longContextRows prop.
 //
 // WHY NOT THE PAYLOAD ALONE (this cost us real coverage). This collector used to parse only the
 // payload, with a regex that hardcoded exactly three price slots per row. OpenAI then added a
@@ -153,6 +155,17 @@ const KNOWN_UNTRACKED = new Map([
 const PIN_ID = 'gpt-4o';
 const PIN_EXPECT = { input: 2.5, output: 10 };
 
+// Header rows that caption a run of columns ("Prompt caching" over Cached input / 30m write / 12h write)
+// rather than splitting them by context length. Since 2026-10-24 long context is a client-side toggle
+// whose rates live in the island's JS bundle (see parseLongContextBundle), not a column group.
+const CAPTION_GROUPS = new Set(['prompt caching']);
+
+// The 12h cache write is rendered client-side as input * 2.5 for every model with a 30m write. The
+// record schema has no 12h variation yet, so it is read, held to that rule, and reported as an
+// unrecorded_variation notice instead of being emitted as a price.
+const TWELVE_HOUR_WRITE = '__cache_write_12h';
+const TWELVE_HOUR_MULTIPLIER = 2.5;
+
 // Column header label -> our variation name, per context-column GROUP. A label we do not recognise
 // throws: that is the whole point of reading the header instead of counting columns.
 const GROUP_COLUMNS = {
@@ -160,6 +173,8 @@ const GROUP_COLUMNS = {
 		input: 'input',
 		'cached input': 'cache_read',
 		'cache writes': 'cache_write',
+		'30m write': 'cache_write',
+		'12h write': TWELVE_HOUR_WRITE,
 		output: 'output',
 	},
 	'long context': {
@@ -169,6 +184,7 @@ const GROUP_COLUMNS = {
 		output: 'tier2_output',
 	},
 };
+
 
 // Positional layouts for the island's props.rows payload, which carries no labels. Keyed by slot
 // count, and every layout is CROSS-CHECKED against the rendered table wherever the two overlap, so a
@@ -239,12 +255,16 @@ function looksLikePricePayload(html) {
  * only if every attempt fails to yield a body that contains the pricing islands.
  */
 async function fetchPricingHtml() {
+	return fetchWithRetry(SOURCE_URL, looksLikePricePayload, 'body had no TextTokenPricingTables island');
+}
+
+async function fetchWithRetry(url, usable, unusableMessage) {
 	let lastErr = null;
 	for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 		try {
-			const res = await fetch(SOURCE_URL, {
+			const res = await fetch(url, {
 				headers: {
 					'user-agent': BROWSER_UA,
 					'accept-language': 'en-US,en;q=0.9',
@@ -253,9 +273,9 @@ async function fetchPricingHtml() {
 				signal: controller.signal,
 			});
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
-			const html = await res.text();
-			if (looksLikePricePayload(html)) return html;
-			lastErr = new Error('body had no TextTokenPricingTables island');
+			const body = await res.text();
+			if (usable(body)) return body;
+			lastErr = new Error(unusableMessage);
 		} catch (e) {
 			lastErr = e;
 		} finally {
@@ -263,7 +283,7 @@ async function fetchPricingHtml() {
 		}
 	}
 	throw new Error(
-		`openai collector: could not fetch a usable pricing page after ${MAX_FETCH_ATTEMPTS} attempts ` +
+		`openai collector: could not fetch a usable ${url} after ${MAX_FETCH_ATTEMPTS} attempts ` +
 			`(last: ${lastErr ? lastErr.message : 'unknown'}). Refusing to guess.`
 	);
 }
@@ -297,7 +317,8 @@ function standardIsland(rawHtml) {
 		// before it, so this slice cannot pick up another tier's rows.
 		const start = m.index + tag.length;
 		const nextIsland = rawHtml.indexOf('<astro-island', start);
-		return { props, inner: rawHtml.slice(start, nextIsland === -1 ? undefined : nextIsland) };
+		const componentUrl = /\scomponent-url="([^"]+)"/.exec(tag)?.[1] ?? null;
+		return { props, componentUrl, inner: rawHtml.slice(start, nextIsland === -1 ? undefined : nextIsland) };
 	}
 	throw new Error(
 		`openai collector: no standard-tier TextTokenPricingTables island found (tiers seen: ` +
@@ -345,7 +366,7 @@ function parseSlot(raw) {
  */
 function columnMap(groupRow, columnRow) {
 	const labels = columnRow.slice(1); // drop the "Model" column
-	const groups = (groupRow || []).map((c) => c.trim()).filter(Boolean);
+	const groups = (groupRow || []).map((c) => c.trim()).filter((c) => c && !CAPTION_GROUPS.has(c.toLowerCase()));
 	const effective = groups.length ? groups : ['Short context'];
 
 	if (!labels.length || labels.length % effective.length !== 0)
@@ -578,6 +599,9 @@ function parseSectionTable(rawHtml, anchors, id) {
 	const end = i + 1 < anchors.length ? anchors[i + 1].index : rawHtml.length;
 	const section = rawHtml.slice(anchors[i].index, end);
 
+	const tokenTag = /<astro-island\b[^>]*?component-export="TextTokenPricingTables"[^>]*?>/.exec(section);
+	if (tokenTag) return parseSectionTokenTable(section, tokenTag, id);
+
 	const tag = /<astro-island\b[^>]*?component-export="GroupedPricingTable"[^>]*?>/.exec(section);
 	if (!tag) throw new Error(`openai collector: no GroupedPricingTable island in section "${id}". Refusing to guess.`);
 	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);
@@ -620,6 +644,100 @@ function parseSectionTable(rawHtml, anchors, id) {
 		if (!out.has(name))
 			throw new Error(`openai collector: section "${id}" renders "${name}" but its props do not carry it. Refusing to guess.`);
 		crossCheck(name, rendered, out.get(name));
+	}
+	return out;
+}
+
+const LONG_CONTEXT_FIELDS = {
+	input: 'tier2_input',
+	cachedInput: 'tier2_cache_read',
+	cacheWrite: 'tier2_cache_write',
+	output: 'tier2_output',
+};
+
+/**
+ * Read the standard tier's long-context (>272K) rates from the island's JS bundle. The bundle holds
+ * them as a minified object literal keyed by tier ({ultrafast:{...},standard:{"gpt-6.1-sol":{input:4,
+ * ...}}}); the island shows them only when the Context length toggle is set to Long.
+ * Returns Map(canonical -> { tier2_*: price }).
+ */
+function parseLongContextBundle(js) {
+	const start = /=\{(?:ultrafast|standard|fast|batch|flex|priority):\{"gpt-/.exec(js);
+	if (!start)
+		throw new Error('openai collector: no long-context rate map in the pricing bundle - bundle drifted. Refusing to guess.');
+	let depth = 0;
+	let end = -1;
+	for (let i = start.index + 1; i < js.length; i++) {
+		if (js[i] === '{') depth++;
+		else if (js[i] === '}' && --depth === 0) {
+			end = i + 1;
+			break;
+		}
+	}
+	if (end === -1) throw new Error('openai collector: unterminated long-context rate map in the bundle. Refusing to guess.');
+	const json = js
+		.slice(start.index + 1, end)
+		.replace(/`([^`]*)`/g, (_, v) => JSON.stringify(v))
+		.replace(/([{,])([A-Za-z_]\w*):/g, '$1"$2":')
+		.replace(/([:,\[])(-?)\.(\d)/g, '$1$20.$3');
+	let map;
+	try {
+		map = JSON.parse(json);
+	} catch (e) {
+		throw new Error(`openai collector: long-context rate map is not a plain literal (${e.message}). Refusing to guess.`);
+	}
+	if (!map.standard || typeof map.standard !== 'object')
+		throw new Error(`openai collector: long-context map has no standard tier (tiers: ${Object.keys(map).join(', ')}). Refusing to guess.`);
+
+	const out = new Map();
+	for (const [name, rates] of Object.entries(map.standard)) {
+		const prices = {};
+		for (const [field, value] of Object.entries(rates)) {
+			const variation = LONG_CONTEXT_FIELDS[field];
+			if (!variation)
+				throw new Error(`openai collector: unknown long-context field "${field}" for ${name}. Map it deliberately.`);
+			const v = parseSlot(value);
+			if (typeof v === 'number') prices[variation] = v;
+		}
+		out.set(name, prices);
+	}
+	return out;
+}
+
+/**
+ * A model section rendered with the same TextTokenPricingTables island as the main tables (Cyber models
+ * since 2026-10-24): positional props.rows cross-checked against the rendered table, plus the island's
+ * own longContextRows prop for the >272K rates.
+ */
+function parseSectionTokenTable(section, tag, id) {
+	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);
+	let props;
+	try {
+		props = JSON.parse(unescape(propsAttr ? propsAttr[1] : ''));
+	} catch (e) {
+		throw new Error(`openai collector: section "${id}" island props are not valid JSON (${e.message}). Refusing to guess.`);
+	}
+	if ((Array.isArray(props.tier) ? props.tier[1] : null) !== 'standard')
+		throw new Error(`openai collector: section "${id}" island is not the standard tier. Refusing to guess.`);
+	const out = parsePayloadRows(props);
+	const inner = section.slice(tag.index + tag[0].length);
+	for (const [name, rendered] of parseRenderedTable(inner)) {
+		if (!out.has(name))
+			throw new Error(`openai collector: section "${id}" renders "${name}" but its props do not carry it. Refusing to guess.`);
+		crossCheck(name, rendered, out.get(name));
+		if (typeof rendered[TWELVE_HOUR_WRITE] === 'number') out.get(name)[TWELVE_HOUR_WRITE] = rendered[TWELVE_HOUR_WRITE];
+	}
+	const long = Array.isArray(props.longContextRows) ? props.longContextRows[1] : {};
+	for (const [name, wrapped] of Object.entries(long ?? {})) {
+		const rates = Array.isArray(wrapped) ? wrapped[1] : wrapped;
+		const prices = out.get(name);
+		if (!prices) throw new Error(`openai collector: section "${id}" has long-context rates for unlisted "${name}". Refusing to guess.`);
+		for (const [field, raw] of Object.entries(rates ?? {})) {
+			const variation = LONG_CONTEXT_FIELDS[field];
+			if (!variation) throw new Error(`openai collector: unknown long-context field "${field}" in section "${id}". Map it deliberately.`);
+			const v = parseSlot(Array.isArray(raw) ? raw[1] : raw);
+			if (typeof v === 'number') prices[variation] = v;
+		}
 	}
 	return out;
 }
@@ -707,7 +825,15 @@ export async function collect() {
 	notices = [];
 
 	const rawHtml = await fetchPricingHtml();
-	const { props, inner } = standardIsland(rawHtml);
+	const { props, componentUrl, inner } = standardIsland(rawHtml);
+	if (!componentUrl)
+		throw new Error('openai collector: standard island has no component-url, so its long-context rates cannot be read. Refusing to guess.');
+	const bundle = await fetchWithRetry(
+		new URL(componentUrl, SOURCE_URL).href,
+		(js) => js.includes('longContextRows'),
+		'pricing bundle carried no longContextRows'
+	);
+	const longRows = parseLongContextBundle(bundle);
 
 	const tableRows = parseRenderedTable(inner);
 	const payloadRows = parsePayloadRows(props);
@@ -757,6 +883,45 @@ export async function collect() {
 
 	assertPin(byId);
 	assertCoverage(byId);
+
+	for (const [name, long] of longRows) {
+		const entry = byId.get(canonicalFromName(name));
+		if (!entry) continue;
+		const { prices } = entry;
+		for (const [variation, value] of Object.entries(long)) {
+			const short = prices[variation.replace(/^tier2_/, '')];
+			if (typeof short === 'number' && value < short)
+				throw new Error(
+					`openai collector: long-context ${variation} for ${name} (${value}) is below its short-context rate ` +
+						`(${short}). The bundle map drifted or is not the standard tier; refusing to guess.`
+				);
+			if (typeof prices[variation] === 'number') crossCheck(name, { [variation]: prices[variation] }, { [variation]: value });
+			else prices[variation] = value;
+		}
+	}
+
+	for (const [model_id, { prices }] of byId) {
+		const twelve = prices[TWELVE_HOUR_WRITE];
+		delete prices[TWELVE_HOUR_WRITE];
+		if (typeof prices.cache_write !== 'number') continue;
+		const expected = prices.input * TWELVE_HOUR_MULTIPLIER;
+		if (typeof twelve === 'number' && !nearly(twelve, expected))
+			throw new Error(
+				`openai collector: ${model_id} 12h write is ${twelve}, not input x ${TWELVE_HOUR_MULTIPLIER} (${expected}). ` +
+					`OpenAI changed the 12h rule; refusing to guess.`
+			);
+		notices.push({
+			kind: 'unrecorded_variation',
+			provider: PROVIDER,
+			model_id,
+			variation: 'cache_write_12h',
+			price_usd: expected,
+			source_url: SOURCE_URL,
+			message:
+				`OpenAI publishes a 12h cache write for ${model_id} at $${expected}/MTok (input x ${TWELVE_HOUR_MULTIPLIER}, ` +
+				`next to the 30m write recorded as cache_write). The record schema has no 12h variation, so it is not recorded.`,
+		});
+	}
 
 	for (const [canonical, display] of untracked) {
 		notices.push({

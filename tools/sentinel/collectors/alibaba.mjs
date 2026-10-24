@@ -77,7 +77,8 @@ const MULT_PATTERNS = {
 const IMPLICIT_PATTERN =
 	/portion of the input served from the cache is typically billed at (\d+(?:\.\d+)?)% of the standard input token price/i;
 // The sentence that names the models whose rate is NOT the published multiplier.
-const EXCEPTION_PATTERN = /is not \d+% of the standard input token price\. For specific pricing, see the Model Studio console/i;
+const EXCEPTION_PATTERN = /The following models do not follow the general ratios above\. For specific pricing, see the Model Studio console\./i;
+const EXCEPTION_CLAUSE = /([a-z][a-z0-9.\-]*(?:(?:,|, and| and)\s+[a-z][a-z0-9.\-]*)*)\s*:\s+(?:The )?cache\b/gi;
 
 
 // The Qwen flagship/mainline models the dataset tracks. Matched against the FIRST whitespace-delimited
@@ -228,9 +229,14 @@ async function fetchCacheRules() {
 	// Models the doc explicitly removes from the multiplier rule. Collected from every exception
 	// sentence, so a newly-named model drops out of derivation on the next run without a code change.
 	const exceptions = new Set();
-	for (const m of text.matchAll(new RegExp('([a-z0-9.,\\-\\s]{0,160}?)' + EXCEPTION_PATTERN.source, 'gi'))) {
-		for (const id of (m[1] || '').match(/qwen[0-9a-z.\-]+|deepseek-[0-9a-z.\-]+|glm-[0-9a-z.\-]+/gi) || [])
-			exceptions.add(id.replace(/[.,]$/, '').toLowerCase());
+	const head = text.match(EXCEPTION_PATTERN);
+	if (head) {
+		const tail = text.slice(head.index + head[0].length);
+		const end = tail.search(/Cacheable content/i);
+		const block = end >= 0 ? tail.slice(0, end) : tail.slice(0, 1200);
+		for (const m of block.matchAll(EXCEPTION_CLAUSE))
+			for (const id of m[1].match(/qwen[0-9a-z.\-]+|deepseek-[0-9a-z.\-]+|glm-[0-9a-z.\-]+/gi) || [])
+				exceptions.add(id.replace(/[.,]$/, '').toLowerCase());
 	}
 	if (!exceptions.size)
 		throw new Error(
