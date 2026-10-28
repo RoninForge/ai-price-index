@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-24",
+  "dataModified": "2026-10-28",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -705,6 +705,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6.1-sol.vfe3efaf9.json",
       "latestRev": "fe3efaf9"
+    },
+    {
+      "id": "gpt-6.1-terra",
+      "provider": "openai",
+      "file": "models/openai/gpt-6.1-terra.vc94c038f.json",
+      "latestRev": "c94c038f"
     },
     {
       "id": "gpt-rosalind-discovery",
