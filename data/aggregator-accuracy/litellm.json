@@ -5,7 +5,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-10-27",
+      "last_seen": "2026-10-28",
       "litellm_usd_per_mtok": 1.32,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -19,7 +19,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-08-17",
-      "last_seen": "2026-10-27",
+      "last_seen": "2026-10-28",
       "litellm_usd_per_mtok": 3.96,
       "model": "deepseek-v4-pro",
       "our_confidence": "verified",
@@ -33,7 +33,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-09-13",
-      "last_seen": "2026-10-27",
+      "last_seen": "2026-10-28",
       "litellm_usd_per_mtok": 0.3,
       "model": "deepseek-flash",
       "our_confidence": "verified",
@@ -47,7 +47,7 @@
     {
       "confirmed_litellm_wrong": false,
       "first_detected": "2026-09-13",
-      "last_seen": "2026-10-27",
+      "last_seen": "2026-10-28",
       "litellm_usd_per_mtok": 1.2,
       "model": "deepseek-flash",
       "our_confidence": "verified",
@@ -55,34 +55,6 @@
       "our_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
       "our_usd_per_mtok": 0.6,
       "provider": "deepseek",
-      "resolved": null,
-      "variation": "output"
-    },
-    {
-      "confirmed_litellm_wrong": false,
-      "first_detected": "2026-10-24",
-      "last_seen": "2026-10-27",
-      "litellm_usd_per_mtok": 0.68,
-      "model": "mistral-large-4",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-10-24",
-      "our_source_url": "https://docs.mistral.ai/inference/pricing",
-      "our_usd_per_mtok": 1.36,
-      "provider": "mistral",
-      "resolved": null,
-      "variation": "input"
-    },
-    {
-      "confirmed_litellm_wrong": false,
-      "first_detected": "2026-10-24",
-      "last_seen": "2026-10-27",
-      "litellm_usd_per_mtok": 2.09,
-      "model": "mistral-large-4",
-      "our_confidence": "verified",
-      "our_last_validated": "2026-10-24",
-      "our_source_url": "https://docs.mistral.ai/inference/pricing",
-      "our_usd_per_mtok": 4.18,
-      "provider": "mistral",
       "resolved": null,
       "variation": "output"
     },
@@ -253,19 +225,47 @@
       "provider": "deepseek",
       "resolved": "2026-09-11",
       "variation": "output"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-10-24",
+      "last_seen": "2026-10-27",
+      "litellm_usd_per_mtok": 0.68,
+      "model": "mistral-large-4",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-10-24",
+      "our_source_url": "https://docs.mistral.ai/inference/pricing",
+      "our_usd_per_mtok": 1.36,
+      "provider": "mistral",
+      "resolved": "2026-10-28",
+      "variation": "input"
+    },
+    {
+      "confirmed_litellm_wrong": false,
+      "first_detected": "2026-10-24",
+      "last_seen": "2026-10-27",
+      "litellm_usd_per_mtok": 2.09,
+      "model": "mistral-large-4",
+      "our_confidence": "verified",
+      "our_last_validated": "2026-10-24",
+      "our_source_url": "https://docs.mistral.ai/inference/pricing",
+      "our_usd_per_mtok": 4.18,
+      "provider": "mistral",
+      "resolved": "2026-10-28",
+      "variation": "output"
     }
   ],
   "summary": {
     "confirmed_open_count": 0,
-    "generated": "2026-10-27",
+    "generated": "2026-10-28",
     "oldest_open": {
       "first_detected": "2026-08-17",
       "model": "deepseek-v4-pro",
       "provider": "deepseek",
       "variation": "input"
     },
-    "oldest_open_days": 71,
-    "open_count": 6,
-    "resolved_count": 12
+    "oldest_open_days": 72,
+    "open_count": 4,
+    "resolved_count": 14
   }
 }
