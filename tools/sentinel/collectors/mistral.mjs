@@ -78,6 +78,7 @@ const COLUMNS = {
 // getNotices().
 const UNTRACKED_RULES = [
 	[(row) => /^Z\.ai /.test(row.title), 'third-party model resold on the Mistral API; belongs to its own provider'],
+	[(row) => /^DeepSeek /.test(row.title), 'third-party model resold on the Mistral API; belongs to its own provider'],
 	[(row) => /^Classifier API model\b/.test(row.title), 'fine-tuned classifier SKU, not a general chat model'],
 ];
 
