@@ -18,6 +18,15 @@
         "last_validated": "2026-10-24",
         "price_usd": 0.14,
         "src": "https://docs.mistral.ai/inference/pricing",
+        "to": "2026-10-29",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-10-29",
+        "last_validated": "2026-10-30",
+        "price_usd": 0.07,
+        "src": "https://docs.mistral.ai/inference/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -38,6 +47,15 @@
         "last_validated": "2026-10-24",
         "price_usd": 1.36,
         "src": "https://docs.mistral.ai/inference/pricing",
+        "to": "2026-10-29",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-10-29",
+        "last_validated": "2026-10-30",
+        "price_usd": 0.7,
+        "src": "https://docs.mistral.ai/inference/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -57,6 +75,15 @@
         "from": "2026-10-24",
         "last_validated": "2026-10-24",
         "price_usd": 4.18,
+        "src": "https://docs.mistral.ai/inference/pricing",
+        "to": "2026-10-29",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-10-29",
+        "last_validated": "2026-10-30",
+        "price_usd": 2.1,
         "src": "https://docs.mistral.ai/inference/pricing",
         "to": null,
         "unit": "usd_per_mtok"

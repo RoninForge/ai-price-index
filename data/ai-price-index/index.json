@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-28",
+  "dataModified": "2026-10-30",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -547,8 +547,8 @@
     {
       "id": "mistral-large-4",
       "provider": "mistral",
-      "file": "models/mistral/mistral-large-4.vbf688ed5.json",
-      "latestRev": "bf688ed5"
+      "file": "models/mistral/mistral-large-4.va4606b8d.json",
+      "latestRev": "a4606b8d"
     },
     {
       "id": "mistral-medium-3.5",
