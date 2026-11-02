@@ -11,7 +11,7 @@
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Price from the live mistral.ai/pricing page (USD). Availability date from the first-party announcement mistral.ai/news/mistral-3 (2025-12-02)."
+    "notes": "Price from the live mistral.ai/pricing page (USD). Availability date from the first-party announcement mistral.ai/news/mistral-3 (2025-12-02). Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Large 3 | mistral-large-2512 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",
@@ -24,7 +24,8 @@
     "last_validated_at": "2026-06-15",
     "source_url": "https://mistral.ai/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Large 3 | mistral-large-2512 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",
@@ -341,7 +342,7 @@
     "source_url": "https://mistral.ai/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Medium 3.5 | mistral-medium-3-5 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",
@@ -355,7 +356,7 @@
     "source_url": "https://mistral.ai/pricing/",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Medium 3.5 | mistral-medium-3-5 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",
@@ -495,7 +496,7 @@
     "source_url": "https://docs.mistral.ai/inference/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Mistral now publishes a Cached input column on its pricing table (docs.mistral.ai/inference/pricing, Standard tier). First read 2026-10-07, when the sentinel collector was repointed from the retired card layout at mistral.ai/pricing/api/. effective_from is our observation date, not a claimed start date: Mistral does not say when cached-input pricing began."
+    "notes": "Mistral now publishes a Cached input column on its pricing table (docs.mistral.ai/inference/pricing, Standard tier). First read 2026-10-07, when the sentinel collector was repointed from the retired card layout at mistral.ai/pricing/api/. effective_from is our observation date, not a claimed start date: Mistral does not say when cached-input pricing began. Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Large 3 | mistral-large-2512 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",
@@ -509,7 +510,7 @@
     "source_url": "https://docs.mistral.ai/inference/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "Mistral now publishes a Cached input column on its pricing table (docs.mistral.ai/inference/pricing, Standard tier). First read 2026-10-07, when the sentinel collector was repointed from the retired card layout at mistral.ai/pricing/api/. effective_from is our observation date, not a claimed start date: Mistral does not say when cached-input pricing began."
+    "notes": "Mistral now publishes a Cached input column on its pricing table (docs.mistral.ai/inference/pricing, Standard tier). First read 2026-10-07, when the sentinel collector was repointed from the retired card layout at mistral.ai/pricing/api/. effective_from is our observation date, not a claimed start date: Mistral does not say when cached-input pricing began. Deprecated 2026-10-31 and absent from docs.mistral.ai/inference/pricing from that day (sentinel run 41177024841); docs.mistral.ai/models (\"Deprecated & retired models\" table, read 2026-11-02) lists \"Mistral Medium 3.5 | mistral-medium-3-5 | 10/31/2026 | 4/30/2027 | Mistral Large 4\" (deprecation, retirement, alternative). Still callable until 2027-04-30; this price is the last one Mistral published and stays open until that retirement."
   },
   {
     "provider": "mistral",

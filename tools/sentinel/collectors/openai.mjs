@@ -97,6 +97,7 @@ const TRACKED = new Set([
 	'gpt-5.6-sol',
 	'gpt-5.6-terra',
 	'gpt-6-astra',
+	'gpt-6-astra-law',
 	'gpt-6-luna',
 	'gpt-6-sol',
 	'gpt-6.1-sol',
@@ -200,11 +201,12 @@ const PAYLOAD_LAYOUTS = new Map([
 // gpt-5.6-cyber sat in "Cyber models" unseen, and gpt-rosalind-research moved from Specialized models
 // into "Life sciences models", which surfaced only because it was already tracked. MODEL_SECTIONS are
 // parsed through their rendered table (same labelled header shape as the main table).
-const MODEL_SECTIONS = ['cyber-models', 'life-sciences-models'];
+const MODEL_SECTIONS = ['cyber-models', 'life-sciences-models', 'legal-model-configurations'];
 const KNOWN_SECTIONS = new Map([
 	['text-tokens', 'main tables, parsed via the standard TextTokenPricingTables island'],
 	['cyber-models', 'parsed (MODEL_SECTIONS)'],
 	['life-sciences-models', 'parsed (MODEL_SECTIONS)'],
+	['legal-model-configurations', 'parsed (MODEL_SECTIONS)'],
 	['image-tokens', 'image token rates; the index tracks text token rates'],
 	['live-session-duration', 'per-minute voice sessions, not per-token'],
 	['audio-tokens', 'realtime/audio modality rates, not tracked'],
@@ -615,7 +617,7 @@ function parseSectionTable(rawHtml, anchors, id) {
 	const headings = (Array.isArray(props.headings) ? props.headings[1] : []).map((h) =>
 		String(Array.isArray(h) ? h[1] : h).trim().toLowerCase()
 	);
-	if (headings[0] !== 'model')
+	if (headings[0] !== 'model' && headings[0] !== 'model configuration')
 		throw new Error(`openai collector: section "${id}" headings drifted (${headings.join(' | ')}). Refusing to guess.`);
 	const layout = headings.slice(1).map(groupedHeadingVariation);
 
