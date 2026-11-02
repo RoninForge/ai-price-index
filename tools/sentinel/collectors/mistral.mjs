@@ -56,6 +56,14 @@ const TRACKED = new Set([
 	'mistral-small-4',
 ]);
 
+// Tracked ids that left the pricing page while still callable, with the retirement date from the
+// "Deprecated & retired models" table on docs.mistral.ai/models. Exempt from coverage until then; the
+// day after, the collector throws so the open records get closed at the retirement date.
+const PAGE_ABSENT = new Map([
+	['mistral-large-3', { retires: '2027-04-30', why: 'deprecated 2026-10-31, replacement Mistral Large 4' }],
+	['mistral-medium-3.5', { retires: '2027-04-30', why: 'deprecated 2026-10-31, replacement Mistral Large 4' }],
+]);
+
 // Sections that are never per-M-token chat models, with the reason. Any other section is read.
 const SKIP_SECTIONS = {
 	'ocr-models': 'OCR SKUs priced per page',
@@ -225,7 +233,14 @@ export async function collect() {
 
 	if (!results.length)
 		throw new Error('mistral collector: found pricing tables but extracted zero model rows - structure drift.');
-	const missing = [...TRACKED].filter((id) => !byModel.has(id));
+	const today = new Date().toISOString().slice(0, 10);
+	const expired = [...PAGE_ABSENT].filter(([, a]) => today > a.retires).map(([id, a]) => `${id} (${a.retires})`);
+	if (expired.length)
+		throw new Error(
+			`mistral collector: PAGE_ABSENT model(s) past their retirement date: ${expired.join(', ')}. Close their ` +
+				`open records at that date and remove them from TRACKED and PAGE_ABSENT.`
+		);
+	const missing = [...TRACKED].filter((id) => !byModel.has(id) && !PAGE_ABSENT.has(id));
 	if (missing.length)
 		throw new Error(
 			`mistral collector: tracked model(s) not parsed from the pricing page: ${missing.join(', ')}. ` +
