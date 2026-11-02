@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-10-30",
+  "dataModified": "2026-11-02",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -687,6 +687,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6-astra.v5dbccf92.json",
       "latestRev": "5dbccf92"
+    },
+    {
+      "id": "gpt-6-astra-law",
+      "provider": "openai",
+      "file": "models/openai/gpt-6-astra-law.v5724100a.json",
+      "latestRev": "5724100a"
     },
     {
       "id": "gpt-6-luna",
