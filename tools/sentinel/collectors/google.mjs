@@ -1,165 +1,72 @@
 // tools/sentinel/collectors/google.mjs  (MIT)
-// First-party Google (Gemini) price collector. This page is the hardest in the set.
+// First-party Google (Gemini) price collector.
 //
-// Source: https://ai.google.dev/gemini-api/docs/pricing  - server-rendered, but ONE small table per
-// model (Standard / Batch sub-tables), each headed by an <hN> with the model name. Verified shape
-// (2026-06-20): each model's Standard table has rows whose first cell is "Input price" / "Output
-// price ..." and whose Paid-Tier cell is one of:
-//   tiered:     "$1.25, prompts $2.50, prompts > 200k tokens"   (standard then the >200k tier)
-//   flat:       "$0.30 (text / image / video) $1.00 (audio)"    (first $ = text input; audio is NOT a tier)
+// Source: https://aistudio.google.com/docs/pricing. On 2026-11-04 ai.google.dev/gemini-api/docs/pricing
+// started 301-ing there, and the new page is client-rendered (zero <table> elements in the HTML).
+// Google publishes the same document as Markdoc at `<page>.md` and lists it in
+// aistudio.google.com/llms.txt; that copy is what we parse. It is locale-invariant (identical bytes
+// with and without Accept-Language), which retires the old machine-translated-locale retry loop.
 //
-// Mapping (PAID tier only, text chat models we track):
-//   standard input  -> input            first "$" in the Input-price paid cell
-//   standard output -> output           first "$" in the Output-price paid cell
-//   cached input    -> cache_read       first "$" in the Context-caching-price paid cell, AFTER the
-//                                       per-hour storage clause is stripped (that cell carries both)
-//   >200k input     -> tier2_input      second "$", ONLY when the cell marks a ">200k" / "200,000" tier
-//   >200k output    -> tier2_output     ditto
-//   >200k cached    -> tier2_cache_read ditto
-// All prices are per 1M tokens -> usd_per_mtok. Image / video / TTS / embedding / Live models are
-// skipped (we only emit a heading that maps to a tracked text model, OR any versioned "Gemini <n> <Name>"
-// heading not caught by NON_TEXT_RE; the long tail of media models is filtered by NAME). A Pro/Flash-only
-// heading allowlist hid Gemini 4 Argon (GA 2026-10-13) until a manual coverage diff on 2026-10-16.
+// Shape (verified 2026-11-05): one `## <Model name>  {% id="<api id>" %}` section per model, then an
+// optional `{% callout %}`, then `{% tabs %}` whose first tab is Standard (or a bare `{% table %}`).
+// A table is `* cell` bullets, rows separated by `---`; the first row is the header and the
+// "Paid Tier" column is the one we read. Paid cells are one of:
+//   tiered:     "$2.00, prompts <= 200k tokens  $4.00, prompts > 200k tokens"
+//   flat:       "$0.30 (text / image / video) $1.00 (audio)"   (first $ = text input)
+//   dated:      "$2.00 through November 30, 2026. $4.00 starting December 1, 2026."   (first $ = current)
 //
-// Fail loud: if no model heading with an "Input price" row is found, THROW (page went JS-only/drifted).
+// Mapping (PAID tier, Standard table only, text chat models):
+//   Input price              -> input,      tier2_input when the cell marks a >200k tier
+//   Output price             -> output,     tier2_output ditto
+//   Context caching price    -> cache_read, tier2_cache_read ditto, after the per-hour storage clause
+//                               is stripped (that cell carries both)
+// The model id is the section's own `{% id %}`, so a new model arrives under Google's API id.
 //
-// NON-DETERMINISM FIX (2026-06-20): Google's edge content-negotiates the locale. With NO
-// Accept-Language header (lib.mjs's fetchText sends none) the page is served in a RANDOM
-// machine-translated locale - the <html lang> rotates through "zh-TW-x-mtfrom-en", "ja-x-mtfrom-en",
-// "fr-x-mtfrom-en", ... and only ~2-in-10 requests land on English. The structure is identical
-// (same `pricing-table` markup, same $ prices) but every label is translated, so the
-// English-anchored parser ("Input price" / "Output price") rejected ~80% of responses. Sending
-// `Accept-Language: en-US,en;q=0.9` forces the English variant deterministically (10/10 in testing).
-// We can't change lib.mjs's fetchText to pass the header, so we fetch here with the header AND retry
-// up to MAX_FETCH_ATTEMPTS, accepting only an English-price variant; we throw the drift error only
-// if EVERY attempt fails to yield English price content (a true JS-only/drift signal).
-//
-// DEPRECATION SKIP (2026-06-22): a retired model must NOT be drafted as a NEW current price. The page
-// flags a deprecated model with an `<aside class="warning">` placed BETWEEN the model's heading-group
-// and its first pricing table, e.g. for gemini-2.0-flash / gemini-2.0-flash-lite (shut down June 1,
-// 2026):
-//   <div class="heading-group"><h2 ...>Gemini 2.0 Flash</h2><em><code>gemini-2.0-flash</code></em></div>
-//   <aside class="warning"><b>Warning:</b> Gemini 2.0 Flash is
-//     <a href="/gemini-api/docs/deprecations">deprecated</a> and has been shut down June 1, 2026. ...</aside>
-//   <table class="pricing-table"> ... </table>
-// We key off that aside (a warning aside whose body says deprecated/discontinued/retired/shut(-)down/
-// sunset OR links to /docs/deprecations) sitting in [modelHeading, firstTable). We do NOT name-blocklist
-// gemini-2.0-* - the marker generalizes to any future retirement. Current models (gemini-3.x,
-// gemini-2.5-x) carry no such aside and are kept. Fail loud: if the ARTICLE BODY says "deprecat" but
-// we detect ZERO deprecation asides, the marker drifted - THROW rather than silently re-emit a
-// retired model as a NEW current price. Google may instead DELIST a retired model outright, in which
-// case the body is clean, no aside exists, and the collector simply stops seeing it.
+// Deprecated models are skipped: a caution/warning callout that names a deprecation, between the
+// section heading and its first table, means the model must not be drafted as a NEW current price.
+// If the document says "deprecat" but no such callout matches, the marker drifted: THROW.
+// Fail loud on any structural drift rather than report partial coverage as success.
+
+import { fetchText } from '../lib.mjs';
 
 export const PROVIDER = 'google';
-const SOURCE_URL = 'https://ai.google.dev/gemini-api/docs/pricing';
+const SOURCE_URL = 'https://aistudio.google.com/docs/pricing';
+const MARKDOC_URL = `${SOURCE_URL}.md`;
 
-// Mirrors lib.mjs's fetch knobs so behavior matches the rest of the sentinel.
-const USER_AGENT = 'ai-price-index price-sentinel (+https://roninforge.org)';
-const FETCH_TIMEOUT_MS = 15000;
-const MAX_FETCH_ATTEMPTS = 4; // up to 4 tries to land on the English-served variant
-
-/** True when a fetched body is the English variant whose price labels the parser anchors on. */
-function looksEnglishAndPriced(html) {
-	return /Input price/.test(html) && /Output price/.test(html);
-}
-
-/**
- * Fetch the pricing page in ENGLISH, deterministically. Sends Accept-Language: en so Google's edge
- * stops rotating machine-translated locales, and retries up to MAX_FETCH_ATTEMPTS until the body is
- * the English-price variant. Throws only if every attempt failed to produce English price content.
- */
-async function fetchEnglishPricingHtml() {
-	let lastHtml = '';
-	let lastErr = null;
-	for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-		try {
-			const res = await fetch(SOURCE_URL, {
-				headers: {
-					'user-agent': USER_AGENT,
-					'accept-language': 'en-US,en;q=0.9',
-				},
-				signal: controller.signal,
-				redirect: 'follow',
-			});
-			if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-			const html = await res.text();
-			lastHtml = html;
-			if (looksEnglishAndPriced(html)) return html;
-		} catch (e) {
-			lastErr = e;
-		} finally {
-			clearTimeout(timer);
-		}
-		// brief linear backoff between attempts (matches lib.mjs's batch-job cadence)
-		if (attempt < MAX_FETCH_ATTEMPTS) await new Promise((r) => setTimeout(r, 400 * attempt));
-	}
-	// All attempts exhausted. If we never got a 2xx body at all, surface the network error;
-	// otherwise return the last body so collect() can emit the precise drift error after parsing.
-	if (!lastHtml && lastErr) throw new Error(`google collector: fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr.message}`);
-	return lastHtml;
-}
-
-// Lower-cased model heading -> canonical id we publish. Unknown text headings slug + surface as NEW.
+// Lower-cased heading -> canonical id, used only when a section carries no `{% id %}`.
 const NAME_TO_CANONICAL = {
 	'gemini 4 argon': 'gemini-4-argon',
-	'gemini 3.5 flash': 'gemini-3.5-flash',
+	'gemini 3.8 flash': 'gemini-3.8-flash',
+	'gemini 3.6 flash': 'gemini-3.6-flash',
+	'gemini 3.5 flash-lite': 'gemini-3.5-flash-lite',
 	'gemini 3.1 flash-lite': 'gemini-3.1-flash-lite',
 	'gemini 3.1 pro preview': 'gemini-3.1-pro-preview',
 	'gemini 3 flash preview': 'gemini-3-flash-preview',
 	'gemini 2.5 pro': 'gemini-2.5-pro',
 	'gemini 2.5 flash': 'gemini-2.5-flash',
 	'gemini 2.5 flash-lite': 'gemini-2.5-flash-lite',
-	'gemini 2.0 flash': 'gemini-2.0-flash',
-	'gemini 1.5 pro': 'gemini-1.5-pro',
-	'gemini 1.5 flash': 'gemini-1.5-flash',
 };
 
-// A deprecation/retirement warning aside on this page. Google wraps each retired model's notice in an
-// `<aside class="warning">...</aside>` placed right after the model heading-group. We treat such an
-// aside as a deprecation marker when its body carries an explicit retirement word OR links to the
-// deprecations doc. Matched on the RAW aside HTML (links/words are inside <a>/<b> tags).
-const WARNING_ASIDE_RE = /<aside\b[^>]*\bclass="[^"]*\bwarning\b[^"]*"[^>]*>([\s\S]*?)<\/aside>/gi;
-const DEPRECATION_WORDS_RE = /(deprecat|discontinu|retir|shut[\s-]*down|sunset)/i;
-const DEPRECATION_LINK_RE = /\/gemini-api\/docs\/deprecations/i;
-
-// The devsite chrome carries the word "deprecated" on every render (a left-nav link to
-// /gemini-api/docs/deprecations, plus a `.deprecated` inline-CSS rule), so the drift check below must
-// read the ARTICLE BODY only or it fires on a page with no deprecated model on it at all.
-const ARTICLE_BODY_OPEN_RE = /<div\b[^>]*\bclass="[^"]*\bdevsite-article-body\b[^"]*"[^>]*>/i;
-
-/** The pricing article's own HTML, with the surrounding devsite nav/footer chrome removed. */
-function articleBody(html) {
-	const m = ARTICLE_BODY_OPEN_RE.exec(html);
-	if (!m)
-		throw new Error(
-			'google collector: no devsite-article-body container on the pricing page - structure drift.'
-		);
-	const rest = html.slice(m.index + m[0].length);
-	const end = rest.search(/devsite-content-footer/i);
-	return end > 0 ? rest.slice(0, end) : rest;
-}
-
-/** True if an aside's inner HTML reads as a deprecation/retirement notice for a model. */
-function isDeprecationAside(innerHtml) {
-	return DEPRECATION_WORDS_RE.test(innerHtml) || DEPRECATION_LINK_RE.test(innerHtml);
-}
-
-// A heading that is a TEXT chat model worth pricing. Excludes image (🍌/Image), video, TTS, Live,
-// Translate, Transcribe, embedding, Audio, Computer Use, Robotics, etc. We keep any "Gemini <ver> <Name>[-Lite]".
+// A text chat model worth pricing: any "Gemini <version> <Name>[-Lite| Preview| Lite]".
 const TEXT_MODEL_HEADING_RE = /^Gemini [\d.]+ [A-Za-z]+(?:-Lite| Preview| Lite)?$/i;
-// media/non-text heading words to hard-exclude even if the above ever loosened
-const NON_TEXT_RE = /(image|video|tts|live|translate|transcribe|embedding|audio|nano banana|robotics|computer use|guard|🍌)/i;
+const NON_TEXT_RE = /(image|video|tts|live|translate|transcribe|embedding|audio|nano banana|robotics|computer use|guard|omni|🍌)/i;
+
+const CALLOUT_RE = /\{%\s*callout\b[^%]*\btype="(?:warning|caution)"[^%]*%\}([\s\S]*?)\{%\s*\/callout\s*%\}/gi;
+const DEPRECATION_WORDS_RE = /(deprecat|discontinu|retir|shut[\s-]*down|sunset)/i;
+const DEPRECATION_LINK_RE = /\/docs\/deprecations/i;
+
+const STORAGE_CLAUSE_RE = /\$\s*[0-9]+(?:\.[0-9]+)?\s*\/\s*1,?000,?000 tokens per hour[^$]*/gi;
+const IGNORED_ROW_LABEL_RE = /^(grounding with google|used to improve our products|context caching \(storage\)|tuning price|google search)/i;
 
 function cleanCell(s) {
 	return s
-		.replace(/<[^>]+>/g, ' ')
+		.replace(/\{%\s*sup\s*%\}[\s\S]*?\{%\s*\/sup\s*%\}/g, ' ')
+		.replace(/\{%[\s\S]*?%\}/g, ' ')
+		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+		.replace(/[*`]/g, '')
 		.replace(/&amp;/g, '&')
-		.replace(/&#36;|&dollar;/g, '$')
 		.replace(/&gt;/g, '>')
 		.replace(/&lt;/g, '<')
-		.replace(/&nbsp;/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim();
 }
@@ -180,174 +87,144 @@ function slugify(name) {
 	return name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-// A Context-caching cell carries TWO different prices: the per-token cache-read rate and a per-hour
-// storage rate ("$1.00 / 1,000,000 tokens per hour (storage price)"). Storage is not a token rate, so
-// it is stripped before parsing rather than risked as a positional match.
-const STORAGE_CLAUSE_RE = /\$\s*[0-9]+(?:\.[0-9]+)?\s*\/\s*1,?000,?000 tokens per hour[^$]*/gi;
-
-// Row labels under a tracked text model that are deliberately not token prices: per-request grounding
-// add-ons and the data-use policy row. Anything outside this set AND unconsumed is reported, so a new
-// pricing dimension surfaces instead of being dropped on the floor.
-const IGNORED_ROW_LABEL_RE = /^(grounding with google|used to improve our products|context caching \(storage\)|tuning price|google search)/i;
-
 /** From a Paid-Tier cell, return { std, tier2 } prices. tier2 only when the cell marks a >200k tier. */
 function parseTierCell(cell) {
 	const nums = allPrices(cell);
 	if (!nums.length) return null;
 	const std = nums[0];
 	let tier2 = null;
-	if (/(>\s*200,?000|>\s*200k|200,?000 tokens|> 200k)/i.test(cell) && nums.length >= 2) {
-		tier2 = nums[1];
-	}
+	if (/(>\s*200,?000|>\s*200k|200,?000 tokens)/i.test(cell) && nums.length >= 2) tier2 = nums[1];
 	return { std, tier2 };
 }
 
-/**
- * Collect Gemini PAID-tier text-model prices.
- * Returns array of { provider, model_id, display_name, prices:{input,output,tier2_input?,tier2_output?},
- *                    unit, source_url, source_kind, confidence, known_mapping }. Fails loud on drift.
- */
-export async function collect() {
-	const html = await fetchEnglishPricingHtml();
+/** Split the document into `## ` sections: { title, id, body }. */
+function sections(md) {
+	const heads = [...md.matchAll(/^## (.*)$/gm)];
+	return heads.map((m, i) => {
+		const raw = m[1];
+		const id = /\{%\s*id="([^"]+)"\s*%\}/.exec(raw)?.[1] ?? null;
+		const end = i + 1 < heads.length ? heads[i + 1].index : md.length;
+		return { title: cleanCell(raw), id, body: md.slice(m.index + m[0].length, end) };
+	});
+}
 
-	// Collect headings + their positions.
-	const heads = [...html.matchAll(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/gi)].map((m) => ({
-		text: cleanCell(m[1]),
-		idx: m.index,
-	}));
-	// Collect tables + positions.
-	const tables = [...html.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => ({ html: m[0], idx: m.index }));
-	if (!tables.length) throw new Error('google collector: no <table> on the pricing page - structure drift.');
+/** Rows of a Markdoc table body as arrays of cleaned cells. */
+function tableRows(tableText) {
+	return tableText
+		.split(/^\s*---\s*$/m)
+		.map((chunk) => {
+			const cells = [];
+			for (const line of chunk.split('\n')) {
+				const bullet = /^\s*\* (.*)$/.exec(line);
+				if (bullet) cells.push(bullet[1]);
+				else if (cells.length && line.trim()) cells[cells.length - 1] += ` ${line.trim()}`;
+			}
+			return cells.map(cleanCell);
+		})
+		.filter((cells) => cells.length);
+}
 
-	// Collect deprecation/retirement warning asides + positions (see DEPRECATION SKIP note above).
-	const deprecationAsides = [...html.matchAll(WARNING_ASIDE_RE)]
-		.filter((m) => isDeprecationAside(m[1]))
-		.map((m) => ({ idx: m.index }));
-	// Fail loud on marker drift: the page clearly marks deprecations in prose ("deprecat..." appears),
-	// yet our aside detector found none -> the warning markup changed and we'd silently re-emit retired
-	// models as NEW current prices. Refuse rather than guess.
-	if (/deprecat/i.test(articleBody(html)) && deprecationAsides.length === 0)
+function isDeprecationCallout(inner) {
+	return DEPRECATION_WORDS_RE.test(inner) || DEPRECATION_LINK_RE.test(inner);
+}
+
+export function parsePricingMarkdoc(md) {
+	if (!/^# Gemini Developer API pricing/m.test(md))
+		throw new Error('google collector: pricing.md has no "# Gemini Developer API pricing" title - wrong document or drift.');
+
+	const deprecationCallouts = [...md.matchAll(CALLOUT_RE)].filter((m) => isDeprecationCallout(m[1]));
+	if (/deprecat/i.test(md) && deprecationCallouts.length === 0)
 		throw new Error(
-			'google collector: page text mentions deprecation but no deprecation <aside class="warning"> was matched - deprecation marker drifted. Refusing to risk emitting a retired model.'
+			'google collector: the document mentions deprecation but no deprecation {% callout %} was matched - marker drifted. Refusing to risk emitting a retired model.'
 		);
 
-	// Is the model at `headingIdx` (whose Standard table starts at `tableIdx`) flagged deprecated?
-	// A deprecation aside sits between the model heading-group and its first pricing table.
-	const isDeprecatedModel = (headingIdx, tableIdx) =>
-		deprecationAsides.some((a) => a.idx > headingIdx && a.idx < tableIdx);
-
-	// For each table, find its nearest preceding MODEL heading (skip Standard/Batch/section headings).
-	// Returns { text, idx } of that heading, or null. idx lets us bound the deprecation-aside check.
-	const nearestModelHeading = (tableIdx) => {
-		let found = null;
-		for (const hd of heads) {
-			if (hd.idx >= tableIdx) break;
-			if (TEXT_MODEL_HEADING_RE.test(hd.text) && !NON_TEXT_RE.test(hd.text)) found = { text: hd.text, idx: hd.idx };
-			// any media/non-text model heading also "claims" the tables under it, so a following
-			// text-model table is never mis-attributed to it; clear when we pass a non-text model head.
-			else if (/^Gemini /i.test(hd.text) && NON_TEXT_RE.test(hd.text)) found = null;
-		}
-		return found;
-	};
-
-	const byModel = new Map(); // canonical -> { display, known, prices }
+	const byModel = new Map();
 	let sawAnyInputRow = false;
+	let sawAnyTable = false;
 	const unknownRowLabels = new Set();
 
-	for (const t of tables) {
-		const head = nearestModelHeading(t.idx);
-		if (!head) continue; // table does not belong to a tracked text model
-		const heading = head.text;
-		const norm = heading.toLowerCase().replace(/\s+/g, ' ').trim();
-		const canonical = NAME_TO_CANONICAL[norm] || slugify(heading);
-		// only take the FIRST (Standard) table per model; skip Batch / later tables
+	for (const sec of sections(md)) {
+		if (!TEXT_MODEL_HEADING_RE.test(sec.title) || NON_TEXT_RE.test(sec.title)) continue;
+		const norm = sec.title.toLowerCase();
+		const canonical = sec.id || NAME_TO_CANONICAL[norm] || slugify(sec.title);
 		if (byModel.has(canonical)) continue;
-		// SKIP retired models: a deprecation aside sits between this model's heading and its first
-		// table (e.g. gemini-2.0-flash / -flash-lite, shut down June 1, 2026). A retired model must not
-		// be drafted as a NEW current price. Record the canonical so a later Batch table can't re-add it.
-		if (isDeprecatedModel(head.idx, t.idx)) {
+
+		const table = /\{%\s*table\s*%\}([\s\S]*?)\{%\s*\/table\s*%\}/.exec(sec.body);
+		if (!table) continue;
+		sawAnyTable = true;
+
+		const beforeTable = sec.body.slice(0, table.index);
+		if ([...beforeTable.matchAll(CALLOUT_RE)].some((m) => isDeprecationCallout(m[1]))) {
 			byModel.set(canonical, null);
 			continue;
 		}
 
-		const rows = [...t.html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
-		let input = null,
-			output = null,
-			tier2_input = null,
-			tier2_output = null,
-			cache_read = null,
-			tier2_cache_read = null;
-		for (const r of rows) {
-			const cells = [...r[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((m) => cleanCell(m[1]));
-			if (cells.length < 2) continue;
-			const label = cells[0].toLowerCase();
-			const paid = cells[cells.length - 1]; // Paid Tier is the last column
+		const [header, ...rows] = tableRows(table[1]);
+		const paidCol = header.findIndex((c) => /paid tier/i.test(c));
+		if (paidCol < 0)
+			throw new Error(`google collector: ${canonical} table header has no "Paid Tier" column (${JSON.stringify(header)}) - drift.`);
+
+		const prices = {};
+		for (const cells of rows) {
+			const label = (cells[0] || '').toLowerCase();
+			const paid = cells[paidCol] ?? '';
 			if (/^input price/.test(label)) {
 				sawAnyInputRow = true;
-				const parsed = parseTierCell(paid);
-				if (parsed) {
-					input = parsed.std;
-					tier2_input = parsed.tier2;
+				const p = parseTierCell(paid);
+				if (p) {
+					prices.input = p.std;
+					if (p.tier2 !== null) prices.tier2_input = p.tier2;
 				}
 			} else if (/^output price/.test(label)) {
-				const parsed = parseTierCell(paid);
-				if (parsed) {
-					output = parsed.std;
-					tier2_output = parsed.tier2;
+				const p = parseTierCell(paid);
+				if (p) {
+					prices.output = p.std;
+					if (p.tier2 !== null) prices.tier2_output = p.tier2;
 				}
 			} else if (/^context caching price/.test(label)) {
-				const parsed = parseTierCell(paid.replace(STORAGE_CLAUSE_RE, ' '));
-				if (parsed) {
-					cache_read = parsed.std;
-					tier2_cache_read = parsed.tier2;
+				const p = parseTierCell(paid.replace(STORAGE_CLAUSE_RE, ' '));
+				if (p) {
+					prices.cache_read = p.std;
+					if (p.tier2 !== null) prices.tier2_cache_read = p.tier2;
 				}
 			} else if (cells[0] && !IGNORED_ROW_LABEL_RE.test(cells[0])) {
 				unknownRowLabels.add(cells[0]);
 			}
 		}
 
-		if (typeof input !== 'number' || typeof output !== 'number') continue;
-		const prices = { input, output };
-		if (typeof cache_read === 'number') prices.cache_read = cache_read;
-		if (typeof tier2_input === 'number') prices.tier2_input = tier2_input;
-		if (typeof tier2_output === 'number') prices.tier2_output = tier2_output;
-		if (typeof tier2_cache_read === 'number') prices.tier2_cache_read = tier2_cache_read;
-
-		byModel.set(canonical, { display: heading, known: Boolean(NAME_TO_CANONICAL[norm]), prices });
+		if (typeof prices.input !== 'number' || typeof prices.output !== 'number') continue;
+		byModel.set(canonical, { display: sec.title, known: Boolean(sec.id || NAME_TO_CANONICAL[norm]), prices });
 	}
 
-	// A row label we have never seen is a new pricing dimension, not noise: report it rather than
-	// let it vanish the way the cached-input row did.
 	if (unknownRowLabels.size)
 		console.warn(
 			`google collector: unrecognised pricing row label(s), not collected: ${[...unknownRowLabels].map((l) => JSON.stringify(l)).join(', ')}`
 		);
-
+	if (!sawAnyTable) throw new Error('google collector: no {% table %} under any text-model section - structure drift.');
 	if (!sawAnyInputRow)
-		throw new Error(
-			'google collector: found tables but no "Input price" row under any model heading - page JS-rendered or drifted. Refusing to guess.'
-		);
+		throw new Error('google collector: tables found but no "Input price" row under any model - drift. Refusing to guess.');
 
 	const results = [];
 	for (const [model_id, entry] of byModel) {
-		if (!entry) continue; // null = a deprecated/retired model whose slot we claimed but never emit
-		const { display, known, prices } = entry;
+		if (!entry) continue;
 		results.push({
 			provider: PROVIDER,
 			model_id,
-			display_name: display,
-			prices,
+			display_name: entry.display,
+			prices: entry.prices,
 			unit: 'usd_per_mtok',
 			source_url: SOURCE_URL,
 			source_kind: 'provider_live',
 			confidence: 'verified',
-			known_mapping: known,
+			known_mapping: entry.known,
 		});
 	}
-
-	if (!results.length)
-		throw new Error('google collector: parsed tables but extracted zero text-model rows - structure drift.');
+	if (!results.length) throw new Error('google collector: parsed sections but extracted zero text-model rows - drift.');
 	return results;
+}
+
+export async function collect() {
+	return parsePricingMarkdoc(await fetchText(MARKDOC_URL));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
