@@ -396,11 +396,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 15,
     "effective_from": "2024-12-17",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -409,11 +410,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 60,
     "effective_from": "2024-12-17",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -450,11 +452,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 150,
     "effective_from": "2025-03-19",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol (reasoning.mode: pro). Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -463,11 +466,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 600,
     "effective_from": "2025-03-19",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol (reasoning.mode: pro). Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -529,11 +533,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.1,
     "effective_from": "2025-01-31",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -542,11 +547,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 4.4,
     "effective_from": "2025-01-31",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -581,11 +587,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.1,
     "effective_from": "2025-04-16",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-terra. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -594,11 +601,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 4.4,
     "effective_from": "2025-04-16",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-06-17",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-terra. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -912,12 +920,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 7.5,
     "effective_from": "2026-07-31",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-07-31",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -940,12 +948,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.275,
     "effective_from": "2026-07-31",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-07-31",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-terra. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -954,12 +962,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.55,
     "effective_from": "2026-07-31",
-    "effective_to": null,
+    "effective_to": "2026-10-23",
     "last_validated_at": "2026-07-31",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Shut down 2026-10-23 per OpenAI's deprecations page (https://developers.openai.com/api/docs/deprecations), 2026-04-22 notice \"Legacy GPT model snapshots\": \"Access to these models was shut down on October 23, 2026.\" Substitute model named there: gpt-5.6-sol. Absent from the pricing page when the first-party collector read it on 2026-11-04."
   },
   {
     "provider": "openai",
@@ -2541,5 +2549,117 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "gpt-6.1-terra first observed on OpenAI's first-party pricing page on 2026-10-26 (price-sentinel run 40382534617, 18:58 UTC); the page carried no such row at 2026-10-26 05:41 UTC (price-sentinel run 40275572598). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly half of gpt-6.1-sol's, and it is NOT gpt-5.6-terra repriced (gpt-5.6-terra output is $12, cached input $0.20), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $2.50 12h cache write, which the schema has no variation for."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 15,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 75,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "cache_write",
+    "unit": "usd_per_mtok",
+    "price_usd": 18.75,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "tier2_input",
+    "unit": "usd_per_mtok",
+    "price_usd": 30,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "tier2_output",
+    "unit": "usd_per_mtok",
+    "price_usd": 112.5,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "tier2_cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 3,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "tier2_cache_write",
+    "unit": "usd_per_mtok",
+    "price_usd": 37.5,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-05",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
   }
 ]

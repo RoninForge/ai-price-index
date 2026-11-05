@@ -99,17 +99,14 @@ const TRACKED = new Set([
 	'gpt-6-astra',
 	'gpt-6-astra-law',
 	'gpt-6-luna',
+	'gpt-6-rosalind',
 	'gpt-6-sol',
 	'gpt-6.1-sol',
 	'gpt-6.1-terra',
 	'gpt-rosalind-discovery',
 	'gpt-rosalind-research',
-	'o1',
-	'o1-pro',
 	'o3',
-	'o3-mini',
 	'o3-pro',
-	'o4-mini',
 	// gpt-4 + gpt-4-turbo are tracked but the page only has dated snapshots; see PAGE_ABSENT.
 ]);
 
