@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-11-02",
+  "dataModified": "2026-11-05",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -701,6 +701,12 @@
       "latestRev": "4fdee993"
     },
     {
+      "id": "gpt-6-rosalind",
+      "provider": "openai",
+      "file": "models/openai/gpt-6-rosalind.ve666b423.json",
+      "latestRev": "e666b423"
+    },
+    {
       "id": "gpt-6-sol",
       "provider": "openai",
       "file": "models/openai/gpt-6-sol.v06520a7a.json",
@@ -733,8 +739,8 @@
     {
       "id": "o1",
       "provider": "openai",
-      "file": "models/openai/o1.v48651a1c.json",
-      "latestRev": "48651a1c"
+      "file": "models/openai/o1.vec13c215.json",
+      "latestRev": "ec13c215"
     },
     {
       "id": "o1-mini",
@@ -745,8 +751,8 @@
     {
       "id": "o1-pro",
       "provider": "openai",
-      "file": "models/openai/o1-pro.vcc5a338d.json",
-      "latestRev": "cc5a338d"
+      "file": "models/openai/o1-pro.vbf40a10f.json",
+      "latestRev": "bf40a10f"
     },
     {
       "id": "o3",
@@ -763,8 +769,8 @@
     {
       "id": "o3-mini",
       "provider": "openai",
-      "file": "models/openai/o3-mini.vd913cc1a.json",
-      "latestRev": "d913cc1a"
+      "file": "models/openai/o3-mini.v48bc3238.json",
+      "latestRev": "48bc3238"
     },
     {
       "id": "o3-pro",
@@ -775,8 +781,8 @@
     {
       "id": "o4-mini",
       "provider": "openai",
-      "file": "models/openai/o4-mini.v0830efad.json",
-      "latestRev": "0830efad"
+      "file": "models/openai/o4-mini.v10fa2b58.json",
+      "latestRev": "10fa2b58"
     },
     {
       "id": "o4-mini-deep-research",
