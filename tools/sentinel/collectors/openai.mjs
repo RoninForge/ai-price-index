@@ -92,12 +92,15 @@ const TRACKED = new Set([
 	'gpt-5.4-pro',
 	'gpt-5.5',
 	'gpt-5.5-pro',
+	// A hidden row behind gpt-6-cyber in the Cyber section's "All models" expander (seen 2026-11-09), but
+	// still offered and priced; parseSectionTokenTable reads collapsed rows from props.
 	'gpt-5.6-cyber',
 	'gpt-5.6-luna',
 	'gpt-5.6-sol',
 	'gpt-5.6-terra',
 	'gpt-6-astra',
 	'gpt-6-astra-law',
+	'gpt-6-cyber',
 	'gpt-6-luna',
 	'gpt-6-rosalind',
 	'gpt-6-sol',
@@ -140,8 +143,8 @@ const KNOWN_UNTRACKED = new Map([
 	['gpt-5-pro', 'current model, not yet in our tracked set'],
 	// Specialized-models table (see parseSpecializedRows).
 	['chat-latest', 'moving alias for the current ChatGPT model, not a stable priced id'],
-	// Cyber models section, hidden behind its expander.
-	['gpt-5.5-cyber', 'previous Daybreak Red model, kept as a hidden row behind gpt-5.6-cyber'],
+	// Cyber models section, hidden behind its "All models" expander.
+	['gpt-5.5-cyber', 'previous Daybreak Red model (gpt-5.5-cyber-preview), hidden behind gpt-6-cyber; retires 2027-02-01'],
 	['gpt-5-search-api', 'search-specialized model billed per token plus per-call search fees; not a general text model'],
 	['text-embedding-3-small', 'embedding model; the index tracks text generation models'],
 	['text-embedding-3-large', 'embedding model; the index tracks text generation models'],
@@ -707,7 +710,9 @@ function parseLongContextBundle(js) {
 /**
  * A model section rendered with the same TextTokenPricingTables island as the main tables (Cyber models
  * since 2026-10-24): positional props.rows cross-checked against the rendered table, plus the island's
- * own longContextRows prop for the >272K rates.
+ * own longContextRows prop for the >272K rates. props.rows carries EVERY model in the section, including
+ * those the page collapses behind its "All models" expander (collapsedLatestRowCount); the rendered table
+ * shows only the uncollapsed ones, so the cross-check covers those and the props supply the rest.
  */
 function parseSectionTokenTable(section, tag, id) {
 	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);

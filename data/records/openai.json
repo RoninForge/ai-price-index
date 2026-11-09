@@ -2353,11 +2353,11 @@
     "price_usd": 12.5,
     "effective_from": "2026-10-12",
     "effective_to": null,
-    "last_validated_at": "2026-10-12",
+    "last_validated_at": "2026-11-09",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified",
-    "notes": "gpt-5.6-cyber is listed in the Cyber models section of OpenAI's first-party pricing page (\"Our latest Daybreak models\"): $12.50 input, $1.25 cached input, $15.625 cache writes, $75 output per MTok. The price-sentinel collector did not read that section until 2026-10-12, so effective_from is our first first-party observation date, NOT a stated launch date; OpenAI publishes none. Corroborated first-party by the Codex credit rate card at learn.chatgpt.com/docs/pricing, where Daybreak Red reads 312.5 / 31.25 / 1875 credits, which resolves at $0.04 per credit to the same $12.50 / $1.25 / $75. The pricing page shows \"-\" in the long-context columns; the model page (developers.openai.com/api/docs/models/gpt-5.6-cyber) says prompts over 272K input tokens are priced at 2x input and 1.5x output, and that cache writes are billed at 1.25x input. No tier2 rows are published because the pricing page itself does not list them. Access requires separate approval and provisioning through OpenAI's Daybreak program, so most API accounts cannot buy it at this price."
+    "notes": "gpt-5.6-cyber is listed in the Cyber models section of OpenAI's first-party pricing page (\"Our latest Daybreak models\"): $12.50 input, $1.25 cached input, $15.625 cache writes, $75 output per MTok. The price-sentinel collector did not read that section until 2026-10-12, so effective_from is our first first-party observation date, NOT a stated launch date; OpenAI publishes none. Corroborated first-party by the Codex credit rate card at learn.chatgpt.com/docs/pricing, where Daybreak Red reads 312.5 / 31.25 / 1875 credits, which resolves at $0.04 per credit to the same $12.50 / $1.25 / $75. The pricing page shows \"-\" in the long-context columns; the model page (developers.openai.com/api/docs/models/gpt-5.6-cyber) says prompts over 272K input tokens are priced at 2x input and 1.5x output, and that cache writes are billed at 1.25x input. No tier2 rows are published because the pricing page itself does not list them. Access requires separate approval and provisioning through OpenAI's Daybreak program, so most API accounts cannot buy it at this price. Re-read 2026-11-09: the same four rates, but gpt-5.6-cyber is now a hidden row behind gpt-6-cyber (launched 2026-11-05) under the Cyber section's \"All models\" expander; the price stays in the section's own table data and in the pricing page's .md copy (https://developers.openai.com/api/docs/pricing.md). It is still offered: OpenAI's Daybreak guide (https://developers.openai.com/api/docs/guides/daybreak) tells gpt-5.5-cyber-preview users to \"change the `model` field to `gpt-5.6-cyber`\" before that model retires on February 1, 2027. The Codex credit card still reads Daybreak Red 312.5 / 31.25 / 1875 credits on 2026-11-09."
   },
   {
     "provider": "openai",
@@ -2367,7 +2367,7 @@
     "price_usd": 75,
     "effective_from": "2026-10-12",
     "effective_to": null,
-    "last_validated_at": "2026-10-12",
+    "last_validated_at": "2026-11-09",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -2380,7 +2380,7 @@
     "price_usd": 1.25,
     "effective_from": "2026-10-12",
     "effective_to": null,
-    "last_validated_at": "2026-10-12",
+    "last_validated_at": "2026-11-09",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -2393,7 +2393,7 @@
     "price_usd": 15.625,
     "effective_from": "2026-10-12",
     "effective_to": null,
-    "last_validated_at": "2026-10-12",
+    "last_validated_at": "2026-11-09",
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
@@ -2661,5 +2661,58 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "gpt-6-rosalind first observed on OpenAI's first-party pricing page on 2026-10-30 (price-sentinel run 41106288786, 18:21 UTC), in the Life sciences models section beside gpt-rosalind-research and gpt-rosalind-discovery; the page carried no such row at 2026-10-30 06:41 UTC (price-sentinel run 41015599531, \"sentinel clean\"). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly 1.5x gpt-6-astra's standard rate, and it is NOT gpt-rosalind-research repriced (that model is $5 input / $25 output with no cache-write or long-context columns), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $37.50 12h cache write ($75 long context), which the schema has no variation for. Access is limited to approved research through OpenAI's trusted-access program, so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 20,
+    "effective_from": "2026-11-05",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "gpt-6-cyber is the first row of the Cyber models section of OpenAI's first-party pricing page (\"Our latest Daybreak models.\"): $20.00 input, $100.00 output, $2.00 cached input, $25.00 30m cache write per MTok, standard tier (https://developers.openai.com/api/docs/pricing.md: \"| gpt-6-cyber | $20.00 | $100.00 | $2.00 | $25.00 | $50.00 | - | - | - | - | - |\"). effective_from is OpenAI's own launch date: the API changelog (https://developers.openai.com/api/docs/changelog) lists \"Feature · Model: gpt-6-cyber\" under November, 2026, \"Nov 5\". The model page (https://developers.openai.com/api/docs/models/gpt-6-cyber) publishes the same four rates and says \"These are standard short-context prices.\" and \"Short-context cache writes cost $25 per 1M tokens for 30 minutes or $50 per 1M tokens for 12 hours.\" The $50 12h cache write is published, but the schema has no variation for it, so it is not recorded. The pricing page shows \"-\" in every long-context column and neither page states a long-context rate, so there are no tier2 rows; do not derive them from gpt-5.6-cyber or any multiplier. It is NOT gpt-5.6-cyber repriced: that model stays listed at $12.50 / $1.25 / $15.625 / $75, now as a hidden row behind gpt-6-cyber. The Codex credit card (learn.chatgpt.com/docs/pricing) carries no gpt-6-cyber row as of 2026-11-09, so these rates have no second first-party corroboration yet. Access needs more than Daybreak Red: the model page says \"Your organization needs Daybreak Red access and approval to use GPT-6-Cyber\", and the Daybreak guide lists it as \"Red + additional model approval\", so most API accounts cannot buy it at this price."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 100,
+    "effective_from": "2026-11-05",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 2,
+    "effective_from": "2026-11-05",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "cache_write",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-11-05",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
