@@ -79,11 +79,11 @@ const COLLECTORS = [
 // discard-what-we-read bug as the missing-variation gap below, one layer further down.
 //
 // `cache_write` is OpenAI's default cache-write rate: published as an untimed "Cache writes" column
-// until 2026-10-24, then as "30m write" beside a new "12h write" that the schema does not hold yet
-// (reported as unrecorded_variation). It is deliberately NOT folded into cache_write_5m/cache_write_1h,
-// which are Anthropic's two TTL-specific rates.
-// tier2_cache_read / tier2_cache_write / tier2_cache_write_5m / tier2_cache_write_1h are the same rates
-// under a long-context tier, with the same TTL rule.
+// until 2026-10-24, then as "30m write" beside a new "12h write", recorded as `cache_write_12h`.
+// Neither is folded into cache_write_5m/cache_write_1h, which are Anthropic's two TTL-specific rates:
+// collapsing them would assert a TTL the vendor never stated.
+// tier2_cache_read / tier2_cache_write / tier2_cache_write_5m / tier2_cache_write_1h /
+// tier2_cache_write_12h are the same rates under a long-context tier, with the same TTL rule.
 const RECORD_VARIATIONS = [
 	'input',
 	'output',
@@ -91,12 +91,14 @@ const RECORD_VARIATIONS = [
 	'cache_write',
 	'cache_write_5m',
 	'cache_write_1h',
+	'cache_write_12h',
 	'tier2_input',
 	'tier2_output',
 	'tier2_cache_read',
 	'tier2_cache_write',
 	'tier2_cache_write_5m',
 	'tier2_cache_write_1h',
+	'tier2_cache_write_12h',
 ];
 
 /**

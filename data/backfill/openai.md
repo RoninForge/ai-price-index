@@ -60,3 +60,35 @@ Still gaps (no price on the current first-party page, so not added): the o-serie
 o3-pro/o4-mini) and gpt-5.1/5.2 are absent from the live pricing page; gpt-5.3-codex (code-specialized,
 $1.75/$14) is out of scope. Batch and cached-input tiers remain unrecorded. The gpt-5.4-mini/nano day
 (Mar 16 vs 17) had minor changelog ambiguity; 2026-03-17 used.
+
+## 2026-11-09 update: 12-hour cache writes added
+
+OpenAI split its "Cache writes" column into "30m write" (still recorded as `cache_write`) and
+"12h write", now recorded as `cache_write_12h` (short context) and `tier2_cache_write_12h` (long
+context). Prices are read from the live first-party pricing page and its `.md` twin; all `verified`,
+standard sync tier, USD per 1M tokens. The 12h write is 2.5x input in every row, as OpenAI states.
+
+effective_from is the OpenAI API changelog entry of Oct 20, 2026 ("You can now choose 12-hour prompt
+caching in the API. [...] 12-hour cache writes cost 2.5x the input token price."), or the model's own
+first-party start date where that is later.
+
+| model | cache_write_12h | tier2_cache_write_12h | effective_from |
+| --- | --- | --- | --- |
+| gpt-6-astra | 25 | 50 | 2026-10-20 |
+| gpt-6.1-sol | 5 | 10 | 2026-10-20 |
+| gpt-6.1-terra | 2.50 | 5 | 2026-10-26 |
+| gpt-6-sol | 5 | 10 | 2026-10-20 |
+| gpt-6-luna | 0.25 | 0.50 | 2026-10-20 |
+| gpt-5.6-sol | 10 | 20 | 2026-10-20 |
+| gpt-5.6-terra | 5 | 10 | 2026-10-20 |
+| gpt-5.6-luna | 0.50 | 1 | 2026-10-20 |
+| gpt-5.6-cyber | 31.25 | - | 2026-10-20 |
+| gpt-6-cyber | 50 | - | 2026-11-05 |
+| gpt-6-rosalind | 37.50 | 75 | 2026-10-30 |
+
+Models without a 30m write (gpt-5.5 and older) have no 12h write on the page and get none.
+
+Sources: https://developers.openai.com/api/docs/pricing (and `.md`),
+https://developers.openai.com/api/docs/changelog,
+https://developers.openai.com/api/docs/guides/prompt-caching,
+https://developers.openai.com/api/docs/models/gpt-6-cyber.

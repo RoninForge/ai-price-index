@@ -1132,6 +1132,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-5.6-terra",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-terra at short context \"12h write\" $5.00 per 1M tokens, beside the $2.50 \"30m write\" recorded as cache_write (short context input $2.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-terra",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 4,
@@ -1184,6 +1198,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $2.00 and output $12.00. OpenRouter publishes this model Batch/Flex rate ($1.00 input, $6.00 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-terra",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-terra at long context \"12h write\" $10.00 per 1M tokens, beside the $5.00 \"30m write\" recorded as tier2_cache_write (long context input $4.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -1244,6 +1272,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-5.6-luna",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-luna at short context \"12h write\" $0.50 per 1M tokens, beside the $0.25 \"30m write\" recorded as cache_write (short context input $0.20). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-luna",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 0.4,
@@ -1296,6 +1338,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "Cross-check flagged 2026-07-31: our price is 2x the OpenRouter listing. Re-verified 2026-08-07 against the first-party pricing page, which lists standard short-context input $0.20 and output $1.20. OpenRouter publishes this model Batch/Flex rate ($0.10 input, $0.60 output) in its standard price field, so the aggregator figure is the discounted rate, not first-party standard. First-party confirmed."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-luna",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 1,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-luna at long context \"12h write\" $1.00 per 1M tokens, beside the $0.50 \"30m write\" recorded as tier2_cache_write (long context input $0.40). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -1552,6 +1608,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-5.6-sol",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-sol at short context \"12h write\" $10.00 per 1M tokens, beside the $5.00 \"30m write\" recorded as cache_write (short context input $4.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-sol",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 8,
@@ -1604,6 +1674,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "OpenAI cut GPT-5.6 Sol between the 2026-08-21 07:47 UTC sentinel run (which still read $5 input / $30 output) and the 2026-08-22 02:12 UTC run. Input-side rates fell 20%, output-side rates 33%. Confirmed on two first-party surfaces: the API dollar card at developers.openai.com/api/docs/pricing, and the Codex credit rate card at learn.chatgpt.com/docs/pricing, which now reads 100 / 10 / 500 credits and still resolves at $0.04 per credit to $4 / $0.40 / $20. The credit card calls it promotional: \"GPT-5.6 Sol's promotional pricing is available at least through November 21, 2026.\" The schema cannot carry a scheduled reversion, so that date lives only in this note. effective_from is our observation date, not a claimed change date: OpenAI publishes none, and the last-modified header on both pages (2026-08-22 05:37 UTC, within 18 seconds of each other) is a site-wide deploy stamp that post-dates our 02:12 UTC reading. GPT-5.6 Terra and Luna did not move."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-sol",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 20,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-sol at long context \"12h write\" $20.00 per 1M tokens, beside the $10.00 \"30m write\" recorded as tier2_cache_write (long context input $8.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -1860,6 +1944,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6-astra",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 25,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-astra at short context \"12h write\" $25.00 per 1M tokens, beside the $12.50 \"30m write\" recorded as cache_write (short context input $10.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-astra",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 20,
@@ -1912,6 +2010,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-astra",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 50,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-astra at long context \"12h write\" $50.00 per 1M tokens, beside the $25.00 \"30m write\" recorded as tier2_cache_write (long context input $20.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -2014,6 +2126,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6-sol",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-sol at short context \"12h write\" $5.00 per 1M tokens, beside the $2.50 \"30m write\" recorded as cache_write (short context input $2.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-sol",
     "variation": "output",
     "unit": "usd_per_mtok",
     "price_usd": 10,
@@ -2066,6 +2192,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "GPT-6 Sol first observed on OpenAI's first-party pricing page on 2026-09-23; the page carried no such row at 2026-09-22 17:28 UTC (price-sentinel run 35760953792, which reported zero untracked models on the page). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI states that for GPT-6 Sol and Luna EU data residency is available only with Standard processing, and that regional processing endpoints carry a 10% uplift for models released on or after 2026-03-05."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-sol",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-sol at long context \"12h write\" $10.00 per 1M tokens, beside the $5.00 \"30m write\" recorded as tier2_cache_write (long context input $4.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -2126,6 +2266,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6-luna",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.25,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-luna at short context \"12h write\" $0.25 per 1M tokens, beside the $0.125 \"30m write\" recorded as cache_write (short context input $0.10). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-luna",
     "variation": "output",
     "unit": "usd_per_mtok",
     "price_usd": 0.5,
@@ -2178,6 +2332,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "GPT-6 Luna first observed on OpenAI's first-party pricing page on 2026-09-23; the page carried no such row at 2026-09-22 17:28 UTC (price-sentinel run 35760953792, which reported zero untracked models on the page). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI states that for GPT-6 Sol and Luna EU data residency is available only with Standard processing, and that regional processing endpoints carry a 10% uplift for models released on or after 2026-03-05."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-luna",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-luna at long context \"12h write\" $0.50 per 1M tokens, beside the $0.25 \"30m write\" recorded as tier2_cache_write (long context input $0.20). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -2252,6 +2420,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6.1-sol",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6.1-sol at short context \"12h write\" $5.00 per 1M tokens, beside the $2.50 \"30m write\" recorded as cache_write (short context input $2.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6.1-sol",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 4,
@@ -2304,6 +2486,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "gpt-6.1-sol first observed on OpenAI's first-party pricing page on 2026-09-29 (price-sentinel run 36611872692, 18:24 UTC); the page carried no such row at 2026-09-29 06:30 UTC (price-sentinel run 36531444224). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Same input, cache-write and output rates as gpt-6-sol, but cached input is $0.10 short-context and $0.20 long-context, half of gpt-6-sol's, so do not re-derive it from gpt-6-sol or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6.1-sol",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6.1-sol at long context \"12h write\" $10.00 per 1M tokens, beside the $5.00 \"30m write\" recorded as tier2_cache_write (long context input $4.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -2397,6 +2593,20 @@
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-5.6-cyber",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 31.25,
+    "effective_from": "2026-10-20",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-5.6-cyber at short context \"12h write\" $31.25 per 1M tokens, beside the $15.625 \"30m write\" recorded as cache_write (short context input $12.50). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is that changelog date; the 12h write did not exist before it."
   },
   {
     "provider": "openai",
@@ -2497,6 +2707,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6.1-terra",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 2.5,
+    "effective_from": "2026-10-26",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6.1-terra at short context \"12h write\" $2.50 per 1M tokens, beside the $1.25 \"30m write\" recorded as cache_write (short context input $1.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-10-26), which is later than the changelog date."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6.1-terra",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 2,
@@ -2549,6 +2773,20 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "gpt-6.1-terra first observed on OpenAI's first-party pricing page on 2026-10-26 (price-sentinel run 40382534617, 18:58 UTC); the page carried no such row at 2026-10-26 05:41 UTC (price-sentinel run 40275572598). effective_from is that first first-party observation date, NOT a stated launch date - OpenAI's pricing page does not publish one. Every rate is exactly half of gpt-6.1-sol's, and it is NOT gpt-5.6-terra repriced (gpt-5.6-terra output is $12, cached input $0.20), so do not re-derive it from either sibling or a multiplier. These are the STANDARD processing rates; batch and fast mode are separate SKUs the index does not track. tier2_* rows are the page's long-context columns. OpenAI also publishes a $2.50 12h cache write, which the schema has no variation for."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6.1-terra",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 5,
+    "effective_from": "2026-10-26",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6.1-terra at long context \"12h write\" $5.00 per 1M tokens, beside the $2.50 \"30m write\" recorded as tier2_cache_write (long context input $2.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-10-26), which is later than the changelog date."
   },
   {
     "provider": "openai",
@@ -2609,6 +2847,20 @@
   {
     "provider": "openai",
     "model_id": "gpt-6-rosalind",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 37.5,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-rosalind at short context \"12h write\" $37.50 per 1M tokens, beside the $18.75 \"30m write\" recorded as cache_write (short context input $15.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-10-30), which is later than the changelog date."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-rosalind",
     "variation": "tier2_input",
     "unit": "usd_per_mtok",
     "price_usd": 30,
@@ -2664,6 +2916,20 @@
   },
   {
     "provider": "openai",
+    "model_id": "gpt-6-rosalind",
+    "variation": "tier2_cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 75,
+    "effective_from": "2026-10-30",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-rosalind at long context \"12h write\" $75.00 per 1M tokens, beside the $37.50 \"30m write\" recorded as tier2_cache_write (long context input $30.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-10-30), which is later than the changelog date."
+  },
+  {
+    "provider": "openai",
     "model_id": "gpt-6-cyber",
     "variation": "input",
     "unit": "usd_per_mtok",
@@ -2714,5 +2980,19 @@
     "source_url": "https://developers.openai.com/api/docs/pricing",
     "source_kind": "provider_live",
     "confidence": "verified"
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "cache_write_12h",
+    "unit": "usd_per_mtok",
+    "price_usd": 50,
+    "effective_from": "2026-11-05",
+    "effective_to": null,
+    "last_validated_at": "2026-11-09",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "OpenAI's first-party pricing page lists gpt-6-cyber at short context \"12h write\" $50.00 per 1M tokens, beside the $25.00 \"30m write\" recorded as cache_write (short context input $20.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-11-05), which is later than the changelog date."
   }
 ]

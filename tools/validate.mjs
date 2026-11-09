@@ -15,10 +15,10 @@ import { join } from 'node:path';
 const TODAY = process.env.AIPI_TODAY || new Date().toISOString().slice(0, 10);
 
 const VARIATIONS = new Set([
-	'input', 'output', 'cache_read', 'cache_write', 'cache_write_5m', 'cache_write_1h',
+	'input', 'output', 'cache_read', 'cache_write', 'cache_write_5m', 'cache_write_1h', 'cache_write_12h',
 	'batch_input', 'batch_output',
 	'tier2_input', 'tier2_output', 'tier2_cache_read', 'tier2_cache_write',
-	'tier2_cache_write_5m', 'tier2_cache_write_1h',
+	'tier2_cache_write_5m', 'tier2_cache_write_1h', 'tier2_cache_write_12h',
 	'embeddings', 'audio_per_min', 'image_per_item'
 ]);
 const UNITS = new Set([

@@ -49,7 +49,7 @@ One row is one price observation (a model's input or output rate during a dated 
 |---|---|
 | `provider` | Provider slug (e.g. `anthropic`, `openai`). |
 | `model_id` | Provider model id (e.g. `claude-opus-4-5-20251101`). |
-| `variation` | `input` or `output` tokens. |
+| `variation` | What is priced: `input`, `output`, `cache_read`, `cache_write` (untimed or OpenAI's 30m write), `cache_write_5m` / `cache_write_1h` (Anthropic), `cache_write_12h` (OpenAI), `batch_input` / `batch_output`, the same rates under a long-context tier as `tier2_*`, or `embeddings` / `audio_per_min` / `image_per_item`. |
 | `unit` | Price unit. Currently `usd_per_mtok` (USD per 1M tokens). |
 | `price_usd` | The price, in USD, for that unit. |
 | `effective_from` | Date this price became valid (ISO `YYYY-MM-DD`). |
