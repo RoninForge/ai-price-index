@@ -51,7 +51,8 @@
 //
 // Contract (same as the other collectors): an array of
 //   { provider:"openai", model_id, display_name, prices:{ input, output, cache_read?, cache_write?,
-//     tier2_input?, tier2_output?, tier2_cache_read?, tier2_cache_write? } (usd_per_mtok),
+//     cache_write_12h?, tier2_input?, tier2_output?, tier2_cache_read?, tier2_cache_write?,
+//     tier2_cache_write_12h? } (usd_per_mtok),
 //     unit:"usd_per_mtok", source_url, source_kind:"provider_live", confidence:"verified",
 //     known_mapping }
 // plus an out-of-band notice channel, getNotices(), for models on the page that we do not track.
@@ -162,10 +163,11 @@ const PIN_EXPECT = { input: 2.5, output: 10 };
 // whose rates live in the island's JS bundle (see parseLongContextBundle), not a column group.
 const CAPTION_GROUPS = new Set(['prompt caching']);
 
-// The 12h cache write is rendered client-side as input * 2.5 for every model with a 30m write. The
-// record schema has no 12h variation yet, so it is read, held to that rule, and reported as an
-// unrecorded_variation notice instead of being emitted as a price.
-const TWELVE_HOUR_WRITE = '__cache_write_12h';
+// The 12h cache write (`cache_write_12h`, beside the 30m write recorded as `cache_write`) is rendered
+// client-side by the island bundle as input * 2.5 for every model with a 30m write, short and long
+// context alike; only the newest rows carry it server-rendered. The bundle's own rule is read and held
+// to TWELVE_HOUR_MULTIPLIER (assertTwelveHourRule), and every rendered 12h cell is held to it too.
+const TWELVE_HOUR_WRITE = 'cache_write_12h';
 const TWELVE_HOUR_MULTIPLIER = 2.5;
 
 // Column header label -> our variation name, per context-column GROUP. A label we do not recognise
@@ -183,6 +185,8 @@ const GROUP_COLUMNS = {
 		input: 'tier2_input',
 		'cached input': 'tier2_cache_read',
 		'cache writes': 'tier2_cache_write',
+		'30m write': 'tier2_cache_write',
+		'12h write': 'tier2_cache_write_12h',
 		output: 'tier2_output',
 	},
 };
@@ -708,6 +712,22 @@ function parseLongContextBundle(js) {
 }
 
 /**
+ * Read the 12h cache-write rule from the island's JS bundle, which computes the "12h write" cell as
+ * input * <multiplier> for any row with a numeric 30m write. Throws if the rule is missing or the
+ * multiplier is not TWELVE_HOUR_MULTIPLIER: OpenAI changed how 12h writes are priced.
+ */
+function assertTwelveHourRule(js) {
+	const m = /typeof (\w+)\.cacheWrite==`number`&&typeof \1\.input==`number`\?\1\.input\*(\d*\.?\d+)/.exec(js);
+	if (!m)
+		throw new Error('openai collector: no 12h cache-write rule (input * n) in the pricing bundle - bundle drifted. Refusing to guess.');
+	if (!nearly(Number(m[2]), TWELVE_HOUR_MULTIPLIER))
+		throw new Error(
+			`openai collector: the pricing bundle computes the 12h write as input x ${m[2]}, not x ${TWELVE_HOUR_MULTIPLIER}. ` +
+				`OpenAI changed the 12h rule; refusing to guess.`
+		);
+}
+
+/**
  * A model section rendered with the same TextTokenPricingTables island as the main tables (Cyber models
  * since 2026-10-24): positional props.rows cross-checked against the rendered table, plus the island's
  * own longContextRows prop for the >272K rates. props.rows carries EVERY model in the section, including
@@ -839,6 +859,7 @@ export async function collect() {
 		'pricing bundle carried no longContextRows'
 	);
 	const longRows = parseLongContextBundle(bundle);
+	assertTwelveHourRule(bundle);
 
 	const tableRows = parseRenderedTable(inner);
 	const payloadRows = parsePayloadRows(props);
@@ -906,26 +927,24 @@ export async function collect() {
 	}
 
 	for (const [model_id, { prices }] of byId) {
-		const twelve = prices[TWELVE_HOUR_WRITE];
-		delete prices[TWELVE_HOUR_WRITE];
-		if (typeof prices.cache_write !== 'number') continue;
-		const expected = prices.input * TWELVE_HOUR_MULTIPLIER;
-		if (typeof twelve === 'number' && !nearly(twelve, expected))
-			throw new Error(
-				`openai collector: ${model_id} 12h write is ${twelve}, not input x ${TWELVE_HOUR_MULTIPLIER} (${expected}). ` +
-					`OpenAI changed the 12h rule; refusing to guess.`
-			);
-		notices.push({
-			kind: 'unrecorded_variation',
-			provider: PROVIDER,
-			model_id,
-			variation: 'cache_write_12h',
-			price_usd: expected,
-			source_url: SOURCE_URL,
-			message:
-				`OpenAI publishes a 12h cache write for ${model_id} at $${expected}/MTok (input x ${TWELVE_HOUR_MULTIPLIER}, ` +
-				`next to the 30m write recorded as cache_write). The record schema has no 12h variation, so it is not recorded.`,
-		});
+		for (const tier of ['', 'tier2_']) {
+			const input = prices[`${tier}input`];
+			const variation = `${tier}${TWELVE_HOUR_WRITE}`;
+			const rendered = prices[variation];
+			delete prices[variation];
+			if (typeof prices[`${tier}cache_write`] !== 'number' || typeof input !== 'number') {
+				if (typeof rendered === 'number')
+					throw new Error(`openai collector: ${model_id} renders a ${variation} with no 30m write. Refusing to guess.`);
+				continue;
+			}
+			const expected = input * TWELVE_HOUR_MULTIPLIER;
+			if (typeof rendered === 'number' && !nearly(rendered, expected))
+				throw new Error(
+					`openai collector: ${model_id} ${variation} is ${rendered}, not ${tier}input x ${TWELVE_HOUR_MULTIPLIER} (${expected}). ` +
+						`OpenAI changed the 12h rule; refusing to guess.`
+				);
+			prices[variation] = expected;
+		}
 	}
 
 	for (const [canonical, display] of untracked) {

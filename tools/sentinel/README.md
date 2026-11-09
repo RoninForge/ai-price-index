@@ -90,11 +90,15 @@ A related drop lived one layer down: `RECORD_VARIATIONS` in `run.mjs` omitted `t
 along with `cache_write`, `tier2_cache_read` and `tier2_cache_write`. `tier2_cache_write_5m` /
 `tier2_cache_write_1h` followed on 2026-10-08 for Anthropic's first prompt-length-tiered model
 (Claude Haiku 5.5), whose "for prompts over 100,000 tokens" row the collector used to slug into a
-fake model id; it now folds that row into the base model as tier2_* rates.
+fake model id; it now folds that row into the base model as tier2_* rates. `cache_write_12h` /
+`tier2_cache_write_12h` followed on 2026-11-09 for OpenAI's 12-hour prompt-cache write.
 
-`cache_write` is the **untimed** cache-write rate: OpenAI publishes a single "Cache writes" column
-with no TTL dimension. It is deliberately separate from Anthropic's `cache_write_5m` /
-`cache_write_1h`, because folding it into either would assert a TTL the vendor never stated.
+`cache_write` is OpenAI's default cache-write rate: an untimed "Cache writes" column until
+2026-10-24, when OpenAI split it into "30m write" (still `cache_write`) and "12h write"
+(`cache_write_12h`). The page renders the 12h write client-side as input x 2.5; the collector reads
+that rule from the pricing bundle and throws if it changes. Both are deliberately separate from
+Anthropic's `cache_write_5m` / `cache_write_1h`, because folding them together would assert a TTL
+the vendor never stated.
 
 ### Untracked models on a provider page
 
