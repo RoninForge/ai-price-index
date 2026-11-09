@@ -27,7 +27,8 @@ const OPENROUTER_VENDOR_TO_PROVIDER = {
 	cohere: 'cohere',
 	qwen: 'alibaba',
 	alibaba: 'alibaba',
-	meta: 'meta-llama',
+	// `meta/` is Meta's own Muse line (Meta Model API); `meta-llama/` is open-weight Llama on other hosts.
+	meta: 'meta',
 	'meta-llama': 'meta-llama',
 };
 

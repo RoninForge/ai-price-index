@@ -55,11 +55,13 @@ import * as xai from './collectors/xai.mjs';
 import * as openai from './collectors/openai.mjs';
 import * as cohere from './collectors/cohere.mjs';
 import * as ai21 from './collectors/ai21.mjs';
+import * as meta from './collectors/meta.mjs';
 
 // provider -> collector. Provider slugs MUST match what each collector emits AND our dataset:
-// anthropic, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere, ai21. meta-llama has
-// no collector: Meta publishes no API price and Together AI, the reference host, removed every
-// tracked Llama model from serverless inference, so all meta-llama records are closed.
+// anthropic, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere, ai21, meta. `meta` is
+// Meta's own Model API (Muse). meta-llama has no collector: Meta publishes no API price for Llama and
+// Together AI, the reference host, removed every tracked Llama model from serverless inference, so
+// all meta-llama records are closed.
 const COLLECTORS = [
 	{ provider: 'anthropic', collect: anthropic.collect },
 	{ provider: 'amazon', collect: amazon.collect },
@@ -71,6 +73,7 @@ const COLLECTORS = [
 	{ provider: 'openai', collect: openai.collect, getNotices: openai.getNotices },
 	{ provider: 'cohere', collect: cohere.collect },
 	{ provider: 'ai21', collect: ai21.collect, getNotices: ai21.getNotices },
+	{ provider: 'meta', collect: meta.collect, getNotices: meta.getNotices },
 ];
 
 // Which extracted variations become contribution records (in this order).
