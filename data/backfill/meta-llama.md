@@ -1,9 +1,46 @@
 # Backfill log: Meta (Llama)
 
-Meta publishes open weights, not a hosted API price, so there is no first-party Meta price. The
-`meta-llama` records price each model at Together AI as a designated reference host, always
-`source_kind: aggregator` (or `wayback` for an archived capture of Together's page), with the note
-"No first-party Meta price; Together AI reference host." Prices are USD per 1M tokens.
+Meta publishes Llama as open weights and sells no hosted Llama API, so there is no first-party Meta
+price for these models. (Meta's own Model API sells the Muse line; those prices are first-party and
+live under the `meta` provider, see `meta.md`.) The `meta-llama` records price each model at Together
+AI as a designated reference host, always `source_kind: aggregator` (or `wayback` for an archived
+capture of Together's page), with the note "No first-party Meta price; Together AI reference host."
+Prices are USD per 1M tokens.
+
+## 2026-11-09 (later): Llama 3.3 70B price history
+
+Every digest-distinct Wayback capture of https://www.together.ai/pricing from 20241104004106 to
+20261107131756 was read (CDX, `collapse=digest`, status 200; 140 captures, all decoded). Llama 3.3 70B
+carried one price for input and output throughout.
+
+| capture | what the page shows |
+| --- | --- |
+| 20250128121027 | table "Llama 3.2, LLAMA 3.1, LLama 3 MODELS"; no Llama 3.3 |
+| 20250131230329 | first capture whose table is headed "Llama 3.3, Llama 3.2, LLAMA 3.1, LLama 3 MODELS": "70B \| Text \| LITE \| $0.54 \| TURBO \| $0.88 \| REFERENCE \| $0.90" |
+| 20250825180208 | first per-model table: "Llama 3.3 70B Instruct-Turbo \| Llama \| $0.88 \| $0.88" |
+| 20260529221755 | last capture at $0.88: "Llama 3.3 70B \| $0.88 \| $0.88" |
+| 20260614124212 | first capture at $1.04: "Llama 3.3 70B \| $1.04 \| $1.04" |
+| 20261023051201 | last capture listing the model, still $1.04 (after the 2026-10-22 removal) |
+
+Every capture from 20250131230329 to 20260529221755 shows $0.88, except 20260413205854 and
+20260415061122, which carry no serverless chat table at all; every capture from 20260614124212 to
+20261023051201 shows $1.04. No dated Together notice of the change was found, so the boundary is the
+first capture showing the new price.
+
+| model | price (in = out) | interval | evidence |
+| --- | --- | --- | --- |
+| llama-3.3-70b | 0.88 | 2025-01-31 -> 2026-06-14, `wayback` / `archived` (new) | capture 20250131230329 |
+| llama-3.3-70b | 1.04 | 2026-06-14 -> 2026-10-22, `wayback` / `archived` (corrected) | capture 20260614124212 |
+
+- **Corrected: the $1.04 start.** The rows were created 2026-06-22 (together.ai/models/llama-3-3-70b,
+  `aggregator` / `inferred`), and 2026-06-22 was our observation date. The first capture showing
+  $1.04 is 20260614124212, so the rows are superseded by Wayback-backed rows starting 2026-06-14, the
+  same way the llama-3.1-405b / 8b rows were corrected above. The system of record supersedes the
+  2026-06-22 rows on the next seed.
+- **effective_from 2025-01-31 is a capture date, not a launch date.** Together listed the model under
+  the shared 70B Turbo row; the price before the table named Llama 3.3 is not attributed to it.
+- The "Not recorded" note below said $1.04 first appeared in 20260621120924. That read missed captures
+  stored compressed in the archive; decoded, 20260614124212 and 20260617191819 already show $1.04.
 
 ## 2026-11-09: Together removals, every interval closed
 
@@ -67,7 +104,7 @@ system of record supersedes the old rows on the next seed, so they stay in the a
   20260210173839 show the same two prices in the per-model table. The 2025-09 to 2025-12 captures use a
   different layout that our extraction did not match for these two rows, and were not read by hand.
 
-### Not recorded
+### Not recorded (superseded by "Llama 3.3 70B price history" above)
 
 Together's pricing page shows Llama 3.3 70B at $0.88 / $0.88 in captures up to 20260302180711 and at
 $1.04 / $1.04 from 20260621120924. The record keeps its 2026-06-22 start (our observation date); the

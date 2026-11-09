@@ -6,6 +6,23 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## New provider: Meta (Meta Model API); correction: Llama 3.3 70B history - 2026-11-09
+
+- New provider **`meta`**: Meta's own Model API prices, read from
+  [dev.meta.ai/docs/pricing-rate-limits](https://dev.meta.ai/docs/pricing-rate-limits). muse-spark-1.1,
+  muse-spark-1.2 and muse-spark-1.3 at $1.25 input / $4.25 output / $0.15 cached input;
+  muse-spark-1.2-contributor and muse-spark-1.3-contributor (Contributor mode, which lets Meta train on
+  your content) at $0.10 / $0.20 / $0.002; muse-wonder-1.0 (alias muse-wonder) at $4 / $20 / $0.20.
+  Start dates come from Meta's dated launch posts, or the earliest Wayback capture of the pricing page
+  where no post states the date or rate. Evidence in `data/backfill/meta.md`.
+- Not added: Muse Spark Open and Muse Glimmer (open weights, no Meta price) and Muse Image, Muse Voice
+  Transcribe and SAM 3.1 (not per-token).
+- New sentinel collector `meta`; OpenRouter's `meta/` vendor now maps to `meta` instead of `meta-llama`.
+- `meta-llama` llama-3.3-70b: added the $0.88 Together interval (2025-01-31 to 2026-06-14, Wayback
+  capture 20250131230329) and corrected the $1.04 interval to start 2026-06-14, the first capture showing
+  it, instead of our 2026-06-22 observation date. Supersedes the 2026-06-22 rows. Evidence in
+  `data/backfill/meta-llama.md`.
+
 ## Correction: Llama intervals closed at Together's removal dates - 2026-11-09
 
 - `meta-llama` has no first-party price; it was priced at Together AI as reference host. Together's
