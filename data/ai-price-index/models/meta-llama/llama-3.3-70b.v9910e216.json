@@ -1,26 +1,26 @@
 {
-  "model": "llama-4-scout",
+  "model": "llama-3.3-70b",
   "provider": "meta-llama",
   "variations": {
     "input": [
       {
         "confidence": "inferred",
-        "from": "2025-04-05",
+        "from": "2026-06-22",
         "last_validated": "2026-06-22",
-        "price_usd": 0.18,
-        "src": "https://www.together.ai/models/llama-4-scout",
-        "to": null,
+        "price_usd": 1.04,
+        "src": "https://www.together.ai/models/llama-3-3-70b",
+        "to": "2026-10-22",
         "unit": "usd_per_mtok"
       }
     ],
     "output": [
       {
         "confidence": "inferred",
-        "from": "2025-04-05",
+        "from": "2026-06-22",
         "last_validated": "2026-06-22",
-        "price_usd": 0.59,
-        "src": "https://www.together.ai/models/llama-4-scout",
-        "to": null,
+        "price_usd": 1.04,
+        "src": "https://www.together.ai/models/llama-3-3-70b",
+        "to": "2026-10-22",
         "unit": "usd_per_mtok"
       }
     ]

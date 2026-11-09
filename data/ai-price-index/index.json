@@ -463,32 +463,32 @@
     {
       "id": "llama-3.1-405b",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-3.1-405b.vf9bfd450.json",
-      "latestRev": "f9bfd450"
+      "file": "models/meta-llama/llama-3.1-405b.ve1e93127.json",
+      "latestRev": "e1e93127"
     },
     {
       "id": "llama-3.1-8b",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-3.1-8b.v039a44a5.json",
-      "latestRev": "039a44a5"
+      "file": "models/meta-llama/llama-3.1-8b.v70bd7632.json",
+      "latestRev": "70bd7632"
     },
     {
       "id": "llama-3.3-70b",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-3.3-70b.vb7ff80c4.json",
-      "latestRev": "b7ff80c4"
+      "file": "models/meta-llama/llama-3.3-70b.v9910e216.json",
+      "latestRev": "9910e216"
     },
     {
       "id": "llama-4-maverick",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-4-maverick.vaa584f1e.json",
-      "latestRev": "aa584f1e"
+      "file": "models/meta-llama/llama-4-maverick.v952c9218.json",
+      "latestRev": "952c9218"
     },
     {
       "id": "llama-4-scout",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-4-scout.v110fd72f.json",
-      "latestRev": "110fd72f"
+      "file": "models/meta-llama/llama-4-scout.v97d7e16f.json",
+      "latestRev": "97d7e16f"
     },
     {
       "id": "codestral-25.08",

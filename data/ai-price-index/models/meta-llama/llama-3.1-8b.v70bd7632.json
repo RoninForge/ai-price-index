@@ -1,0 +1,30 @@
+{
+  "model": "llama-3.1-8b",
+  "provider": "meta-llama",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2024-08-12",
+        "last_validated": "2024-08-12",
+        "price_usd": 0.18,
+        "snapshot": "20240812095045",
+        "src": "https://web.archive.org/web/20240812095045/https://www.together.ai/pricing",
+        "to": "2026-03-06",
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2024-08-12",
+        "last_validated": "2024-08-12",
+        "price_usd": 0.18,
+        "snapshot": "20240812095045",
+        "src": "https://web.archive.org/web/20240812095045/https://www.together.ai/pricing",
+        "to": "2026-03-06",
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
