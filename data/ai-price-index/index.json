@@ -461,6 +461,45 @@
       "latestRev": "2745c446"
     },
     {
+      "id": "muse-spark-1.1",
+      "provider": "meta",
+      "file": "models/meta/muse-spark-1.1.v879de861.json",
+      "latestRev": "879de861"
+    },
+    {
+      "id": "muse-spark-1.2",
+      "provider": "meta",
+      "file": "models/meta/muse-spark-1.2.v24074e62.json",
+      "latestRev": "24074e62"
+    },
+    {
+      "id": "muse-spark-1.2-contributor",
+      "provider": "meta",
+      "file": "models/meta/muse-spark-1.2-contributor.v09f4fd2b.json",
+      "latestRev": "09f4fd2b"
+    },
+    {
+      "id": "muse-spark-1.3",
+      "provider": "meta",
+      "file": "models/meta/muse-spark-1.3.v0b7d5090.json",
+      "latestRev": "0b7d5090"
+    },
+    {
+      "id": "muse-spark-1.3-contributor",
+      "provider": "meta",
+      "file": "models/meta/muse-spark-1.3-contributor.v229307dc.json",
+      "latestRev": "229307dc"
+    },
+    {
+      "id": "muse-wonder-1.0",
+      "provider": "meta",
+      "file": "models/meta/muse-wonder-1.0.v3bbbe0f4.json",
+      "latestRev": "3bbbe0f4",
+      "aliases": [
+        "muse-wonder"
+      ]
+    },
+    {
       "id": "llama-3.1-405b",
       "provider": "meta-llama",
       "file": "models/meta-llama/llama-3.1-405b.ve1e93127.json",
@@ -475,8 +514,8 @@
     {
       "id": "llama-3.3-70b",
       "provider": "meta-llama",
-      "file": "models/meta-llama/llama-3.3-70b.v9910e216.json",
-      "latestRev": "9910e216"
+      "file": "models/meta-llama/llama-3.3-70b.v543e9d0d.json",
+      "latestRev": "543e9d0d"
     },
     {
       "id": "llama-4-maverick",

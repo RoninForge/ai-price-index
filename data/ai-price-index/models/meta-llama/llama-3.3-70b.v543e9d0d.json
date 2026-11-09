@@ -1,0 +1,50 @@
+{
+  "model": "llama-3.3-70b",
+  "provider": "meta-llama",
+  "variations": {
+    "input": [
+      {
+        "confidence": "archived",
+        "from": "2025-01-31",
+        "last_validated": "2025-01-31",
+        "price_usd": 0.88,
+        "snapshot": "20250131230329",
+        "src": "https://web.archive.org/web/20250131230329/https://www.together.ai/pricing",
+        "to": "2026-06-14",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "archived",
+        "from": "2026-06-14",
+        "last_validated": "2026-06-14",
+        "price_usd": 1.04,
+        "snapshot": "20260614124212",
+        "src": "https://web.archive.org/web/20260614124212/https://www.together.ai/pricing",
+        "to": "2026-10-22",
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "archived",
+        "from": "2025-01-31",
+        "last_validated": "2025-01-31",
+        "price_usd": 0.88,
+        "snapshot": "20250131230329",
+        "src": "https://web.archive.org/web/20250131230329/https://www.together.ai/pricing",
+        "to": "2026-06-14",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "archived",
+        "from": "2026-06-14",
+        "last_validated": "2026-06-14",
+        "price_usd": 1.04,
+        "snapshot": "20260614124212",
+        "src": "https://web.archive.org/web/20260614124212/https://www.together.ai/pricing",
+        "to": "2026-10-22",
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

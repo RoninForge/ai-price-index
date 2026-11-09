@@ -1,0 +1,39 @@
+{
+  "model": "muse-spark-1.3",
+  "provider": "meta",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-02",
+        "last_validated": "2026-11-09",
+        "price_usd": 0.15,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-02",
+        "last_validated": "2026-11-09",
+        "price_usd": 1.25,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-09-02",
+        "last_validated": "2026-11-09",
+        "price_usd": 4.25,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}

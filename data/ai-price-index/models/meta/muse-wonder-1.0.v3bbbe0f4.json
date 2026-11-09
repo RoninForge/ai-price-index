@@ -1,0 +1,42 @@
+{
+  "aliases": [
+    "muse-wonder"
+  ],
+  "model": "muse-wonder-1.0",
+  "provider": "meta",
+  "variations": {
+    "cache_read": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-14",
+        "last_validated": "2026-11-09",
+        "price_usd": 0.2,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "input": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-11-09",
+        "price_usd": 4,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
+    "output": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-12",
+        "last_validated": "2026-11-09",
+        "price_usd": 20,
+        "src": "https://dev.meta.ai/docs/pricing-rate-limits",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ]
+  }
+}
