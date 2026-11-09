@@ -6,8 +6,8 @@ name: price-sentinel
 # to diff Anthropic's /v1/models + BerriAI/litellm against current.json). This sentinel runs the keyless
 # OpenRouter + HuggingFace TRIPWIRE to spot where to look, then the FIRST-PARTY collectors
 # (tools/sentinel/collectors/*) to read each provider's own pricing surface and draft contribution-form
-# records for genuinely new models. Providers covered: anthropic, meta-llama (Together reference),
-# amazon (Bedrock Nova), mistral, deepseek, google, alibaba, xai.
+# records for genuinely new models. Providers covered: anthropic, amazon (Bedrock Nova), mistral,
+# deepseek, google, alibaba, xai, openai, cohere, ai21.
 #
 # It runs twice daily (01:00 + 13:00 UTC = 08:00 + 20:00 Asia/Bangkok); it is also available via manual
 # dispatch. The rolling-PR idempotency below means a twice-daily cadence never spams: it keeps refreshing

@@ -6,6 +6,18 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## Correction: Llama intervals closed at Together's removal dates - 2026-11-09
+
+- `meta-llama` has no first-party price; it was priced at Together AI as reference host. Together's
+  [deprecations page](https://docs.together.ai/docs/deprecations) lists all five tracked models as
+  removed from serverless inference. Closed: llama-4-scout and llama-3.1-405b at 2026-02-06,
+  llama-3.1-8b at 2026-03-06, llama-4-maverick at 2026-03-31, llama-3.3-70b at 2026-10-22. No
+  meta-llama model has a current price any more.
+- Supersedes the 2026-06-22 llama-3.1-405b ($3.50) and llama-3.1-8b ($0.18) rows, which opened after
+  Together had already removed both models. Replaced by Wayback-backed intervals (2024-09-27 and
+  2024-08-12 capture dates to the removal date). Evidence in `data/backfill/meta-llama.md`.
+- Removed the llama sentinel collector: Together's model pages still display prices after removal.
+
 ## Tooling: npm package + documented JSON API - 2026-06-18
 
 - Published the **`ai-price-index` npm package** (lib + CLI): point-in-time `priceOn` / `current` /

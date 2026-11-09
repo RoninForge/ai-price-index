@@ -6,12 +6,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.18,
     "effective_from": "2025-04-05",
-    "effective_to": null,
+    "effective_to": "2026-02-06",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-4-scout",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.18 is 1.8x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $0.59 is 1.97x OpenRouter's $0.3 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host."
+    "notes": "[needs_review] cross-check flagged: input $0.18 is 1.8x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $0.59 is 1.97x OpenRouter's $0.3 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host. Retired 2026-02-06: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-02-06 | meta-llama/Llama-4-Scout-17B-16E-Instruct | Yes\" (the Yes column is on-demand dedicated endpoints, billed per minute, not per token). The page states: \"After the removal date, the model is no longer available via its serverless endpoint\". The together.ai model page kept showing this price after removal; Together's page says to \"treat the runtime API behavior and this page as the source of truth\"."
   },
   {
     "provider": "meta-llama",
@@ -20,12 +20,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.59,
     "effective_from": "2025-04-05",
-    "effective_to": null,
+    "effective_to": "2026-02-06",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-4-scout",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.18 is 1.8x OpenRouter's $0.1 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]); output $0.59 is 1.97x OpenRouter's $0.3 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host."
+    "notes": "Retired 2026-02-06: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-02-06 | meta-llama/Llama-4-Scout-17B-16E-Instruct | Yes\". The page states: \"After the removal date, the model is no longer available via its serverless endpoint\". No first-party Meta price; Together AI reference host."
   },
   {
     "provider": "meta-llama",
@@ -34,12 +34,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.27,
     "effective_from": "2025-04-05",
-    "effective_to": null,
+    "effective_to": "2026-03-31",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-4-maverick",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.27 is 1.8x OpenRouter's $0.15 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host."
+    "notes": "[needs_review] cross-check flagged: input $0.27 is 1.8x OpenRouter's $0.15 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host. Retired 2026-03-31: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-03-31 | meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 | Yes\" (the Yes column is on-demand dedicated endpoints, billed per minute, not per token). The page states: \"After the removal date, the model is no longer available via its serverless endpoint\". The together.ai model page kept showing this price after removal; Together's page says to \"treat the runtime API behavior and this page as the source of truth\"."
   },
   {
     "provider": "meta-llama",
@@ -48,12 +48,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.85,
     "effective_from": "2025-04-05",
-    "effective_to": null,
+    "effective_to": "2026-03-31",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-4-maverick",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: input $0.27 is 1.8x OpenRouter's $0.15 - suspicious (reseller price should be >= first-party; expected ratio in [0.5, 1.5]). No first-party Meta price; Together AI reference host."
+    "notes": "Retired 2026-03-31: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-03-31 | meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 | Yes\". The page states: \"After the removal date, the model is no longer available via its serverless endpoint\". No first-party Meta price; Together AI reference host."
   },
   {
     "provider": "meta-llama",
@@ -62,12 +62,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.04,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-10-22",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-3-3-70b",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host. Retired 2026-10-22: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-10-22 | meta-llama/Llama-3.3-70B-Instruct-Turbo | Yes\" (the Yes column is on-demand dedicated endpoints, billed per minute, not per token). The page states: \"After the removal date, the model is no longer available via its serverless endpoint\"."
   },
   {
     "provider": "meta-llama",
@@ -76,12 +76,12 @@
     "unit": "usd_per_mtok",
     "price_usd": 1.04,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-10-22",
     "last_validated_at": "2026-06-22",
     "source_url": "https://www.together.ai/models/llama-3-3-70b",
     "source_kind": "aggregator",
     "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "notes": "Retired 2026-10-22: removed from Together serverless inference per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-10-22 | meta-llama/Llama-3.3-70B-Instruct-Turbo | Yes\". The page states: \"After the removal date, the model is no longer available via its serverless endpoint\". No first-party Meta price; Together AI reference host."
   },
   {
     "provider": "meta-llama",
@@ -89,13 +89,14 @@
     "variation": "input",
     "unit": "usd_per_mtok",
     "price_usd": 3.5,
-    "effective_from": "2026-06-22",
-    "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://www.together.ai/pricing",
-    "source_kind": "aggregator",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "effective_from": "2024-09-27",
+    "effective_to": "2026-02-06",
+    "last_validated_at": "2024-09-27",
+    "source_url": "https://web.archive.org/web/20240927025044/https://www.together.ai/pricing",
+    "source_kind": "wayback",
+    "source_snapshot_ts": "20240927025044",
+    "confidence": "archived",
+    "notes": "[correction 2026-11-09] Supersedes the open record from 2026-06-22 (together.ai/pricing, inferred), which priced the model for a period after Together had already removed it. No first-party Meta price; Together AI reference host. Serverless Endpoints table, \"Llama 3.2, LLAMA 3.1, LLama 3 LITE, TURBO, & REFERENCE MODELS\": \"405B | Text | TURBO | $3.50\", one price for input and output (\"Prices are per 1 million tokens including input and output tokens\"). effective_from is the first capture showing $3.50, not a documented change date: the previous capture (20240922053205) shows \"405B | TURBO | $5.00\". Capture 20260130191400 still lists \"Llama 3.1 405B | Llama | $3.50 | $3.50\". Retired 2026-02-06 per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-02-06 | meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo | No\"; \"After the removal date, the model is no longer available via its serverless endpoint\"."
   },
   {
     "provider": "meta-llama",
@@ -103,13 +104,14 @@
     "variation": "output",
     "unit": "usd_per_mtok",
     "price_usd": 3.5,
-    "effective_from": "2026-06-22",
-    "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://www.together.ai/pricing",
-    "source_kind": "aggregator",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "effective_from": "2024-09-27",
+    "effective_to": "2026-02-06",
+    "last_validated_at": "2024-09-27",
+    "source_url": "https://web.archive.org/web/20240927025044/https://www.together.ai/pricing",
+    "source_kind": "wayback",
+    "source_snapshot_ts": "20240927025044",
+    "confidence": "archived",
+    "notes": "[correction 2026-11-09] Supersedes the open record from 2026-06-22; see the input row. Same single $3.50 Turbo price as input. Retired 2026-02-06 per https://docs.together.ai/docs/deprecations: \"2026-02-06 | meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo | No\"."
   },
   {
     "provider": "meta-llama",
@@ -117,13 +119,14 @@
     "variation": "input",
     "unit": "usd_per_mtok",
     "price_usd": 0.18,
-    "effective_from": "2026-06-22",
-    "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://www.together.ai/models/llama-3-1-8b-instruct-turbo",
-    "source_kind": "aggregator",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "effective_from": "2024-08-12",
+    "effective_to": "2026-03-06",
+    "last_validated_at": "2024-08-12",
+    "source_url": "https://web.archive.org/web/20240812095045/https://www.together.ai/pricing",
+    "source_kind": "wayback",
+    "source_snapshot_ts": "20240812095045",
+    "confidence": "archived",
+    "notes": "[correction 2026-11-09] Supersedes the open record from 2026-06-22 (together.ai/models/llama-3-1-8b-instruct-turbo, inferred), which priced the model for a period after Together had already removed it. No first-party Meta price; Together AI reference host. Serverless Endpoints table, \"LLAMA 3 AND LLAMA 3.1 LITE, TURBO, & REFERENCE MODELS\": \"8B | LITE | $0.10 | TURBO | $0.18\", one price for input and output (\"Prices are per 1 million tokens including input and output tokens\"). effective_from is the first capture showing the Llama 3.1 Turbo table, not a documented launch date: the previous capture (20240725130005) has no Llama 3.1 table. Capture 20260130191400 still lists \"Llama 3.1 8B | Llama | $0.18 | $0.18\". Retired 2026-03-06 per https://docs.together.ai/docs/deprecations, Deprecation history > Inference: \"2026-03-06 | meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo | Yes\"; \"After the removal date, the model is no longer available via its serverless endpoint\"."
   },
   {
     "provider": "meta-llama",
@@ -131,12 +134,13 @@
     "variation": "output",
     "unit": "usd_per_mtok",
     "price_usd": 0.18,
-    "effective_from": "2026-06-22",
-    "effective_to": null,
-    "last_validated_at": "2026-06-22",
-    "source_url": "https://www.together.ai/models/llama-3-1-8b-instruct-turbo",
-    "source_kind": "aggregator",
-    "confidence": "inferred",
-    "notes": "[needs_review] cross-check flagged: no independent corroboration (new model, no OpenRouter match). No first-party Meta price; Together AI reference host."
+    "effective_from": "2024-08-12",
+    "effective_to": "2026-03-06",
+    "last_validated_at": "2024-08-12",
+    "source_url": "https://web.archive.org/web/20240812095045/https://www.together.ai/pricing",
+    "source_kind": "wayback",
+    "source_snapshot_ts": "20240812095045",
+    "confidence": "archived",
+    "notes": "[correction 2026-11-09] Supersedes the open record from 2026-06-22; see the input row. Same single $0.18 Turbo price as input. Retired 2026-03-06 per https://docs.together.ai/docs/deprecations: \"2026-03-06 | meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo | Yes\"."
   }
 ]

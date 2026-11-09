@@ -46,7 +46,6 @@ import {
 import { findCandidates } from './tripwire.mjs';
 import { crossCheck, buildOpenRouterLookup, normalizeModelKey } from './crosscheck.mjs';
 import * as anthropic from './collectors/anthropic.mjs';
-import * as llama from './collectors/llama.mjs';
 import * as amazon from './collectors/amazon.mjs';
 import * as mistral from './collectors/mistral.mjs';
 import * as deepseek from './collectors/deepseek.mjs';
@@ -58,10 +57,11 @@ import * as cohere from './collectors/cohere.mjs';
 import * as ai21 from './collectors/ai21.mjs';
 
 // provider -> collector. Provider slugs MUST match what each collector emits AND our dataset:
-// anthropic, meta-llama, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere, ai21.
+// anthropic, amazon, mistral, deepseek, google, alibaba, xai, openai, cohere, ai21. meta-llama has
+// no collector: Meta publishes no API price and Together AI, the reference host, removed every
+// tracked Llama model from serverless inference, so all meta-llama records are closed.
 const COLLECTORS = [
 	{ provider: 'anthropic', collect: anthropic.collect },
-	{ provider: 'meta-llama', collect: llama.collect },
 	{ provider: 'amazon', collect: amazon.collect },
 	{ provider: 'mistral', collect: mistral.collect, getNotices: mistral.getNotices },
 	{ provider: 'deepseek', collect: deepseek.collect },

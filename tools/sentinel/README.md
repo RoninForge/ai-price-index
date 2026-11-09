@@ -21,7 +21,6 @@ node tools/sentinel/run.mjs --apply    # APPEND drafted NEW-model records into d
 # individual pieces, standalone (each prints JSON):
 node tools/sentinel/tripwire.mjs
 node tools/sentinel/collectors/anthropic.mjs
-node tools/sentinel/collectors/llama.mjs
 node tools/sentinel/collectors/amazon.mjs
 node tools/sentinel/collectors/mistral.mjs
 node tools/sentinel/collectors/deepseek.mjs
@@ -184,7 +183,7 @@ It does **not** auto-edit existing records for CHANGED prices.
 | Provider | Source | Kind | Notes |
 | --- | --- | --- | --- |
 | `anthropic` | `platform.claude.com/.../pricing.md` | first-party (`provider_live`, `verified`) | Clean GFM markdown, no JS/auth. Parsed defensively; **throws** on header/structure drift, including an orphaned prompt-length tier row. |
-| `meta-llama` | `together.ai/pricing` | aggregator (`inferred` if scraped clean, else `estimated`) | No first-party Meta price exists. Together is a reference host; every record carries the note "No first-party Meta price; Together AI reference host." |
+| `meta-llama` | none (retired 2026-11-09) | - | No first-party Meta price exists. The records used Together AI as a reference host (`aggregator`), and Together's [deprecations page](https://docs.together.ai/docs/deprecations) lists every tracked Llama model as removed from serverless inference (Llama 4 Scout and Llama 3.1 405B on 2026-02-06, Llama 3.1 8B on 2026-03-06, Llama 4 Maverick on 2026-03-31, Llama 3.3 70B on 2026-10-22). Every meta-llama interval is closed at that removal date, so the models are archived and tripwire hits for them land in "Skipped (archived)". Together's model pages still display prices after removal, which is why nothing re-reads them. |
 | `amazon` | AWS Bedrock Price List API | first-party (`provider_live`, `verified`) | Machine-readable bulk JSON, no auth. Nova text models; per-1K -> per-MTok. **Throws** on usagetype-scheme drift. |
 | `mistral` | `docs.mistral.ai/inference/pricing` | first-party (`provider_live`, `verified`) | One table per `<section>`, each cell read by its column label; an unknown header throws. A sale cell emits the sale price and reports the struck list price. **Asserts coverage** of `TRACKED` and reports priced cards that are neither tracked nor excluded by `UNTRACKED_RULES`. |
 | `deepseek` | first-party DeepSeek pricing | first-party | See `collectors/deepseek.mjs`. |
@@ -220,8 +219,8 @@ to the `COLLECTORS` array in `run.mjs`. The provider slug must match both what t
   `classify()` (NEW / CHANGED / UNCHANGED), `effectiveFromForNew()` / `unixSecToIsoDate()` (launch-date
   policy for new models), and `makeRecord()` (throws on anything invalid).
 - `tripwire.mjs` - `findCandidates()` over OpenRouter + the 4 HF orgs, mapped to our provider slugs.
-- `collectors/*.mjs` - first-party collectors: `anthropic`, `llama` (Together reference), `amazon`,
-  `mistral`, `deepseek`, `google`, `alibaba`, `xai`, `openai`, `cohere`, `ai21`.
+- `collectors/*.mjs` - first-party collectors: `anthropic`, `amazon`, `mistral`, `deepseek`, `google`,
+  `alibaba`, `xai`, `openai`, `cohere`, `ai21`.
 - `run.mjs` - the orchestrator CLI (default dry-run; `--apply` to draft + write the report).
 
 ## CI workflow
@@ -241,4 +240,5 @@ straight to main; opens no PRs).
 ## Where this is going
 
 Phase 2 is complete: OpenAI, Cohere and `ai21` all have first-party collectors, so every provider in
-`data/records/` is now price-checked on every run.
+`data/records/` with an open price is now price-checked on every run. `meta-llama` is the exception by
+design: all of its records are closed (see the source map), so it has nothing live to check.
