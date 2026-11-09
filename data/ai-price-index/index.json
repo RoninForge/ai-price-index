@@ -661,32 +661,32 @@
     {
       "id": "gpt-5.6-cyber",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-cyber.v78f271a5.json",
-      "latestRev": "78f271a5"
+      "file": "models/openai/gpt-5.6-cyber.vceec1419.json",
+      "latestRev": "ceec1419"
     },
     {
       "id": "gpt-5.6-luna",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-luna.v417c5dba.json",
-      "latestRev": "417c5dba"
+      "file": "models/openai/gpt-5.6-luna.v40f47dcd.json",
+      "latestRev": "40f47dcd"
     },
     {
       "id": "gpt-5.6-sol",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-sol.vfc53e1a6.json",
-      "latestRev": "fc53e1a6"
+      "file": "models/openai/gpt-5.6-sol.v6768b9f7.json",
+      "latestRev": "6768b9f7"
     },
     {
       "id": "gpt-5.6-terra",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-terra.vd0aa182d.json",
-      "latestRev": "d0aa182d"
+      "file": "models/openai/gpt-5.6-terra.v93a226b0.json",
+      "latestRev": "93a226b0"
     },
     {
       "id": "gpt-6-astra",
       "provider": "openai",
-      "file": "models/openai/gpt-6-astra.v5dbccf92.json",
-      "latestRev": "5dbccf92"
+      "file": "models/openai/gpt-6-astra.v4ace9c2c.json",
+      "latestRev": "4ace9c2c"
     },
     {
       "id": "gpt-6-astra-law",
@@ -697,38 +697,38 @@
     {
       "id": "gpt-6-cyber",
       "provider": "openai",
-      "file": "models/openai/gpt-6-cyber.vc6deac01.json",
-      "latestRev": "c6deac01"
+      "file": "models/openai/gpt-6-cyber.v6c0f13a6.json",
+      "latestRev": "6c0f13a6"
     },
     {
       "id": "gpt-6-luna",
       "provider": "openai",
-      "file": "models/openai/gpt-6-luna.v4fdee993.json",
-      "latestRev": "4fdee993"
+      "file": "models/openai/gpt-6-luna.v8d103a75.json",
+      "latestRev": "8d103a75"
     },
     {
       "id": "gpt-6-rosalind",
       "provider": "openai",
-      "file": "models/openai/gpt-6-rosalind.ve666b423.json",
-      "latestRev": "e666b423"
+      "file": "models/openai/gpt-6-rosalind.v5ccdc6cd.json",
+      "latestRev": "5ccdc6cd"
     },
     {
       "id": "gpt-6-sol",
       "provider": "openai",
-      "file": "models/openai/gpt-6-sol.v06520a7a.json",
-      "latestRev": "06520a7a"
+      "file": "models/openai/gpt-6-sol.v3b6e2cb9.json",
+      "latestRev": "3b6e2cb9"
     },
     {
       "id": "gpt-6.1-sol",
       "provider": "openai",
-      "file": "models/openai/gpt-6.1-sol.vfe3efaf9.json",
-      "latestRev": "fe3efaf9"
+      "file": "models/openai/gpt-6.1-sol.v90b90a2b.json",
+      "latestRev": "90b90a2b"
     },
     {
       "id": "gpt-6.1-terra",
       "provider": "openai",
-      "file": "models/openai/gpt-6.1-terra.vc94c038f.json",
-      "latestRev": "c94c038f"
+      "file": "models/openai/gpt-6.1-terra.v1a5e6a8e.json",
+      "latestRev": "1a5e6a8e"
     },
     {
       "id": "gpt-rosalind-discovery",

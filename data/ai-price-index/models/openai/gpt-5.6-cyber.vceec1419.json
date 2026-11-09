@@ -24,6 +24,17 @@
         "unit": "usd_per_mtok"
       }
     ],
+    "cache_write_12h": [
+      {
+        "confidence": "verified",
+        "from": "2026-10-20",
+        "last_validated": "2026-11-09",
+        "price_usd": 31.25,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": null,
+        "unit": "usd_per_mtok"
+      }
+    ],
     "input": [
       {
         "confidence": "verified",
