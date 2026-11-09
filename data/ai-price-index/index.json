@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-11-05",
+  "dataModified": "2026-11-09",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -661,8 +661,8 @@
     {
       "id": "gpt-5.6-cyber",
       "provider": "openai",
-      "file": "models/openai/gpt-5.6-cyber.v7ebd2b63.json",
-      "latestRev": "7ebd2b63"
+      "file": "models/openai/gpt-5.6-cyber.v78f271a5.json",
+      "latestRev": "78f271a5"
     },
     {
       "id": "gpt-5.6-luna",
@@ -693,6 +693,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6-astra-law.v5724100a.json",
       "latestRev": "5724100a"
+    },
+    {
+      "id": "gpt-6-cyber",
+      "provider": "openai",
+      "file": "models/openai/gpt-6-cyber.vc6deac01.json",
+      "latestRev": "c6deac01"
     },
     {
       "id": "gpt-6-luna",
