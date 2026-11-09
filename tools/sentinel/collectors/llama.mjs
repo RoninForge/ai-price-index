@@ -22,8 +22,12 @@
 // serverless API at all; it falls back to a clearly-labelled "estimated" value.
 //
 // A live OpenRouter cross-check (meta-llama/* ids) runs as a SANITY GUARD: a reference host being
-// cheaper than a downstream reseller is impossible, so if any emitted Together value comes in BELOW the
-// cheapest OpenRouter reseller for that model we FAIL LOUD rather than publish a mis-stated number.
+// cheaper than the CHEAPEST downstream reseller is implausible, so if any emitted Together value comes in
+// BELOW the cheapest OpenRouter endpoint for that model we FAIL LOUD rather than publish a mis-stated
+// number. The floor is the cheapest per-provider ENDPOINT (/models/<id>/endpoints), NOT the single
+// headline price on /models: that headline is one routed endpoint, not the minimum. On 2026-11-08 it read
+// $0.35 for Llama 4 Maverick (Parasail / Vertex) while DigitalOcean served it at $0.1875, so a headline
+// floor rejected Together's own published $0.27 as an undercut.
 // (We deliberately do NOT cap on Together being more EXPENSIVE than OpenRouter - Together legitimately
 // runs pricier than OpenRouter's cheapest reseller, e.g. Llama 3.3 70B at $1.04 vs ~$0.10.)
 //
@@ -56,6 +60,7 @@ const TARGETS = [
 		model_id: 'llama-4-maverick',
 		display: 'Llama 4 Maverick',
 		// https://www.together.ai/models/llama-4-maverick  (serverless: $0.27 in / $0.85 out per 1M)
+		// Re-read 2026-11-09: "On Together AI it costs $0.27 per 1M input tokens and $0.85 per 1M output tokens."
 		prices: { input: 0.27, output: 0.85 },
 		confidence: 'inferred',
 		source_url: 'https://www.together.ai/models/llama-4-maverick',
@@ -92,49 +97,49 @@ const TARGETS = [
 	},
 ];
 
-// OpenRouter cross-check bounds (multiples of the cheapest OpenRouter reseller price for the same id).
-//   FLOOR: a reference host should not undercut a downstream reseller. Allow a small float-noise margin.
+// OpenRouter cross-check bounds (multiples of the cheapest OpenRouter endpoint price for the same id,
+// taken per variation across every provider endpoint).
+//   FLOOR: a reference host should not undercut every downstream reseller. Allow a small float-noise margin.
 //   CEIL:  the reference host (Together) legitimately runs PRICIER than OpenRouter's cheapest reseller -
 //          e.g. Llama 3.3 70B at $1.04 vs ~$0.10 (~10x) is real and verified. But the original bug
 //          (Llama 4 Scout drafted at $3 vs ~$0.10 = ~30x) was the serverless price being swapped for the
 //          FINE-TUNING table. So we cap at a generous multiple that passes real Together premiums (10x)
 //          yet fails loud on the fine-tuning-contamination signature (>=~15x).
-const RESELLER_FLOOR_MULT = 0.9; // emitted must be >= 90% of the cheapest OpenRouter reseller
-const RESELLER_CEIL_MULT = 12; // emitted must be <= 12x the cheapest OpenRouter reseller
+const RESELLER_FLOOR_MULT = 0.9; // emitted must be >= 90% of the cheapest OpenRouter endpoint
+const RESELLER_CEIL_MULT = 12; // emitted must be <= 12x the cheapest OpenRouter endpoint
 
 /**
- * Fetch OpenRouter's model list and return a Map<openrouter_id, { input, output }> in usd_per_mtok for
- * the meta-llama ids we care about. Best-effort: returns an empty Map on any network/parse failure, so a
- * flaky OpenRouter does not block publishing Together's verified reference prices (the guard simply does
- * not run for missing ids).
+ * For each target's OpenRouter id, read every provider endpoint (/models/<id>/endpoints) and return a
+ * Map<openrouter_id, { input, output }> holding the CHEAPEST endpoint price per variation, usd_per_mtok.
+ * Best-effort per id: a network/parse failure or an id with no priced endpoint is simply absent from the
+ * Map, so a flaky OpenRouter does not block publishing Together's verified reference prices (the guard
+ * does not run for missing ids).
  */
 async function fetchOpenRouterLlamaPrices() {
 	const out = new Map();
-	let data;
-	try {
-		const j = await fetchJson(OPENROUTER_MODELS_URL);
-		data = Array.isArray(j) ? j : j.data;
-	} catch {
-		return out; // best-effort cross-check only
-	}
-	if (!Array.isArray(data)) return out;
-	const want = new Set(TARGETS.map((t) => t.openrouter_id));
-	for (const m of data) {
-		if (!m || typeof m.id !== 'string') continue;
-		// match exact id, a ":variant" suffix (skip ":free"), or the canonical_slug
-		const baseId = m.id.split(':')[0];
-		const variant = m.id.includes(':') ? m.id.split(':')[1] : '';
-		if (variant === 'free') continue; // $0 free tiers are not a real reseller floor
-		const id = want.has(m.id) ? m.id : want.has(baseId) ? baseId : want.has(m.canonical_slug) ? m.canonical_slug : null;
-		if (!id) continue;
-		const p = m.pricing || {};
-		const input = parseFloat(p.prompt) * 1e6;
-		const output = parseFloat(p.completion) * 1e6;
-		if (!Number.isFinite(input) || !Number.isFinite(output) || input <= 0 || output <= 0) continue;
-		// keep the cheapest reseller seen for this id (the true downstream floor)
-		const prev = out.get(id);
-		if (!prev || input < prev.input) out.set(id, { input, output });
-	}
+	await Promise.all(
+		TARGETS.map(async ({ openrouter_id: id }) => {
+			let endpoints;
+			try {
+				const j = await fetchJson(`${OPENROUTER_MODELS_URL}/${id}/endpoints`);
+				endpoints = j?.data?.endpoints;
+			} catch {
+				return; // best-effort cross-check only
+			}
+			if (!Array.isArray(endpoints)) return;
+			let input = Infinity;
+			let output = Infinity;
+			for (const e of endpoints) {
+				const p = e?.pricing || {};
+				const i = parseFloat(p.prompt) * 1e6;
+				const o = parseFloat(p.completion) * 1e6;
+				// $0 endpoints (free tiers) are not a real reseller floor
+				if (Number.isFinite(i) && i > 0) input = Math.min(input, i);
+				if (Number.isFinite(o) && o > 0) output = Math.min(output, o);
+			}
+			if (Number.isFinite(input) && Number.isFinite(output)) out.set(id, { input, output });
+		})
+	);
 	return out;
 }
 
@@ -153,15 +158,15 @@ function assertWithinResellerBounds(target, orPrice) {
 		if (!Number.isFinite(ours) || !Number.isFinite(reseller) || reseller <= 0) continue;
 		if (ours < reseller * RESELLER_FLOOR_MULT) {
 			throw new Error(
-				`llama collector: ${target.model_id} ${variation}=$${ours}/Mtok undercuts OpenRouter reseller ` +
-					`$${reseller.toFixed(4)}/Mtok - a reference host cannot be cheaper than a reseller. Refusing to ` +
+				`llama collector: ${target.model_id} ${variation}=$${ours}/Mtok undercuts the cheapest OpenRouter ` +
+					`endpoint $${reseller.toFixed(4)}/Mtok - a reference host cannot be cheaper than every reseller. Refusing to ` +
 					`publish (likely a mis-stated Together figure).`
 			);
 		}
 		if (ours > reseller * RESELLER_CEIL_MULT) {
 			throw new Error(
 				`llama collector: ${target.model_id} ${variation}=$${ours}/Mtok is >${RESELLER_CEIL_MULT}x the ` +
-					`OpenRouter reseller $${reseller.toFixed(4)}/Mtok - implausible reference premium (the ` +
+					`cheapest OpenRouter endpoint $${reseller.toFixed(4)}/Mtok - implausible reference premium (the ` +
 					`fine-tuning-table bug signature). Refusing to publish.`
 			);
 		}
