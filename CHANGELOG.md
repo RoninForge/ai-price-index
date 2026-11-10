@@ -6,6 +6,18 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## New models: Claude Fable 5.2 and Claude Mythos 5.2 - 2026-11-10
+
+- `anthropic` claude-fable-5-2 and claude-mythos-5-2 at $8 input / $40 output, cache writes $10 (5m)
+  and $16 (1h), cache reads $0.20, read from Anthropic's
+  [pricing page](https://platform.claude.com/docs/en/about-claude/pricing). That is 20% below
+  Fable 5.1 / Mythos 5.1 ($10 / $50), which keep their rows. The cache-read rate is 0.025x base input,
+  as on 5.1. Mythos 5.2 is limited availability (Project Glasswing) at the same rates.
+- effective_from 2026-11-09 is the first first-party observation (price-sentinel run 42715293583);
+  the page did not list either model at 07:31 UTC the same day (run 42579926226) and states no launch date.
+- Not recorded: fast mode ($16 / $80) and Batch API ($4 / $20) rates; the schema has no variation for
+  either, on any model.
+
 ## New provider: Meta (Meta Model API); correction: Llama 3.3 70B history - 2026-11-09
 
 - New provider **`meta`**: Meta's own Model API prices, read from
