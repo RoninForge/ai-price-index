@@ -6,6 +6,16 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## Addition: gpt-6-cyber long-context rates; openai collector repaired - 2026-11-10
+
+- `openai` gpt-6-cyber: added the long-context (more than 272K input tokens) standard rates OpenAI now
+  publishes, $40 input / $150 output / $4 cached input (`tier2_input`, `tier2_output`,
+  `tier2_cache_read`). On 2026-11-09 the pricing page showed "-" for them; effective_from is the
+  2026-11-10 observation date. No long-context cache write is published, so none is recorded.
+- OpenAI folded its Cyber, Life sciences and Legal pricing sections into the Specialized-models table,
+  whose cache-write column split into "30m write" / "12h write". The `openai` collector now reads that
+  table by the main table's column labels, including each group's long-context rates.
+
 ## New model: Muse Ember (Meta Model API) - 2026-11-10
 
 - `meta` muse-ember-1.0 (alias muse-ember, Standard mode only), priced by request length: up to 200K

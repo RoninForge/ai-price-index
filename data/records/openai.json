@@ -2994,5 +2994,47 @@
     "source_kind": "provider_live",
     "confidence": "verified",
     "notes": "OpenAI's first-party pricing page lists gpt-6-cyber at short context \"12h write\" $50.00 per 1M tokens, beside the $25.00 \"30m write\" recorded as cache_write (short context input $20.00). OpenAI API changelog, Oct 20, 2026 (https://developers.openai.com/api/docs/changelog): \"You can now choose 12-hour prompt caching in the API. [...] 12-hour cache writes cost 2.5x the input token price.\" effective_from is this model's own first-party start date (2026-11-05), which is later than the changelog date."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "tier2_input",
+    "unit": "usd_per_mtok",
+    "price_usd": 40,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] OpenAI's first-party pricing page lists gpt-6-cyber at long context (more than 272K input tokens) $40.00 input, $150.00 output, $4.00 cached input per 1M tokens, standard tier (https://developers.openai.com/api/docs/pricing.md: \"| gpt-6-cyber (long context) | $40.00 | $150.00 | $4.00 | - | - |\"), and the model page (https://developers.openai.com/api/docs/models/gpt-6-cyber) now says \"For requests with more than 272K input tokens, Standard prices per 1M tokens are $40 for input, $4 for cached input, and $150 for output.\" effective_from is the first first-party OBSERVATION date (2026-11-10), NOT a stated change date: on 2026-11-09 the pricing page showed \"-\" in every gpt-6-cyber long-context column and the model page stated short-context prices only (see this model's input row), and price-sentinel run 42715293583 (2026-11-09 22:49 UTC) read OpenAI's page and drafted no openai missing variation. The API changelog (https://developers.openai.com/api/docs/changelog) has no dated entry for these rates. No long-context 30m or 12h cache write is published (\"-\"), so none is recorded."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "tier2_output",
+    "unit": "usd_per_mtok",
+    "price_usd": 150,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] OpenAI's first-party pricing page lists gpt-6-cyber at long context (more than 272K input tokens) $40.00 input, $150.00 output, $4.00 cached input per 1M tokens, standard tier (https://developers.openai.com/api/docs/pricing.md: \"| gpt-6-cyber (long context) | $40.00 | $150.00 | $4.00 | - | - |\"), and the model page (https://developers.openai.com/api/docs/models/gpt-6-cyber) now says \"For requests with more than 272K input tokens, Standard prices per 1M tokens are $40 for input, $4 for cached input, and $150 for output.\" effective_from is the first first-party OBSERVATION date (2026-11-10), NOT a stated change date: on 2026-11-09 the pricing page showed \"-\" in every gpt-6-cyber long-context column and the model page stated short-context prices only (see this model's input row), and price-sentinel run 42715293583 (2026-11-09 22:49 UTC) read OpenAI's page and drafted no openai missing variation. The API changelog (https://developers.openai.com/api/docs/changelog) has no dated entry for these rates. No long-context 30m or 12h cache write is published (\"-\"), so none is recorded."
+  },
+  {
+    "provider": "openai",
+    "model_id": "gpt-6-cyber",
+    "variation": "tier2_cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 4,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://developers.openai.com/api/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "notes": "[missing variation] OpenAI's first-party pricing page lists gpt-6-cyber at long context (more than 272K input tokens) $40.00 input, $150.00 output, $4.00 cached input per 1M tokens, standard tier (https://developers.openai.com/api/docs/pricing.md: \"| gpt-6-cyber (long context) | $40.00 | $150.00 | $4.00 | - | - |\"), and the model page (https://developers.openai.com/api/docs/models/gpt-6-cyber) now says \"For requests with more than 272K input tokens, Standard prices per 1M tokens are $40 for input, $4 for cached input, and $150 for output.\" effective_from is the first first-party OBSERVATION date (2026-11-10), NOT a stated change date: on 2026-11-09 the pricing page showed \"-\" in every gpt-6-cyber long-context column and the model page stated short-context prices only (see this model's input row), and price-sentinel run 42715293583 (2026-11-09 22:49 UTC) read OpenAI's page and drafted no openai missing variation. The API changelog (https://developers.openai.com/api/docs/changelog) has no dated entry for these rates. No long-context 30m or 12h cache write is published (\"-\"), so none is recorded."
   }
 ]

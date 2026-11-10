@@ -155,7 +155,11 @@ Coverage only protects what is in `TRACKED`, so a model we publish that no colle
 covered at all. `gpt-5.3-codex` was in that state from 2026-07-10: it lives in OpenAI's separate
 Specialized-models table (a `GroupedPricingTable` island inside the `specialized-pricing` content
 switcher), which nothing parsed. `openai.mjs` now reads that table's `standard` pane by its own
-headings. To find the next one, compare every current index model against what the collectors emit.
+headings, mapped through the same label table as the main pricing table (`30m write` -> `cache_write`,
+`12h write` -> `cache_write_12h`, held to the input x 2.5 rule). On 2026-11-10 OpenAI folded its Cyber,
+Life sciences and Legal sections into this table as groups, so it also carries gpt-6-cyber,
+gpt-6-rosalind and their long-context rates (each group's `longContextPrices`). To find the next one,
+compare every current index model against what the collectors emit.
 
 ### `effective_from` for new models
 
@@ -194,7 +198,7 @@ It does **not** auto-edit existing records for CHANGED prices.
 | `xai` | `api.x.ai/v1/language-models` | first-party (`provider_live`) | **Requires `XAI_API_KEY`** (free). Without it: a loud `xai BLOCKED: ...` error in `errors[]`, never a crash. |
 | OpenRouter | `openrouter.ai/api/v1/models` | **tripwire only** | Keyless. Reseller per-token prices, used as a new/changed signal + the `effective_from` launch-date source, never published. |
 | HuggingFace | `huggingface.co/api/models?author=<org>` | **tripwire only** | Keyless. Flags freshly-published open weights from meta-llama / mistralai / deepseek-ai / Qwen. No price implied. |
-| `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Also reads the Specialized-models table (Codex, ChatGPT, Search, Embedding), standard pane only, by its own headings. Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
+| `openai` | `developers.openai.com/api/docs/pricing` | first-party (`provider_live`, `verified`) | Standard tier only, selected explicitly by the island's `props.tier`. Reads the rendered table's own column HEADER (labelled, has the long-context tier) and cross-checks it against the island payload (complete, positional). Also reads the Specialized-models table (Cyber, Life Sciences, Legal, ChatGPT, Codex, Search, Embedding, Moderation), standard pane only, by its own headings, including each group's long-context rates. Emission is gated on `TRACKED`; **asserts coverage** and reports untracked models. |
 | `cohere` | first-party Cohere pricing | first-party | See `collectors/cohere.mjs`. Also allow-list gated. |
 | `ai21` | `ai21.com/pricing/` | first-party (`provider_live`, `verified`) | Server-rendered WordPress cards. Anchored on the `b-cards--type-models` block, because the same page prices the plans ("Free Trial - $10 credits") and a bare `$` scraper would publish a trial credit as a token price. Each figure read by its own label (`/ 1M input tokens`). **Asserts coverage** of `TRACKED` and reports untracked cards. |
 
