@@ -6,6 +6,16 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## New model: Muse Ember (Meta Model API) - 2026-11-10
+
+- `meta` muse-ember-1.0 (alias muse-ember, Standard mode only), priced by request length: up to 200K
+  input tokens $0.10 input / $0.50 output / $0.004 cached input; over 200K input tokens the whole
+  request is billed at $0.30 / $1.50 / $0.012 (`tier2_input` / `tier2_output` / `tier2_cache_read`).
+  effective_from 2026-11-09 is the first first-party observation (absent at price-sentinel run
+  42579926226, 07:31 UTC; on the page by run 42715293583, 22:49 UTC), not a stated launch date.
+- Sentinel collector `meta` now reads a two-tier input-token table by its column labels and tracks
+  muse-ember-1.0.
+
 ## New models: Claude Fable 5.2 and Claude Mythos 5.2 - 2026-11-10
 
 - `anthropic` claude-fable-5-2 and claude-mythos-5-2 at $8 input / $40 output, cache writes $10 (5m)

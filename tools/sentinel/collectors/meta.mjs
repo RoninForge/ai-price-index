@@ -14,7 +14,10 @@
 // which, e.g. "Models: `muse-spark-1.3`, `muse-spark-1.2`, and `muse-spark-1.1` in Standard mode;
 // `muse-spark-1.3-contributor` and `muse-spark-1.2-contributor` in Contributor mode." A sentence with
 // no mode ("Model: `muse-wonder-1.0`.") is Standard mode, and its Contributor column must then read
-// "Not available". Every column is read by its header label; an unknown column, row label or cell
+// "Not available". A Standard-only model priced by request length (Muse Ember) has instead two tier
+// columns, "Up to 200K input tokens (per 1M tokens)" and "Over 200K input tokens (per 1M tokens)"; a
+// request over the threshold is billed at the second column in full, so it maps to tier2_cache_read /
+// tier2_input / tier2_output. Every column is read by its header label; an unknown column, row label or cell
 // throws rather than shifting a price onto the wrong id.
 //
 // Muse Image (per image), Muse Voice Transcribe (per hour of audio) and SAM (per image / video
@@ -31,7 +34,8 @@ export const PROVIDER = 'meta';
 const SOURCE_URL = 'https://dev.meta.ai/docs/pricing-rate-limits';
 const FETCH_URL = `${SOURCE_URL}.md`;
 
-// Meta's id -> aliases we carry. OpenRouter lists Muse Wonder as `meta/muse-wonder`.
+// Meta's id -> aliases we carry. OpenRouter lists Muse Wonder as `meta/muse-wonder` and Muse Ember as
+// `meta/muse-ember`.
 const ID_TO_ALIASES = {
 	'muse-spark-1.1': undefined,
 	'muse-spark-1.2': undefined,
@@ -39,6 +43,7 @@ const ID_TO_ALIASES = {
 	'muse-spark-1.2-contributor': undefined,
 	'muse-spark-1.3-contributor': undefined,
 	'muse-wonder-1.0': ['muse-wonder'],
+	'muse-ember-1.0': ['muse-ember'],
 };
 
 // Every id we publish as current; collect() throws if one is not parsed.
@@ -109,22 +114,39 @@ function parseSection(name, body) {
 
 	if (header[0] !== 'usage')
 		throw new Error(`meta collector: "${name}" table starts with "${header[0]}", expected "Usage".`);
+	// Columns are either pricing modes (Standard / Contributor) or, for a model priced by request
+	// length, two input-token tiers of Standard mode ("Up to 200K ..." / "Over 200K ..."). A request
+	// over the threshold is billed at the second column in full, which is what tier2_* means.
 	const cols = {};
+	const thresholds = new Set();
 	header.slice(1).forEach((label, i) => {
-		const mode = /^standard mode \(per 1m tokens\)$/.test(label)
+		let key = /^standard mode \(per 1m tokens\)$/.test(label)
 			? 'standard'
 			: /^contributor mode \(per 1m tokens\)$/.test(label)
 				? 'contributor'
 				: null;
-		if (!mode) throw new Error(`meta collector: unknown column "${label}" in the "${name}" table. Refusing to guess.`);
-		cols[mode] = i + 1;
+		const tier = label.match(/^(up to|over) ([0-9]+k) input tokens \(per 1m tokens\)$/);
+		if (tier) {
+			key = tier[1] === 'up to' ? 'tier1' : 'tier2';
+			thresholds.add(tier[2]);
+		}
+		if (!key) throw new Error(`meta collector: unknown column "${label}" in the "${name}" table. Refusing to guess.`);
+		if (cols[key]) throw new Error(`meta collector: duplicate "${label}" column in the "${name}" table.`);
+		cols[key] = i + 1;
 	});
-	if (!cols.standard) throw new Error(`meta collector: "${name}" table has no Standard mode column.`);
+	const tiered = Boolean(cols.tier1 || cols.tier2);
+	if (tiered && (!cols.tier1 || !cols.tier2 || cols.standard || cols.contributor || thresholds.size !== 1))
+		throw new Error(
+			`meta collector: "${name}" table mixes or half-states its input-token tier columns. Refusing to guess.`
+		);
+	if (!tiered && !cols.standard) throw new Error(`meta collector: "${name}" table has no Standard mode column.`);
 
 	const ids = idsByMode(lines.slice(0, tableStart).join(' '), name);
 	if (!ids.standard.length) throw new Error(`meta collector: no Standard-mode model id found for "${name}".`);
 	if (ids.standard.some((id) => id.endsWith('-contributor')))
 		throw new Error(`meta collector: a -contributor id is listed under Standard mode in "${name}".`);
+	if (tiered && ids.contributor.length)
+		throw new Error(`meta collector: "${name}" has tier columns but names Contributor-mode ids.`);
 
 	const prices = { standard: {}, contributor: {} };
 	for (const line of lines.slice(tableStart + 1)) {
@@ -133,11 +155,16 @@ function parseSection(name, body) {
 		if (cells.every((c) => /^:?-+:?$/.test(c))) continue;
 		const variation = ROW_TO_VARIATION[cells[0].toLowerCase()];
 		if (!variation) throw new Error(`meta collector: unknown row "${cells[0]}" in the "${name}" table.`);
-		for (const [mode, idx] of Object.entries(cols)) {
-			const v = parseCell(cells[idx] ?? '', `"${name}" ${cells[0]} / ${mode}`);
-			if (v !== null) prices[mode][variation] = v;
+		for (const [key, idx] of Object.entries(cols)) {
+			const v = parseCell(cells[idx] ?? '', `"${name}" ${cells[0]} / ${key}`);
+			if (v === null) continue;
+			if (key === 'tier1') prices.standard[variation] = v;
+			else if (key === 'tier2') prices.standard[`tier2_${variation}`] = v;
+			else prices[key][variation] = v;
 		}
 	}
+	if (tiered && !('tier2_input' in prices.standard && 'tier2_output' in prices.standard))
+		throw new Error(`meta collector: "${name}" long-context tier lacks an Input or Output price.`);
 
 	for (const mode of ['standard', 'contributor']) {
 		const priced = Object.keys(prices[mode]).length > 0;
@@ -162,10 +189,13 @@ export async function collect() {
 
 	const sec = md.match(/^## Model pricing\s*$([\s\S]*?)(?=^## )/m);
 	if (!sec) throw new Error('meta collector: "## Model pricing" section not found - structure drift.');
-	if (!/no long-context premium/i.test(sec[1]))
+	// Long-context pricing is read only from a table's tier columns (Muse Ember). The page scopes its
+	// "no long-context premium" statement to the flat-priced lines; if that scope changes, a tier may
+	// exist that no table shows.
+	if (!/no long-context premium on muse wonder and muse spark/i.test(sec[1]))
 		throw new Error(
-			'meta collector: the page no longer states "No long-context premium". A long-context tier may now ' +
-				'exist that this collector does not read. Human review required.'
+			'meta collector: the page no longer states "No long-context premium on Muse Wonder and Muse Spark". ' +
+				'A long-context tier may now exist that this collector does not read. Human review required.'
 		);
 
 	const byModel = new Map();
