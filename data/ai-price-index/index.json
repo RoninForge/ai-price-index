@@ -473,6 +473,15 @@
       "latestRev": "2745c446"
     },
     {
+      "id": "muse-ember-1.0",
+      "provider": "meta",
+      "file": "models/meta/muse-ember-1.0.va60c4afd.json",
+      "latestRev": "a60c4afd",
+      "aliases": [
+        "muse-ember"
+      ]
+    },
+    {
       "id": "muse-spark-1.1",
       "provider": "meta",
       "file": "models/meta/muse-spark-1.1.v879de861.json",
