@@ -34,9 +34,11 @@
 // layout is read from the table's own HEADER rather than assumed by position, and COVERAGE is
 // asserted (see assertCoverage) so "tracked but not emitted" fails loudly instead of passing quietly.
 //
-// SPECIALIZED MODELS (Codex, ChatGPT, Search, ...) live in a GroupedPricingTable island inside the
-// `specialized-pricing` content switcher. It has no tier prop; the tier is the enclosing pane
-// (data-value="standard" vs "fast"). Its props carry their own headings, so it is parsed by label.
+// SPECIALIZED MODELS (Cyber, Life Sciences, Legal, ChatGPT, Codex, Search, ...) live in one
+// GroupedPricingTable island inside the `specialized-pricing` content switcher. It has no tier prop; the
+// tier is the enclosing pane (data-value="standard" vs "fast"). Its props carry their own headings, so it
+// is parsed by label, and a group's longContextPrices prop carries that group's >272K rates. Until
+// 2026-11-10 Cyber, Life sciences and Legal were separate page sections with their own tables.
 //
 // TIERS - WE TAKE THE STANDARD TIER ONLY, and we now select it EXPLICITLY by the island's
 // `props.tier === 'standard'` rather than by "first tuple in document order wins". The other tiers
@@ -93,8 +95,8 @@ const TRACKED = new Set([
 	'gpt-5.4-pro',
 	'gpt-5.5',
 	'gpt-5.5-pro',
-	// A hidden row behind gpt-6-cyber in the Cyber section's "All models" expander (seen 2026-11-09), but
-	// still offered and priced; parseSectionTokenTable reads collapsed rows from props.
+	// A row collapsed behind gpt-6-cyber in the Cyber group's expander (seen 2026-11-09), but still
+	// offered and priced; parseSpecializedRows reads collapsed rows from props.
 	'gpt-5.6-cyber',
 	'gpt-5.6-luna',
 	'gpt-5.6-sol',
@@ -144,8 +146,7 @@ const KNOWN_UNTRACKED = new Map([
 	['gpt-5-pro', 'current model, not yet in our tracked set'],
 	// Specialized-models table (see parseSpecializedRows).
 	['chat-latest', 'moving alias for the current ChatGPT model, not a stable priced id'],
-	// Cyber models section, hidden behind its "All models" expander.
-	['gpt-5.5-cyber', 'previous Daybreak Red model (gpt-5.5-cyber-preview), hidden behind gpt-6-cyber; retires 2027-02-01'],
+	['gpt-5.5-cyber-preview', 'previous Daybreak Red model, collapsed behind gpt-6-cyber in the Cyber group; retires 2027-02-01'],
 	['gpt-5-search-api', 'search-specialized model billed per token plus per-call search fees; not a general text model'],
 	['text-embedding-3-small', 'embedding model; the index tracks text generation models'],
 	['text-embedding-3-large', 'embedding model; the index tracks text generation models'],
@@ -203,14 +204,11 @@ const PAYLOAD_LAYOUTS = new Map([
 // Every <h2 class="anchor-heading"> section on the page, and whether we read it. A section not in this
 // map throws. OpenAI has twice moved priced text models into a section this collector did not read:
 // gpt-5.6-cyber sat in "Cyber models" unseen, and gpt-rosalind-research moved from Specialized models
-// into "Life sciences models", which surfaced only because it was already tracked. MODEL_SECTIONS are
-// parsed through their rendered table (same labelled header shape as the main table).
-const MODEL_SECTIONS = ['cyber-models', 'life-sciences-models', 'legal-model-configurations'];
+// into "Life sciences models", which surfaced only because it was already tracked. On 2026-11-10 the
+// Cyber, Life sciences and Legal sections folded back into the Specialized-models table as groups; they
+// are deliberately absent here, so a return as their own section throws instead of going unread.
 const KNOWN_SECTIONS = new Map([
 	['text-tokens', 'main tables, parsed via the standard TextTokenPricingTables island'],
-	['cyber-models', 'parsed (MODEL_SECTIONS)'],
-	['life-sciences-models', 'parsed (MODEL_SECTIONS)'],
-	['legal-model-configurations', 'parsed (MODEL_SECTIONS)'],
 	['image-tokens', 'image token rates; the index tracks text token rates'],
 	['live-session-duration', 'per-minute voice sessions, not per-token'],
 	['audio-tokens', 'realtime/audio modality rates, not tracked'],
@@ -221,15 +219,6 @@ const KNOWN_SECTIONS = new Map([
 	['fine-tuning', 'training and fine-tuned inference rates, not tracked'],
 	['cloud-platforms', 'third-party cloud listings, not first-party rates'],
 ]);
-
-// Column label -> variation for the Specialized-models table. Its first two headings are the group
-// ("Category") and the row name ("Model"); an unrecognised price heading throws.
-const SPECIALIZED_COLUMNS = {
-	input: 'input',
-	'cached input': 'cache_read',
-	'cache writes': 'cache_write',
-	output: 'output',
-};
 
 // Out-of-band findings for the caller (run.mjs), reset at the start of each collect().
 let notices = [];
@@ -495,8 +484,40 @@ function parsePayloadRows(props) {
 }
 
 /**
+ * Map the Specialized-models price headings to variations under one GROUP_COLUMNS context group. The
+ * table names its price columns exactly as the main table does ("Input", "Output", "Cached input",
+ * "30m write", "12h write" as of 2026-11-10), after a "Category" (group) and a "Model" heading, so it
+ * shares that label convention: short context for the rows, long context for a group's
+ * longContextPrices. An unrecognised heading throws.
+ */
+function specializedLayout(labels, group) {
+	return labels.map((h) => {
+		const v = GROUP_COLUMNS[group][h];
+		if (!v) throw new Error(`openai collector: unrecognised specialized-table column "${h}". Map it deliberately.`);
+		return v;
+	});
+}
+
+/** Read one Specialized-models price tuple against its layout. A length mismatch throws. */
+function specializedPrices(name, cells, layout) {
+	const values = (Array.isArray(cells) ? cells : []).map((cell) => (Array.isArray(cell) ? cell[1] : cell));
+	if (values.length !== layout.length)
+		throw new Error(
+			`openai collector: specialized row "${name}" has ${values.length} price cells for ` +
+				`${layout.length} headings. Refusing to read values off by one.`
+		);
+	const prices = {};
+	layout.forEach((variation, i) => {
+		const v = parseSlot(values[i]);
+		if (typeof v === 'number') prices[variation] = v;
+	});
+	return prices;
+}
+
+/**
  * Parse the STANDARD pane of the Specialized-models switcher.
- * Returns Map(rawDisplayName -> { variation: price }), labelled by the island's own headings.
+ * Returns Map(rawDisplayName -> { variation: price }), labelled by the island's own headings. A group's
+ * longContextPrices (Cyber, Life Sciences) are folded into its own rows as tier2_* rates.
  */
 function parseSpecializedRows(rawHtml) {
 	const sw = rawHtml.indexOf('data-content-switcher-id="specialized-pricing"');
@@ -533,126 +554,53 @@ function parseSpecializedRows(rawHtml) {
 	);
 	if (headings[0] !== 'category' || headings[1] !== 'model')
 		throw new Error(`openai collector: specialized table headings drifted (${headings.join(' | ')}). Refusing to guess.`);
-	const layout = headings.slice(2).map((h) => {
-		const v = SPECIALIZED_COLUMNS[h];
-		if (!v) throw new Error(`openai collector: unrecognised specialized-table column "${h}". Map it deliberately.`);
-		return v;
-	});
+	const layout = specializedLayout(headings.slice(2), 'short context');
+	const longLayout = specializedLayout(headings.slice(2), 'long context');
 
 	const out = new Map();
 	const groups = Array.isArray(props.groups) ? props.groups[1] : [];
 	for (const g of groups) {
 		const group = Array.isArray(g) ? g[1] : g;
+		const category = String(Array.isArray(group?.model) ? group.model[1] : group?.model ?? '').trim();
 		const rows = Array.isArray(group?.rows) ? group.rows[1] : [];
+		const groupRows = new Map();
 		for (const row of rows) {
-			const values = (Array.isArray(row) ? row[1] : []).map((cell) => (Array.isArray(cell) ? cell[1] : cell));
-			if (values.length !== layout.length + 1)
-				throw new Error(
-					`openai collector: specialized row "${values[0]}" has ${values.length - 1} price cells for ` +
-						`${layout.length} headings. Refusing to read values off by one.`
-				);
-			const prices = {};
-			layout.forEach((variation, i) => {
-				const v = parseSlot(values[i + 1]);
-				if (typeof v === 'number') prices[variation] = v;
-			});
-			out.set(String(values[0]).trim(), prices);
+			const cells = Array.isArray(row) ? row[1] : [];
+			const name = String(Array.isArray(cells[0]) ? cells[0][1] : cells[0]).trim();
+			groupRows.set(name, specializedPrices(name, cells.slice(1), layout));
 		}
+		const long = Array.isArray(group?.longContextPrices) ? group.longContextPrices[1] : {};
+		for (const [name, wrapped] of Object.entries(long ?? {})) {
+			const prices = groupRows.get(name);
+			if (!prices)
+				throw new Error(
+					`openai collector: specialized group "${category}" has long-context rates for unlisted "${name}". Refusing to guess.`
+				);
+			mergeLongContext(name, prices, specializedPrices(name, Array.isArray(wrapped) ? wrapped[1] : wrapped, longLayout));
+		}
+		for (const [name, prices] of groupRows) out.set(name, prices);
 	}
 	if (!out.size) throw new Error('openai collector: specialized table parsed to zero rows. Refusing to guess.');
 	return out;
 }
 
-/** Every top-level section anchor on the page, in order, with its offset. */
+/** Every top-level section anchor id on the page, in order. */
 function sectionAnchors(rawHtml) {
 	const out = [];
 	const re = /<h2\b[^>]*\bid="([^"]+)"[^>]*\bclass="anchor-heading"/g;
 	let m;
-	while ((m = re.exec(rawHtml))) out.push({ id: m[1], index: m.index });
+	while ((m = re.exec(rawHtml))) out.push(m[1]);
 	return out;
 }
 
 /** Throw on a section we have not classified, so a new home for priced models cannot go unread. */
 function assertKnownSections(anchors) {
-	const unknown = anchors.map((a) => a.id).filter((id) => !KNOWN_SECTIONS.has(id));
+	const unknown = anchors.filter((id) => !KNOWN_SECTIONS.has(id));
 	if (unknown.length)
 		throw new Error(
 			`openai collector: unclassified pricing section(s) on the page: ${unknown.join(', ')}. Add each to ` +
-				`KNOWN_SECTIONS (and to MODEL_SECTIONS if it prices text models). Refusing to skip a section unread.`
+				`KNOWN_SECTIONS (and parse it if it prices text models). Refusing to skip a section unread.`
 		);
-}
-
-/**
- * Map one GroupedPricingTable heading to a variation. Section tables flatten the context group into the
- * label ("Short context cached input", "Long context output"); a bare label is short context.
- */
-function groupedHeadingVariation(label) {
-	const m = /^(short context|long context)\s+(.+)$/.exec(label);
-	const [group, column] = m ? [m[1], m[2]] : ['short context', label];
-	const v = GROUP_COLUMNS[group][column];
-	if (!v) throw new Error(`openai collector: unrecognised section-table column "${label}". Map it deliberately.`);
-	return v;
-}
-
-/**
- * Parse one model section (Cyber models, Life sciences models), bounded by the next section heading.
- * Reads the GroupedPricingTable island's props, which carry every model INCLUDING the ones hidden behind
- * the section's expander (hiddenModels, e.g. gpt-5.5-cyber), and cross-checks them against the rendered
- * table wherever both list a model. Returns Map(rawDisplayName -> { variation: price }).
- */
-function parseSectionTable(rawHtml, anchors, id) {
-	const i = anchors.findIndex((a) => a.id === id);
-	if (i === -1) throw new Error(`openai collector: section "${id}" not found - page structure drifted. Refusing to guess.`);
-	const end = i + 1 < anchors.length ? anchors[i + 1].index : rawHtml.length;
-	const section = rawHtml.slice(anchors[i].index, end);
-
-	const tokenTag = /<astro-island\b[^>]*?component-export="TextTokenPricingTables"[^>]*?>/.exec(section);
-	if (tokenTag) return parseSectionTokenTable(section, tokenTag, id);
-
-	const tag = /<astro-island\b[^>]*?component-export="GroupedPricingTable"[^>]*?>/.exec(section);
-	if (!tag) throw new Error(`openai collector: no GroupedPricingTable island in section "${id}". Refusing to guess.`);
-	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);
-	let props;
-	try {
-		props = JSON.parse(unescape(propsAttr ? propsAttr[1] : ''));
-	} catch (e) {
-		throw new Error(`openai collector: section "${id}" island props are not valid JSON (${e.message}). Refusing to guess.`);
-	}
-	const headings = (Array.isArray(props.headings) ? props.headings[1] : []).map((h) =>
-		String(Array.isArray(h) ? h[1] : h).trim().toLowerCase()
-	);
-	if (headings[0] !== 'model' && headings[0] !== 'model configuration')
-		throw new Error(`openai collector: section "${id}" headings drifted (${headings.join(' | ')}). Refusing to guess.`);
-	const layout = headings.slice(1).map(groupedHeadingVariation);
-
-	const out = new Map();
-	for (const g of Array.isArray(props.groups) ? props.groups[1] : []) {
-		const group = Array.isArray(g) ? g[1] : g;
-		const name = String(Array.isArray(group?.model) ? group.model[1] : group?.model ?? '').trim();
-		const rows = Array.isArray(group?.rows) ? group.rows[1] : [];
-		if (!name || rows.length !== 1)
-			throw new Error(`openai collector: section "${id}" group "${name}" has ${rows.length} rows, expected 1. Refusing to guess.`);
-		const values = (Array.isArray(rows[0]) ? rows[0][1] : []).map((cell) => (Array.isArray(cell) ? cell[1] : cell));
-		if (values.length !== layout.length)
-			throw new Error(
-				`openai collector: section "${id}" row "${name}" has ${values.length} price cells for ` +
-					`${layout.length} headings. Refusing to read values off by one.`
-			);
-		const prices = {};
-		layout.forEach((variation, j) => {
-			const v = parseSlot(values[j]);
-			if (typeof v === 'number') prices[variation] = v;
-		});
-		out.set(name, prices);
-	}
-	if (!out.size) throw new Error(`openai collector: section "${id}" parsed to zero rows. Refusing to guess.`);
-
-	for (const [name, rendered] of parseRenderedTable(section)) {
-		if (!out.has(name))
-			throw new Error(`openai collector: section "${id}" renders "${name}" but its props do not carry it. Refusing to guess.`);
-		crossCheck(name, rendered, out.get(name));
-	}
-	return out;
 }
 
 const LONG_CONTEXT_FIELDS = {
@@ -728,43 +676,20 @@ function assertTwelveHourRule(js) {
 }
 
 /**
- * A model section rendered with the same TextTokenPricingTables island as the main tables (Cyber models
- * since 2026-10-24): positional props.rows cross-checked against the rendered table, plus the island's
- * own longContextRows prop for the >272K rates. props.rows carries EVERY model in the section, including
- * those the page collapses behind its "All models" expander (collapsedLatestRowCount); the rendered table
- * shows only the uncollapsed ones, so the cross-check covers those and the props supply the rest.
+ * Fold one model's long-context (>272K) rates into its prices. A long rate below its short-context
+ * counterpart throws (the source drifted or is not the standard tier); a rate already present must agree.
  */
-function parseSectionTokenTable(section, tag, id) {
-	const propsAttr = /\sprops="([^"]*)"/.exec(tag[0]);
-	let props;
-	try {
-		props = JSON.parse(unescape(propsAttr ? propsAttr[1] : ''));
-	} catch (e) {
-		throw new Error(`openai collector: section "${id}" island props are not valid JSON (${e.message}). Refusing to guess.`);
+function mergeLongContext(name, prices, long) {
+	for (const [variation, value] of Object.entries(long)) {
+		const short = prices[variation.replace(/^tier2_/, '')];
+		if (typeof short === 'number' && value < short)
+			throw new Error(
+				`openai collector: long-context ${variation} for ${name} (${value}) is below its short-context rate ` +
+					`(${short}). The long-context rates drifted or are not the standard tier; refusing to guess.`
+			);
+		if (typeof prices[variation] === 'number') crossCheck(name, { [variation]: prices[variation] }, { [variation]: value });
+		else prices[variation] = value;
 	}
-	if ((Array.isArray(props.tier) ? props.tier[1] : null) !== 'standard')
-		throw new Error(`openai collector: section "${id}" island is not the standard tier. Refusing to guess.`);
-	const out = parsePayloadRows(props);
-	const inner = section.slice(tag.index + tag[0].length);
-	for (const [name, rendered] of parseRenderedTable(inner)) {
-		if (!out.has(name))
-			throw new Error(`openai collector: section "${id}" renders "${name}" but its props do not carry it. Refusing to guess.`);
-		crossCheck(name, rendered, out.get(name));
-		if (typeof rendered[TWELVE_HOUR_WRITE] === 'number') out.get(name)[TWELVE_HOUR_WRITE] = rendered[TWELVE_HOUR_WRITE];
-	}
-	const long = Array.isArray(props.longContextRows) ? props.longContextRows[1] : {};
-	for (const [name, wrapped] of Object.entries(long ?? {})) {
-		const rates = Array.isArray(wrapped) ? wrapped[1] : wrapped;
-		const prices = out.get(name);
-		if (!prices) throw new Error(`openai collector: section "${id}" has long-context rates for unlisted "${name}". Refusing to guess.`);
-		for (const [field, raw] of Object.entries(rates ?? {})) {
-			const variation = LONG_CONTEXT_FIELDS[field];
-			if (!variation) throw new Error(`openai collector: unknown long-context field "${field}" in section "${id}". Map it deliberately.`);
-			const v = parseSlot(Array.isArray(raw) ? raw[1] : raw);
-			if (typeof v === 'number') prices[variation] = v;
-		}
-	}
-	return out;
 }
 
 /**
@@ -864,9 +789,7 @@ export async function collect() {
 	const tableRows = parseRenderedTable(inner);
 	const payloadRows = parsePayloadRows(props);
 	const specializedRows = parseSpecializedRows(rawHtml);
-	const anchors = sectionAnchors(rawHtml);
-	assertKnownSections(anchors);
-	const sectionRows = MODEL_SECTIONS.map((id) => [id, parseSectionTable(rawHtml, anchors, id)]);
+	assertKnownSections(sectionAnchors(rawHtml));
 
 	// canonical id -> { display, prices }. The rendered table is consulted FIRST and wins where the two
 	// overlap: it is labelled, and it is the only source for the long-context tier.
@@ -877,7 +800,6 @@ export async function collect() {
 		['table', tableRows],
 		['payload', payloadRows],
 		['specialized', specializedRows],
-		...sectionRows,
 	]) {
 		for (const [rawName, prices] of rows) {
 			const canonical = canonicalFromName(rawName);
@@ -912,18 +834,7 @@ export async function collect() {
 
 	for (const [name, long] of longRows) {
 		const entry = byId.get(canonicalFromName(name));
-		if (!entry) continue;
-		const { prices } = entry;
-		for (const [variation, value] of Object.entries(long)) {
-			const short = prices[variation.replace(/^tier2_/, '')];
-			if (typeof short === 'number' && value < short)
-				throw new Error(
-					`openai collector: long-context ${variation} for ${name} (${value}) is below its short-context rate ` +
-						`(${short}). The bundle map drifted or is not the standard tier; refusing to guess.`
-				);
-			if (typeof prices[variation] === 'number') crossCheck(name, { [variation]: prices[variation] }, { [variation]: value });
-			else prices[variation] = value;
-		}
+		if (entry) mergeLongContext(name, entry.prices, long);
 	}
 
 	for (const [model_id, { prices }] of byId) {

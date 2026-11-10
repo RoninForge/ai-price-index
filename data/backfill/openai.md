@@ -92,3 +92,25 @@ Sources: https://developers.openai.com/api/docs/pricing (and `.md`),
 https://developers.openai.com/api/docs/changelog,
 https://developers.openai.com/api/docs/guides/prompt-caching,
 https://developers.openai.com/api/docs/models/gpt-6-cyber.
+
+## 2026-11-10 update: gpt-6-cyber long-context rates added
+
+OpenAI now publishes gpt-6-cyber's long-context (more than 272K input tokens) standard rates, recorded
+as `tier2_input` $40, `tier2_output` $150, `tier2_cache_read` $4 per 1M tokens, `verified`. Pricing
+page `.md`: "| gpt-6-cyber (long context) | $40.00 | $150.00 | $4.00 | - | - |". Model page: "For
+requests with more than 272K input tokens, Standard prices per 1M tokens are $40 for input, $4 for
+cached input, and $150 for output."
+
+effective_from is 2026-11-10, the first first-party observation. On 2026-11-09 the pricing page showed
+"-" in every gpt-6-cyber long-context column and the model page stated short-context prices only;
+price-sentinel run 42715293583 (2026-11-09 22:49 UTC) read the page and drafted no openai missing
+variation. The changelog has no dated entry for these rates. The long-context 30m and 12h writes are
+"-", so no `tier2_cache_write` / `tier2_cache_write_12h` is recorded.
+
+Same day, OpenAI folded its Cyber, Life sciences and Legal sections into the Specialized-models table
+(columns Input / Output / Cached input / 30m write / 12h write). Every other rate in those groups
+matches what is already recorded.
+
+Sources: https://developers.openai.com/api/docs/pricing (and `.md`),
+https://developers.openai.com/api/docs/models/gpt-6-cyber,
+https://developers.openai.com/api/docs/changelog.
