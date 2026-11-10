@@ -259,5 +259,107 @@
       "muse-wonder"
     ],
     "notes": "Cached-input rate. effective_from is the earliest first-party evidence, NOT a known start date: the 2026-10-12 launch post states only input and output prices, and the Wayback capture of Meta's pricing page 20261014155040 is the first to show the Muse Wonder table. Meta's pricing page, Muse Wonder table (Model: `muse-wonder-1.0`): \"Cached input | $0.20 | Not available\", \"Input | $4.00 | Not available\", \"Output | $20.00 | Not available\" (Standard | Contributor columns; \"Contributor mode isn't available for Muse Wonder on Model API\"). Muse Wonder is in preview. Muse Wonder Full is available only in Muse Code subscriptions and has no per-token price."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.1,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.5,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.004,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "tier2_input",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.3,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "tier2_output",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
+  },
+  {
+    "provider": "meta",
+    "model_id": "muse-ember-1.0",
+    "variation": "tier2_cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.012,
+    "effective_from": "2026-11-09",
+    "effective_to": null,
+    "last_validated_at": "2026-11-10",
+    "source_url": "https://dev.meta.ai/docs/pricing-rate-limits",
+    "source_kind": "provider_live",
+    "confidence": "verified",
+    "aliases": [
+      "muse-ember"
+    ],
+    "notes": "Muse Ember first observed on Meta's first-party pricing page on 2026-11-09: absent at the 2026-11-09 07:31 UTC price-sentinel run (42579926226, meta collector clean) and present by the 22:49 UTC run (42715293583), where the meta collector broke on its new table. effective_from is that first first-party observation date, NOT a stated launch date - the pricing page does not publish one. Meta's pricing page, Muse Ember table (Usage | Up to 200K input tokens (per 1M tokens) | Over 200K input tokens (per 1M tokens)): \"Cached input | $0.004 | $0.012\", \"Input | $0.10 | $0.30\", \"Output | $0.50 | $1.50\", for \"Model: `muse-ember-1.0`, in Standard mode only.\" Muse Ember is priced by request length: the base rows apply to requests with up to 200K input tokens (cached tokens included), the tier2_* rows to requests with more, which Meta bills \"at the long-context rates in full, not only for the tokens past 200K\"."
   }
 ]
