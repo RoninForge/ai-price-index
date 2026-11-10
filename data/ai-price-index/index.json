@@ -757,8 +757,8 @@
     {
       "id": "gpt-6-cyber",
       "provider": "openai",
-      "file": "models/openai/gpt-6-cyber.v6c0f13a6.json",
-      "latestRev": "6c0f13a6"
+      "file": "models/openai/gpt-6-cyber.v646fa016.json",
+      "latestRev": "646fa016"
     },
     {
       "id": "gpt-6-luna",
