@@ -921,5 +921,83 @@
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
       "quote": "$0.10 through November 30, 2026. $0.20 starting December 1, 2026."
     }
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-carbon",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 2,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-carbon",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 10,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-carbon",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.1,
+    "effective_from": "2026-11-10",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-hydrogen",
+    "variation": "input",
+    "unit": "usd_per_mtok",
+    "price_usd": 1.5,
+    "effective_from": "2026-11-12",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-hydrogen",
+    "variation": "output",
+    "unit": "usd_per_mtok",
+    "price_usd": 7.5,
+    "effective_from": "2026-11-12",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
+  },
+  {
+    "provider": "google",
+    "model_id": "gemini-4-hydrogen",
+    "variation": "cache_read",
+    "unit": "usd_per_mtok",
+    "price_usd": 0.075,
+    "effective_from": "2026-11-12",
+    "effective_to": null,
+    "last_validated_at": "2026-11-14",
+    "source_url": "https://aistudio.google.com/docs/pricing",
+    "source_kind": "provider_live",
+    "confidence": "verified"
   }
 ]
