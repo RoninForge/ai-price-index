@@ -47,9 +47,7 @@
 // Mapping: page display names map 1:1 to our canonical ids for the tracked set (the bare id, or the
 // bare id followed by a " (<...context length)" suffix which we strip). A ">" context suffix would be
 // a long-context ROW rather than a column group; it is rejected so it can never be mistaken for the
-// standard rate. gpt-4 and gpt-4-turbo are tracked by us but the page only carries DATED snapshots of
-// them (gpt-4-0613, gpt-4-turbo-2024-04-09, ...), never the bare canonical id, so they are OMITTED
-// here (we do not invent a snapshot->bare mapping); see PAGE_ABSENT.
+// standard rate. gpt-4 and gpt-4-turbo were shut down 2026-10-23 and are no longer tracked.
 //
 // Contract (same as the other collectors): an array of
 //   { provider:"openai", model_id, display_name, prices:{ input, output, cache_read?, cache_write?,
@@ -113,17 +111,15 @@ const TRACKED = new Set([
 	'gpt-rosalind-research',
 	'o3',
 	'o3-pro',
-	// gpt-4 + gpt-4-turbo are tracked but the page only has dated snapshots; see PAGE_ABSENT.
 ]);
 
 // Tracked ids that are legitimately NOT on this page, with the reason. assertCoverage exempts these,
 // so everything else in TRACKED must be found or the run fails. Keep this list short and dated: an
 // entry here is a standing claim that a model we publish prices for cannot be re-verified from the
 // vendor's own pricing page, which is exactly the kind of thing that should require a human to type.
-const PAGE_ABSENT = new Map([
-	['gpt-4', 'page carries only dated snapshots (gpt-4-0613); we do not map snapshot -> bare id'],
-	['gpt-4-turbo', 'page carries only dated snapshots (gpt-4-turbo-2024-04-09)'],
-]);
+// Empty since 2026-11-16: gpt-4 and gpt-4-turbo, its last entries, were shut down 2026-10-23 per OpenAI's
+// deprecations page and their records are closed, so they are no longer tracked.
+const PAGE_ABSENT = new Map([]);
 
 // Models on the standard page we deliberately do not track, with the reason. Anything on the page that
 // is in neither TRACKED nor here is reported through getNotices() as a candidate, which is how a new
@@ -154,8 +150,10 @@ const KNOWN_UNTRACKED = new Map([
 	['omni-moderation-latest', 'moderation endpoint, published as free'],
 ]);
 
-// PIN: gpt-4o is present on the page AND in current.json and is rock-stable. If the standard tuple ever
-// stops resolving to $2.5 in / $10 out, the parse drifted or OpenAI changed it - either way, escalate.
+// PIN: gpt-4o is present on the page AND in current.json and its price has not moved. If the standard
+// tuple ever stops resolving to $2.5 in / $10 out, the parse drifted or OpenAI changed it - escalate.
+// OpenAI's deprecations page schedules gpt-4o's shutdown for 2027-01-14 (the pricing page has marked it
+// deprecated since 2026-11-13), so the PIN must move to a live model before that date or the run throws.
 const PIN_ID = 'gpt-4o';
 const PIN_EXPECT = { input: 2.5, output: 10 };
 
@@ -353,6 +351,25 @@ function parseSlot(raw) {
 }
 
 /**
+ * Read a payload row's model-name cell. Usually a bare string; since 2026-11-13 (first failing run
+ * 43386328275, last clean 43301983540 at 2026-11-12 20:36 UTC) a row OpenAI marks
+ * deprecated arrives as an object ({label, deprecated}) with each field wrapped as [0, value]. Any other
+ * object key throws: a new field on the name cell is a structure change to map deliberately, not to
+ * stringify into "[object Object]" and lose the row (which is how gpt-4o vanished and tripped the PIN).
+ */
+const ROW_LABEL_FIELDS = new Set(['label', 'deprecated']);
+function rowLabel(raw) {
+	if (raw === null || typeof raw !== 'object') return String(raw).trim();
+	const unknown = Object.keys(raw).filter((k) => !ROW_LABEL_FIELDS.has(k));
+	if (unknown.length || !Array.isArray(raw.label))
+		throw new Error(
+			`openai collector: row name cell is an object with fields [${Object.keys(raw).join(', ')}]; only ` +
+				`${[...ROW_LABEL_FIELDS].join('/')} are mapped. Refusing to guess the model name.`
+		);
+	return String(raw.label[1]).trim();
+}
+
+/**
  * Build the column index -> variation map from the table's OWN header rows.
  *
  * `groupRow` is the optional grouping row (["", "Short context", "Long context"]); `columnRow` is the
@@ -462,7 +479,7 @@ function parsePayloadRows(props) {
 		const cells = Array.isArray(row) ? row[1] : null;
 		if (!Array.isArray(cells) || cells.length < 2) continue;
 		const values = cells.map((cell) => (Array.isArray(cell) ? cell[1] : cell));
-		const name = String(values[0]).trim();
+		const name = rowLabel(values[0]);
 		const slots = values.slice(1);
 
 		const layout = PAYLOAD_LAYOUTS.get(slots.length);
@@ -566,7 +583,7 @@ function parseSpecializedRows(rawHtml) {
 		const groupRows = new Map();
 		for (const row of rows) {
 			const cells = Array.isArray(row) ? row[1] : [];
-			const name = String(Array.isArray(cells[0]) ? cells[0][1] : cells[0]).trim();
+			const name = rowLabel(Array.isArray(cells[0]) ? cells[0][1] : cells[0]);
 			groupRows.set(name, specializedPrices(name, cells.slice(1), layout));
 		}
 		const long = Array.isArray(group?.longContextPrices) ? group.longContextPrices[1] : {};

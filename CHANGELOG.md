@@ -6,6 +6,30 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## New models: Gemini 4 Carbon, Gemini 4 Hydrogen, Qwen4-Max; openai collector repaired - 2026-11-16
+
+- `google` gemini-4-carbon: $2.00 input / $10.00 output / $0.10 cached input, effective 2026-11-10
+  (GA per the Gemini API release notes). Introductory pricing: Google's page doubles it to $4 / $20 /
+  $0.20 on 2026-12-01, carried in `announced_change` (not yet a price), same shape as Gemini 4 Argon.
+- `google` gemini-4-hydrogen: $1.50 input / $7.50 output / $0.075 cached input, effective 2026-11-12
+  (GA per the release notes). No dated change on the page.
+- `alibaba` qwen4-max: $1.50 input / $4.50 output, International scope, effective 2026-11-16 (Alibaba's
+  Model releases and updates). Cache rates are READ from the pricing doc's own qwen4-max cache-price
+  table, not derived: $0.075 cache read (`cache_read`, explicit and implicit alike; 5% of input, not
+  the 10% general rule), $1.875 5-minute write (`cache_write_5m`), $3.00 1-hour write
+  (`cache_write_1h`). The Context Cache doc names qwen4-max as an exception priced in the console;
+  the pricing doc publishes the numbers.
+- The `alibaba` collector now reads a captioned per-model cache-price table when one sits in the same
+  region block as the model's International row, and its exception parse admits "qwen4-max: Explicit
+  cache ...". Without both, tracking qwen4-max would have derived a $0.15 cache read.
+- The `openai` collector threw "PIN model gpt-4o not found" from price-sentinel run 43386328275
+  (2026-11-13 07:31 UTC; last clean run 43301983540, 2026-11-12 20:36 UTC). OpenAI began sending
+  deprecated rows' model name as an object (`{label, deprecated}`) instead of a string, so 8 tracked
+  models went unread. Repaired; the re-run emits all 30 tracked models and reports 0 price changes, so
+  no current OpenAI rate differs from what we publish. The pricing page now marks gpt-4o, gpt-4o-mini, gpt-4.1, gpt-5,
+  gpt-5.1, gpt-5.4-nano, o3 and o3-pro deprecated; OpenAI's deprecations page schedules shutdowns from
+  2026-12-11. Records stay open until those dates.
+
 ## Addition: gpt-6-cyber long-context rates; openai collector repaired - 2026-11-10
 
 - `openai` gpt-6-cyber: added the long-context (more than 272K input tokens) standard rates OpenAI now
