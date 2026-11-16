@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-11-10",
+  "dataModified": "2026-11-16",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -116,6 +116,12 @@
       "provider": "alibaba",
       "file": "models/alibaba/qwen3.8-max.v80b1e77f.json",
       "latestRev": "80b1e77f"
+    },
+    {
+      "id": "qwen4-max",
+      "provider": "alibaba",
+      "file": "models/alibaba/qwen4-max.v609bdd64.json",
+      "latestRev": "609bdd64"
     },
     {
       "id": "nova-2-lite",
@@ -471,6 +477,18 @@
       "provider": "google",
       "file": "models/google/gemini-4-argon.v2745c446.json",
       "latestRev": "2745c446"
+    },
+    {
+      "id": "gemini-4-carbon",
+      "provider": "google",
+      "file": "models/google/gemini-4-carbon.vb5be107f.json",
+      "latestRev": "b5be107f"
+    },
+    {
+      "id": "gemini-4-hydrogen",
+      "provider": "google",
+      "file": "models/google/gemini-4-hydrogen.va4da513c.json",
+      "latestRev": "a4da513c"
     },
     {
       "id": "muse-ember-1.0",
