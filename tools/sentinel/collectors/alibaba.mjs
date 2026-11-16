@@ -31,8 +31,17 @@
 // "International" scope is absent, ZERO tracked models resolve, or ANY tracked model is missing (a retired
 // model must be removed from TRACKED by a human; the throw only takes down this one collector).
 //
+// PUBLISHED PER-MODEL CACHE PRICES (since 2026-11-16, qwen4-max). The doc may follow a region's tables
+// with a captioned table "<id> — Cache price (per million tokens)" (Cache write (5m) | Cache write (1h) |
+// Explicit/implicit cache read). Where one sits in the SAME heading section as a tracked model's
+// International base row, its rates are read verbatim (verified, first-party) and win over both the
+// Context Cache doc's multiplier rule and its "see the console" exception list. qwen4-max is why: the
+// cache doc lists it as an exception, the pricing doc publishes its rates, and the generic multiplier
+// would have derived a $0.15 cache read against a published $0.075.
+//
 // Contract (same as the other collectors): an array of
-//   { provider:"alibaba", model_id, display_name, prices:{ input, output } (usd_per_mtok),
+//   { provider:"alibaba", model_id, display_name, prices:{ input, output, cache_read?, cache_write?,
+//     cache_write_5m?, cache_write_1h? } (usd_per_mtok),
 //     unit:"usd_per_mtok", source_url, source_kind:"provider_live", confidence:"verified", known_mapping }
 
 import { fetchJson } from '../lib.mjs';
@@ -78,7 +87,18 @@ const IMPLICIT_PATTERN =
 	/portion of the input served from the cache is typically billed at (\d+(?:\.\d+)?)% of the standard input token price/i;
 // The sentence that names the models whose rate is NOT the published multiplier.
 const EXCEPTION_PATTERN = /The following models do not follow the general ratios above\. For specific pricing, see the Model Studio console\./i;
-const EXCEPTION_CLAUSE = /([a-z][a-z0-9.\-]*(?:(?:,|, and| and)\s+[a-z][a-z0-9.\-]*)*)\s*:\s+(?:The )?cache\b/gi;
+// "qwen4-max: Explicit cache write and read prices do not follow ..." (2026-11-16) put a word between the
+// colon and "cache"; the clause admits "The" or "Explicit" there so that sentence still registers.
+const EXCEPTION_CLAUSE = /([a-z][a-z0-9.\-]*(?:(?:,|, and| and)\s+[a-z][a-z0-9.\-]*)*)\s*:\s+(?:(?:The|Explicit)\s+)?cache\b/gi;
+
+// Captioned per-model cache table on the pricing doc (see the header comment). Column label -> variation;
+// an unrecognised label throws rather than shifting the others.
+const PUBLISHED_CACHE_CAPTION = /<strong>\s*([a-z0-9][a-z0-9.\-]*)\s*(?:—|&mdash;)\s*Cache price \(per million tokens\)\s*<\/strong>/gi;
+const PUBLISHED_CACHE_COLUMNS = {
+	'cache write (5m)': 'cache_write_5m',
+	'cache write (1h)': 'cache_write_1h',
+	'explicit/implicit cache read': 'cache_read',
+};
 
 
 // The Qwen flagship/mainline models the dataset tracks. Matched against the FIRST whitespace-delimited
@@ -102,6 +122,8 @@ const TRACKED = [
 	'qwen3.8-flash',
 	'qwen3.8-max',
 	'qwen3-coder-flash',
+	// Released 2026-11-16 at International scope (Model releases and updates).
+	'qwen4-max',
 ];
 
 // Ids that ARE priced per-Mtok at International scope on this doc but that we deliberately do not
@@ -177,6 +199,59 @@ function rowsOf(tableHtml) {
 }
 
 const round6 = (n) => Math.round(n * 1e6) / 1e6;
+
+/**
+ * Build sameSection(a, b): true when two doc offsets share the section opened by the heading nearest
+ * before the earlier one, i.e. no heading of that level or shallower sits between them. Region blocks
+ * are <h4> (Singapore, China (Beijing), ...) with deeper subsections inside (<h5> "More models"), so a
+ * cache table under "More models" still belongs to the Singapore block its model's row sits in.
+ */
+function headingSections(content) {
+	const heads = [...content.matchAll(/<h([1-6])\b/gi)].map((m) => ({ at: m.index, level: Number(m[1]) }));
+	return (a, b) => {
+		const [lo, hi] = a <= b ? [a, b] : [b, a];
+		const opener = heads.filter((h) => h.at < lo).pop();
+		const level = opener ? opener.level : 0;
+		return !heads.some((h) => h.at > lo && h.at < hi && h.level <= level);
+	};
+}
+
+/**
+ * Every captioned "<id> — Cache price (per million tokens)" table on the pricing doc, as
+ * { model_id, at, prices:{ cache_write_5m?, cache_write_1h?, cache_read? } }. The table must directly
+ * follow its caption and carry one header row plus one value row; an unknown column label, a missing
+ * table, or an unreadable cell throws.
+ */
+function publishedCacheRates(content, tables) {
+	const out = [];
+	for (const m of content.matchAll(PUBLISHED_CACHE_CAPTION)) {
+		const model_id = m[1].toLowerCase();
+		const captionEnd = m.index + m[0].length;
+		const table = tables.find((t) => t.at >= captionEnd);
+		if (!table || /\S/.test(content.slice(captionEnd, table.at).replace(/<\/?p[^>]*>/gi, '')))
+			throw new Error(`alibaba collector: "${model_id}" cache-price caption is not followed by its table. Refusing to guess.`);
+		const rows = rowsOf(table.html);
+		if (rows.length !== 2 || rows[0].length !== rows[1].length)
+			throw new Error(
+				`alibaba collector: ${model_id} cache-price table has ${rows.length} rows; expected one header and one value row. Refusing to guess.`
+			);
+		const prices = {};
+		rows[0].forEach((label, i) => {
+			const variation = PUBLISHED_CACHE_COLUMNS[label.toLowerCase()];
+			if (!variation)
+				throw new Error(
+					`alibaba collector: unknown column "${label}" in the ${model_id} cache-price table. Known: ` +
+						`${Object.keys(PUBLISHED_CACHE_COLUMNS).join(', ')}. Map it deliberately.`
+				);
+			const v = parsePrice(rows[1][i]);
+			if (v === null)
+				throw new Error(`alibaba collector: ${model_id} cache-price cell "${rows[1][i]}" is not a price. Refusing to guess.`);
+			prices[variation] = round6(v);
+		});
+		out.push({ model_id, at: table.at, prices });
+	}
+	return out;
+}
 
 // Out-of-band channel for models this collector SAW priced first-party but does not track. Without
 // it the TRACKED allow-list makes a new model invisible rather than detected-and-skipped: qwen3.8-max
@@ -275,15 +350,16 @@ export async function collect() {
 				`whether the help content API or the pricing doc id changed at ${SOURCE_URL}.`
 		);
 
-	const tables = [...content.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => m[0]);
+	const tables = [...content.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => ({ html: m[0], at: m.index }));
 	if (!tables.length)
 		throw new Error('alibaba collector: model-pricing doc body has no <table> - structure drift.');
 	if (!/International/.test(content))
 		throw new Error('alibaba collector: no "International" deployment scope in the pricing doc - structure/region drift.');
 
 	const found = new Map(); // model_id -> { input, output }
+	const foundAt = new Map(); // model_id -> doc offset of the table holding its International base row
 	const untracked = new Map(); // model_id -> raw display text (priced first-party, not in TRACKED)
-	for (const t of tables) {
+	for (const { html: t, at } of tables) {
 		const rows = rowsOf(t);
 		if (rows.length < 2) continue;
 		const header = rows[0].map((c) => c.toLowerCase());
@@ -311,6 +387,7 @@ export async function collect() {
 			if (found.has(id)) continue; // first International base row (in doc order) wins
 			if (bandCol >= 0 && !isBaseBand(r[bandCol])) continue;
 			found.set(id, { input: round6(input), output: round6(output) });
+			foundAt.set(id, at);
 		}
 	}
 
@@ -336,7 +413,7 @@ export async function collect() {
 	const cache = await fetchCacheRules();
 	const cachePct = (v) => `${Math.round(cache.multipliers[v] * 1000) / 10}%`;
 	const derivedNote =
-		`DERIVED, not read: Alibaba publishes no per-model cache price. The Context Cache doc prices ` +
+		`DERIVED, not read: Alibaba publishes no cache price for this model. The Context Cache doc prices ` +
 		`explicit caching as a multiplier of the standard input price (hit ${cachePct('cache_read')}, ` +
 		`creation ${cachePct('cache_write')}), and this rate is that multiplier applied to the input price ` +
 		`recorded from the pricing doc on the same day` +
@@ -354,6 +431,9 @@ export async function collect() {
 			`alibaba collector: tracked model(s) not on the International pricing doc: ${missing.join(', ')}. ` +
 				`Check Alibaba's retirement notices, then close the records and remove the id from TRACKED.`
 		);
+
+	const published = publishedCacheRates(content, tables);
+	const sameSection = headingSections(content);
 
 	const results = [];
 	for (const model_id of TRACKED) {
@@ -379,8 +459,22 @@ export async function collect() {
 			notes: 'International deployment scope (intl USD), Model Studio "Model inference pricing"; base/standard tier.',
 		};
 
-		// Derive the cache rows only where the doc's own rule actually applies.
-		if (cache.exceptions.has(model_id)) {
+		// A cache table published for this model in its International row's section is first-party and
+		// wins. Otherwise derive the cache rows only where the Context Cache doc's own rule applies.
+		const own = published.filter((c) => c.model_id === model_id && sameSection(c.at, foundAt.get(model_id)));
+		if (own.length > 1)
+			throw new Error(
+				`alibaba collector: ${own.length} published cache tables for ${model_id} in its International section. Refusing to guess which one applies.`
+			);
+		if (own.length) {
+			for (const [variation, v] of Object.entries(own[0].prices)) {
+				if (v < PRICE_MIN || v > PRICE_MAX)
+					throw new Error(
+						`alibaba collector: ${model_id} published ${variation}=${v} out of sanity bounds [${PRICE_MIN}, ${PRICE_MAX}]. Refusing to emit.`
+					);
+				out.prices[variation] = v;
+			}
+		} else if (cache.exceptions.has(model_id)) {
 			// The vendor states this model is NOT on the multiplier and prices it only in an
 			// authenticated console. Publishing the derived number would contradict the source, and
 			// publishing nothing silently would let a consumer re-derive the same wrong number, so the
