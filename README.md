@@ -86,10 +86,12 @@ meta.dataModified;                 // the dataset date this install pins to
 ```
 
 Short ids and a trailing `[1m]` display suffix resolve to the dated series (e.g. `claude-opus-4-5`
--> `claude-opus-4-5-20251101`); pass `{ provider }` to disambiguate a bare model id. `usdForRollup`
-values a token rollup at a point in time with the shared cache multipliers (read 0.1x, write 1.25x /
-2x). The package reproduces the same [golden vectors](examples/pricing-vectors.json) as the other
-RoninForge pricing engines.
+-> `claude-opus-4-5-20251101`); pass `{ provider }` to disambiguate a bare model id. `usdForRequest`
+values ONE request at a point in time with the shared cache multipliers (read 0.1x, write 1.25x /
+2x) and applies prompt-length tiers: a Claude Haiku 5.5 request whose prompt (input + cache reads +
+cache writes) is over 100,000 tokens bills entirely at its `tier2_*` rates. `usdForRollup` values a
+sum of requests at the base tier, so for a tiered model it is a lower bound. The package reproduces
+the same [golden vectors](examples/pricing-vectors.json) as the other RoninForge pricing engines.
 
 CLI (no install needed):
 

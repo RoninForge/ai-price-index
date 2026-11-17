@@ -114,6 +114,20 @@ export function rateAt(
 	date: string
 ): { inputPerM: number; outputPerM: number; cacheReadPerM: number } | null;
 
+/** The prompt-length tier (tier2_*) rates in effect on `date`, or null when the model has none. */
+export function tier2RateAt(
+	provider: string,
+	model: string,
+	date: string
+): { inputPerM: number; outputPerM: number; cacheReadPerM: number } | null;
+
+/** Prompt size for prompt-length tiers: input + cache_read + cache_write_5m + cache_write_1h. */
+export function promptTokens(tokens: TokenRollup): number;
+
+/** Prompt size above which a provider bills a request at its tier2 rates (anthropic: 100000). */
+export const PROMPT_TIER_THRESHOLDS: Readonly<Record<string, number>>;
+
+/** Values a rollup at the base tier; a lower bound for a model with a prompt-length tier. */
 export function usdForRollup(
 	tokens: TokenRollup,
 	provider: string,
@@ -128,6 +142,21 @@ export function usdForRollupRaw(
 	date: string
 ): { usd: number; modelKnown: boolean };
 
+/** Values ONE request; a prompt over the provider's threshold bills at the tier2 rates (tier2: true). */
+export function usdForRequest(
+	tokens: TokenRollup,
+	provider: string,
+	model: string,
+	date: string
+): { cents: number; modelKnown: boolean; tier2: boolean };
+
+export function usdForRequestRaw(
+	tokens: TokenRollup,
+	provider: string,
+	model: string,
+	date: string
+): { usd: number; modelKnown: boolean; tier2: boolean };
+
 declare const _default: {
 	meta: typeof meta;
 	bundle: PriceBundle;
@@ -139,7 +168,11 @@ declare const _default: {
 	current: typeof current;
 	rate: typeof rate;
 	rateAt: typeof rateAt;
+	tier2RateAt: typeof tier2RateAt;
+	promptTokens: typeof promptTokens;
 	usdForRollup: typeof usdForRollup;
 	usdForRollupRaw: typeof usdForRollupRaw;
+	usdForRequest: typeof usdForRequest;
+	usdForRequestRaw: typeof usdForRequestRaw;
 };
 export default _default;
