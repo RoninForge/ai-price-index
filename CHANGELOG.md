@@ -6,6 +6,18 @@ and why is auditable. Hand-maintained for now (the export bot cuts the release t
 every price lives in `data/backfill/<provider>.md` and in each record's `source_url` /
 `last_validated_at`.
 
+## Engine: per-request prompt-length tiers (Claude Haiku 5.5) - 2026-11-17
+
+- New `usdForRequest` / `usdForRequestRaw`: price ONE request and bill it entirely at the `tier2_*`
+  rates when its prompt (input + cache read + cache writes) is over the provider's threshold.
+  `PROMPT_TIER_THRESHOLDS` lists only published thresholds: `anthropic` 100,000 tokens (Claude Haiku
+  5.5). Also exported: `tier2RateAt`, `promptTokens`.
+- `usdForRollup` / `usdForRollupRaw` are unchanged: a rollup cannot show which requests crossed the
+  threshold, so it prices at the base tier and is a lower bound for a tiered model.
+- `examples/pricing-vectors.json`: each vector is now defined as one request, and two Haiku 5.5
+  vectors pin the boundary (exactly 100,000 prompt tokens stays base; over it bills at tier2).
+  BudgetClaw's `CostForModelAt` already reproduces both.
+
 ## New models: Gemini 4 Carbon, Gemini 4 Hydrogen, Qwen4-Max; openai collector repaired - 2026-11-16
 
 - `google` gemini-4-carbon: $2.00 input / $10.00 output / $0.10 cached input, effective 2026-11-10

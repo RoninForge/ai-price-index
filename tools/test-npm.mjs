@@ -12,7 +12,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Ensure the bundle exists and is current before importing the lib (which reads it at module load).
 execFileSync('node', [join(ROOT, 'tools', 'build-npm.mjs')], { stdio: 'inherit' });
 
-const { usdForRollup, usdForRollupRaw, priceOn, current, rate, resolve, models, providers } =
+const { usdForRollup, usdForRollupRaw, usdForRequest, usdForRequestRaw, priceOn, current, rate, resolve, models, providers } =
 	await import('../lib/index.js');
 
 const vectors = JSON.parse(readFileSync(join(ROOT, 'examples', 'pricing-vectors.json'), 'utf8'));
@@ -28,16 +28,17 @@ const ok = (name, cond, detail = '') => {
 	}
 };
 
-// 1. Golden vectors: every engine must reproduce expected_usd exactly. Vectors are all Claude, so the
-//    provider is anthropic (same as Goei's golden.test.ts).
+// 1. Golden vectors: every engine must reproduce expected_usd exactly. Each vector is one request, so
+//    the per-request path prices it. Vectors are all Claude, so the provider is anthropic (same as
+//    Goei's golden.test.ts).
 for (const v of vectors.vectors) {
 	if (v.expected === 'unknown_model') {
-		const { modelKnown } = usdForRollup(v.usage, 'anthropic', v.model, v.at);
+		const { modelKnown } = usdForRequest(v.usage, 'anthropic', v.model, v.at);
 		ok(`golden: ${v.name}`, modelKnown === false, `expected unknown, got modelKnown=${modelKnown}`);
 		continue;
 	}
-	const { usd, modelKnown } = usdForRollupRaw(v.usage, 'anthropic', v.model, v.at);
-	const { cents } = usdForRollup(v.usage, 'anthropic', v.model, v.at);
+	const { usd, modelKnown } = usdForRequestRaw(v.usage, 'anthropic', v.model, v.at);
+	const { cents } = usdForRequest(v.usage, 'anthropic', v.model, v.at);
 	ok(
 		`golden: ${v.name}`,
 		modelKnown && Math.abs(usd - v.expected_usd) < 1e-6 && cents === Math.round(v.expected_usd * 100),
@@ -50,6 +51,22 @@ for (const v of vectors.vectors) {
 {
 	const { usd, modelKnown } = usdForRollupRaw({ cache_read: 1_000_000 }, 'anthropic', 'claude-fable-5-1', '2026-10-01');
 	ok('recorded cache_read wins (fable-5-1 0.025x)', modelKnown && Math.abs(usd - 0.25) < 1e-9, `usd=${usd}`);
+}
+
+// 1c. A rollup cannot see which requests crossed the prompt threshold, so it stays on the base tier:
+//     150k Haiku 5.5 input tokens as a rollup = $0.015, as one request = $0.075 (tier2 $0.50).
+{
+	const t = { input: 150_000 };
+	const rollup = usdForRollupRaw(t, 'anthropic', 'claude-haiku-5-5', '2026-10-15');
+	const request = usdForRequestRaw(t, 'anthropic', 'claude-haiku-5-5', '2026-10-15');
+	ok('rollup prices haiku-5-5 at the base tier', Math.abs(rollup.usd - 0.015) < 1e-9, `usd=${rollup.usd}`);
+	ok('request over 100k prices haiku-5-5 at tier2', request.tier2 && Math.abs(request.usd - 0.075) < 1e-9, `usd=${request.usd}`);
+}
+
+// 1d. Only Anthropic's threshold is published here: a tiered OpenAI model's request stays on its base tier.
+{
+	const r = usdForRequestRaw({ input: 500_000 }, 'openai', 'gpt-5.5', '2026-11-01');
+	ok('non-anthropic tiered model stays base per request', r.modelKnown && r.tier2 === false, JSON.stringify(r));
 }
 
 // 2. API shape smoke checks.
