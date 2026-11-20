@@ -9,6 +9,15 @@
         "last_validated": "2026-11-05",
         "price_usd": 1.5,
         "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 1,
+        "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -19,6 +28,15 @@
         "from": "2026-10-30",
         "last_validated": "2026-11-05",
         "price_usd": 18.75,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 12.5,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -31,6 +49,15 @@
         "last_validated": "2026-11-09",
         "price_usd": 37.5,
         "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 25,
+        "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -41,6 +68,15 @@
         "from": "2026-10-30",
         "last_validated": "2026-11-05",
         "price_usd": 15,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 10,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -53,6 +89,15 @@
         "last_validated": "2026-11-05",
         "price_usd": 75,
         "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 50,
+        "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -63,6 +108,15 @@
         "from": "2026-10-30",
         "last_validated": "2026-11-05",
         "price_usd": 3,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 2,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -75,6 +129,15 @@
         "last_validated": "2026-11-05",
         "price_usd": 37.5,
         "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 25,
+        "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -85,6 +148,15 @@
         "from": "2026-10-30",
         "last_validated": "2026-11-09",
         "price_usd": 75,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 50,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
@@ -97,6 +169,15 @@
         "last_validated": "2026-11-05",
         "price_usd": 30,
         "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 20,
+        "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
       }
@@ -107,6 +188,15 @@
         "from": "2026-10-30",
         "last_validated": "2026-11-05",
         "price_usd": 112.5,
+        "src": "https://developers.openai.com/api/docs/pricing",
+        "to": "2026-11-17",
+        "unit": "usd_per_mtok"
+      },
+      {
+        "confidence": "verified",
+        "from": "2026-11-17",
+        "last_validated": "2026-11-20",
+        "price_usd": 75,
         "src": "https://developers.openai.com/api/docs/pricing",
         "to": null,
         "unit": "usd_per_mtok"
