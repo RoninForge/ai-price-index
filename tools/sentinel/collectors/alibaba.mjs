@@ -21,6 +21,14 @@
 // tokens, so usd_per_mtok directly (the input-price column header is unit-guarded to say "per 1 million
 // tokens"; a table whose price column is in any other unit is skipped, never mis-scaled).
 //
+// REWORDED 2026-11 (the doc is now titled "Model Invocation Pricing"; drift seen from the 2026-11-17 run).
+// Every label was re-translated: "Deployment scope" -> "Service Deployment Scope", "Mode" -> "Pattern",
+// "Input price" -> "Input unit price (per million tokens)", "Output price" -> "Output unit price (per
+// million tokens) Chain-of-thought + response", and Model ID cells gained badge text after the id
+// ("qwen-max Batch calls at half price"). The id is still the cell's first token. The price-column
+// matchers are ANCHORED to the start of the header because some tables now also carry a "Cache-hit input
+// unit price" column, which an unanchored /input .*price/ would take for the input price.
+//
 // Validated 2026-06-28: the 8 previously-tracked models read identical prices to the live dataset
 // (qwen3-max $1.2/$6, qwen-max $1.6/$6.4, qwen-plus $0.4/$1.2, qwen-flash $0.05/$0.4, qwen-turbo $0.05/$0.2,
 // qwen3.5-plus $0.4/$2.4, qwen3.5-flash $0.1/$0.4, qwen3-coder-plus $1/$5), confirming the scope/band choice.
@@ -32,8 +40,8 @@
 // model must be removed from TRACKED by a human; the throw only takes down this one collector).
 //
 // PUBLISHED PER-MODEL CACHE PRICES (since 2026-11-16, qwen4-max). The doc may follow a region's tables
-// with a captioned table "<id> — Cache price (per million tokens)" (Cache write (5m) | Cache write (1h) |
-// Explicit/implicit cache read). Where one sits in the SAME heading section as a tracked model's
+// with a captioned table "<id> - Cache unit prices (per million tokens)" (Cache creation (5m) | Cache
+// creation (1h) | Explicit/implicit cache hit). Where one sits in the SAME heading section as a tracked model's
 // International base row, its rates are read verbatim (verified, first-party) and win over both the
 // Context Cache doc's multiplier rule and its "see the console" exception list. qwen4-max is why: the
 // cache doc lists it as an exception, the pricing doc publishes its rates, and the generic multiplier
@@ -93,11 +101,12 @@ const EXCEPTION_CLAUSE = /([a-z][a-z0-9.\-]*(?:(?:,|, and| and)\s+[a-z][a-z0-9.\
 
 // Captioned per-model cache table on the pricing doc (see the header comment). Column label -> variation;
 // an unrecognised label throws rather than shifting the others.
-const PUBLISHED_CACHE_CAPTION = /<strong>\s*([a-z0-9][a-z0-9.\-]*)\s*(?:—|&mdash;)\s*Cache price \(per million tokens\)\s*<\/strong>/gi;
+const PUBLISHED_CACHE_CAPTION =
+	/<strong>\s*([a-z0-9][a-z0-9.\-]*)\s*(?:—|&mdash;)\s*Cache (?:unit )?prices? \(per million tokens\)\s*<\/strong>/gi;
 const PUBLISHED_CACHE_COLUMNS = {
-	'cache write (5m)': 'cache_write_5m',
-	'cache write (1h)': 'cache_write_1h',
-	'explicit/implicit cache read': 'cache_read',
+	'cache creation (5m)': 'cache_write_5m',
+	'cache creation (1h)': 'cache_write_1h',
+	'explicit/implicit cache hit': 'cache_read',
 };
 
 
@@ -176,12 +185,20 @@ function parsePrice(s) {
 	return Number.isFinite(n) ? n : null;
 }
 
-/** True when the input-price column header declares a per-1M-token unit (so the value is usd_per_mtok). */
+/**
+ * True when the input-price column header declares a per-1M-token unit (so the value is usd_per_mtok).
+ * The doc has said both "per 1 million tokens" and (since the 2026-11 rewording) "per million tokens".
+ */
 function isPerMtokHeader(label) {
-	return /per\s*1\s*(?:million|m)\s*tokens|per\s*1,?0{3},?0{3}\s*tokens/i.test(String(label));
+	return /per\s*(?:1\s*)?million\s*tokens|per\s*1\s*m\s*tokens|per\s*1,?0{3},?0{3}\s*tokens/i.test(String(label));
 }
 
-/** A row's "Input tokens per request" cell marks the BASE tier when it is the lowest band or untiered. */
+/** A cell that holds an input-token band ("0<Token≤1M", "32K<Token≤256K") or says the model is untiered. */
+function isBandCell(cell) {
+	return /token\s*(?:≤|<=|<)|no tiered pricing/i.test(String(cell || ''));
+}
+
+/** A row's input-token band cell marks the BASE tier when it is the lowest band or untiered. */
 function isBaseBand(cell) {
 	const b = String(cell || '')
 		.replace(/\s+/g, '')
@@ -217,7 +234,7 @@ function headingSections(content) {
 }
 
 /**
- * Every captioned "<id> — Cache price (per million tokens)" table on the pricing doc, as
+ * Every captioned "<id> - Cache unit prices (per million tokens)" table on the pricing doc, as
  * { model_id, at, prices:{ cache_write_5m?, cache_write_1h?, cache_read? } }. The table must directly
  * follow its caption and carry one header row plus one value row; an unknown column label, a missing
  * table, or an unreadable cell throws.
@@ -364,9 +381,10 @@ export async function collect() {
 		if (rows.length < 2) continue;
 		const header = rows[0].map((c) => c.toLowerCase());
 		const scopeCol = header.findIndex((c) => /deployment scope/.test(c));
-		const inCol = header.findIndex((c) => /input price/.test(c));
-		const outCol = header.findIndex((c) => /output price/.test(c));
-		const bandCol = header.findIndex((c) => /input tokens per request/.test(c));
+		const inCol = header.findIndex((c) => /^input (?:unit )?price\b/.test(c));
+		const outCol = header.findIndex((c) => /^output (?:unit )?price\b/.test(c));
+		// "Input tokens per request" on some tables, "Input token range per request" on others.
+		const bandCol = header.findIndex((c) => /input tokens? (?:range )?per request/.test(c));
 		if (scopeCol < 0 || inCol < 0 || outCol < 0) continue;
 		// Unit guard: only parse tables whose price columns are per-1M-token (skip per-image/-second/etc.).
 		if (!isPerMtokHeader(rows[0][inCol])) continue;
@@ -377,15 +395,27 @@ export async function collect() {
 			if (!id || !/^[a-z0-9]/.test(id)) continue;
 			// Scope first, so an untracked model is reported once (at International) and not once per scope.
 			if (!CANONICAL_SCOPE_RE.test((r[scopeCol] || '').trim())) continue;
-			const input = parsePrice(r[inCol]);
-			const output = parsePrice(r[outCol]);
+			// Vendor authoring defect (seen 2026-11 on the Qwen Flash table): a row drops its Pattern cell
+			// and carries an empty cell at the end instead, so every later cell sits one column left of its
+			// header. The band cell is the only one whose CONTENT names its column, so re-align on it, and
+			// only where the header orders band, input price, output price contiguously (the prices'
+			// position relative to the band is then the header's own). A row that cannot be aligned is
+			// skipped, never read at header positions; a tracked id lost that way fails the missing check.
+			let shift = 0;
+			if (bandCol >= 0 && !isBandCell(r[bandCol])) {
+				const bandAt = r.findIndex((c, k) => k > scopeCol && isBandCell(c));
+				if (bandAt < 0 || inCol !== bandCol + 1 || outCol !== bandCol + 2) continue;
+				shift = bandAt - bandCol;
+			}
+			const input = parsePrice(r[inCol + shift]);
+			const output = parsePrice(r[outCol + shift]);
 			if (input === null || output === null) continue;
 			if (!TRACKED.includes(id)) {
 				if (!untrackedReason(id)) untracked.set(id, (r[0] || '').trim());
 				continue;
 			}
 			if (found.has(id)) continue; // first International base row (in doc order) wins
-			if (bandCol >= 0 && !isBaseBand(r[bandCol])) continue;
+			if (bandCol >= 0 && !isBaseBand(r[bandCol + shift])) continue;
 			found.set(id, { input: round6(input), output: round6(output) });
 			foundAt.set(id, at);
 		}
