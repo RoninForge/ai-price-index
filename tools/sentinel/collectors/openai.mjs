@@ -107,6 +107,9 @@ const TRACKED = new Set([
 	'gpt-6-sol',
 	'gpt-6.1-sol',
 	'gpt-6.1-terra',
+	'gpt-6.2-astra',
+	'gpt-6.2-astra-law',
+	'gpt-6.2-sol',
 	'gpt-rosalind-discovery',
 	'gpt-rosalind-research',
 	'o3',
@@ -150,12 +153,13 @@ const KNOWN_UNTRACKED = new Map([
 	['omni-moderation-latest', 'moderation endpoint, published as free'],
 ]);
 
-// PIN: gpt-4o is present on the page AND in current.json and its price has not moved. If the standard
-// tuple ever stops resolving to $2.5 in / $10 out, the parse drifted or OpenAI changed it - escalate.
-// OpenAI's deprecations page schedules gpt-4o's shutdown for 2027-01-14 (the pricing page has marked it
-// deprecated since 2026-11-13), so the PIN must move to a live model before that date or the run throws.
-const PIN_ID = 'gpt-4o';
-const PIN_EXPECT = { input: 2.5, output: 10 };
+// PIN: gpt-5.4 is present on the page AND in current.json and its price has not moved. If its standard
+// short-context tuple ever stops resolving to $2.5 in / $15 out, the parse drifted or OpenAI changed it -
+// escalate. Its long-context tuple ($5 / $22.5) differs, so a wrong-tier pick fails the pin too. Moved off
+// gpt-4o on 2026-11-20 because OpenAI shuts gpt-4o down on 2027-01-14; gpt-5.4 has no scheduled shutdown
+// on the deprecations page as of that date.
+const PIN_ID = 'gpt-5.4';
+const PIN_EXPECT = { input: 2.5, output: 15 };
 
 // Header rows that caption a run of columns ("Prompt caching" over Cached input / 30m write / 12h write)
 // rather than splitting them by context length. Since 2026-10-24 long context is a client-side toggle
@@ -743,14 +747,14 @@ function crossCheck(canonical, fromTable, fromPayload) {
 }
 
 /**
- * PIN: after building every record, assert gpt-4o's standard tuple is $2.5 in / $10 out. Guards against
+ * PIN: after building every record, assert PIN_ID's standard tuple equals PIN_EXPECT. Guards against
  * an upstream re-scale silently rescaling every price, against a wrong-tier pick (e.g. taking the
  * long-context or batch tuple), and against a mis-parse. Throws on mismatch.
  */
 function assertPin(byId) {
 	const p = byId.get(PIN_ID);
 	if (!p) {
-		// gpt-4o is expected on this page; its absence means a name/structure drift the parser missed.
+		// The pin model is expected on this page; its absence means a name/structure drift the parser missed.
 		throw new Error(
 			`openai collector: PIN model "${PIN_ID}" not found among parsed rows - the page structure or ` +
 				`its display name drifted. Refusing to emit a possibly-mis-parsed set.`
