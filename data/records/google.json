@@ -1035,7 +1035,8 @@
     "last_validated_at": "2026-11-20",
     "source_url": "https://aistudio.google.com/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Gemini 4 Neon, GA 2026-11-18 per the Gemini API release notes (https://aistudio.google.com/docs/changelog: \"Available on the paid tier at pricing of $3.00 per 1M input tokens and $15.00 per 1M output tokens\"). Standard paid tier: $3 input / $15 output (including thinking tokens) / $0.15 context caching per 1M tokens; not available on the Free tier. One rate across its unified 1M-token context window. Implicit caching only (explicit caching is not supported), so no cache write or storage price is published. Batch and Flex are separate SKUs the index does not track. No dated price change is stated on the pricing page."
   },
   {
     "provider": "google",
@@ -1048,7 +1049,8 @@
     "last_validated_at": "2026-11-20",
     "source_url": "https://aistudio.google.com/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Gemini 4 Neon, GA 2026-11-18 per the Gemini API release notes (https://aistudio.google.com/docs/changelog: \"Available on the paid tier at pricing of $3.00 per 1M input tokens and $15.00 per 1M output tokens\"). Standard paid tier: $3 input / $15 output (including thinking tokens) / $0.15 context caching per 1M tokens; not available on the Free tier. One rate across its unified 1M-token context window. Implicit caching only (explicit caching is not supported), so no cache write or storage price is published. Batch and Flex are separate SKUs the index does not track. No dated price change is stated on the pricing page."
   },
   {
     "provider": "google",
@@ -1061,6 +1063,7 @@
     "last_validated_at": "2026-11-20",
     "source_url": "https://aistudio.google.com/docs/pricing",
     "source_kind": "provider_live",
-    "confidence": "verified"
+    "confidence": "verified",
+    "notes": "Gemini 4 Neon, GA 2026-11-18 per the Gemini API release notes (https://aistudio.google.com/docs/changelog: \"Available on the paid tier at pricing of $3.00 per 1M input tokens and $15.00 per 1M output tokens\"). Standard paid tier: $3 input / $15 output (including thinking tokens) / $0.15 context caching per 1M tokens; not available on the Free tier. One rate across its unified 1M-token context window. Implicit caching only (explicit caching is not supported), so no cache write or storage price is published. Batch and Flex are separate SKUs the index does not track. No dated price change is stated on the pricing page."
   }
 ]
