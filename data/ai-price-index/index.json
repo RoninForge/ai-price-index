@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "dataModified": "2026-11-20",
+  "dataModified": "2026-11-27",
   "license": "CC-BY-4.0",
   "models": [
     {
@@ -773,6 +773,12 @@
       "latestRev": "4ace9c2c"
     },
     {
+      "id": "gpt-6-astra-healthcare",
+      "provider": "openai",
+      "file": "models/openai/gpt-6-astra-healthcare.ved7921d6.json",
+      "latestRev": "ed7921d6"
+    },
+    {
       "id": "gpt-6-astra-law",
       "provider": "openai",
       "file": "models/openai/gpt-6-astra-law.vae9eea3f.json",
@@ -809,6 +815,12 @@
       "latestRev": "90b90a2b"
     },
     {
+      "id": "gpt-6.1-sol-healthcare",
+      "provider": "openai",
+      "file": "models/openai/gpt-6.1-sol-healthcare.va75aa57a.json",
+      "latestRev": "a75aa57a"
+    },
+    {
       "id": "gpt-6.1-terra",
       "provider": "openai",
       "file": "models/openai/gpt-6.1-terra.v1a5e6a8e.json",
@@ -821,6 +833,12 @@
       "latestRev": "6f48277d"
     },
     {
+      "id": "gpt-6.2-astra-healthcare",
+      "provider": "openai",
+      "file": "models/openai/gpt-6.2-astra-healthcare.vda074a23.json",
+      "latestRev": "da074a23"
+    },
+    {
       "id": "gpt-6.2-astra-law",
       "provider": "openai",
       "file": "models/openai/gpt-6.2-astra-law.vcab4a08e.json",
@@ -831,6 +849,12 @@
       "provider": "openai",
       "file": "models/openai/gpt-6.2-sol.vffce9422.json",
       "latestRev": "ffce9422"
+    },
+    {
+      "id": "gpt-6.2-sol-healthcare",
+      "provider": "openai",
+      "file": "models/openai/gpt-6.2-sol-healthcare.v13039e6d.json",
+      "latestRev": "13039e6d"
     },
     {
       "id": "gpt-rosalind-discovery",
