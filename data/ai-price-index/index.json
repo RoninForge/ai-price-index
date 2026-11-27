@@ -1009,8 +1009,8 @@
     {
       "id": "grok-build-0.1",
       "provider": "xai",
-      "file": "models/xai/grok-build-0.1.v0651fbdd.json",
-      "latestRev": "0651fbdd",
+      "file": "models/xai/grok-build-0.1.vedcee83d.json",
+      "latestRev": "edcee83d",
       "aliases": [
         "grok-code-fast",
         "grok-code-fast-1",
