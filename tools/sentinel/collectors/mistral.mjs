@@ -2,11 +2,12 @@
 // First-party Mistral price collector.
 //
 // Source: https://docs.mistral.ai/inference/pricing - server-rendered HTML. (mistral.ai/pricing/api/
-// now 301s here.) The page has one <section id="..."> per family, each holding one table:
+// now 301s here.) The page has one <h2> per family, each followed by one table; a family runs until
+// the next <h2>, and its heading text slugged ("Generalist models" -> generalist-models) is its key:
 //     generalist-models         Model | Input | Cached input | Output     (per M tokens; also lists Z.ai GLM)
 //     code-models               Codestral
-//     ocr-models, audio-models, embedding-models, moderation-safety-models, time-series-models,
-//     voice-agents              priced per page / minute / char, free, self-hosted -> skipped
+//     ocr-models, audio-models, embedding-models, moderation-and-safety-models, time-series-models
+//                               priced per page / minute / char, free, self-hosted -> skipped
 // Every cell is read by its COLUMN LABEL, never by position, and a header we do not recognise throws.
 //
 // The SSR table is the default view: "Regional inference" unchecked, tier "Standard" pressed. Batch,
@@ -69,9 +70,8 @@ const SKIP_SECTIONS = {
 	'ocr-models': 'OCR SKUs priced per page',
 	'audio-models': 'audio SKUs priced per minute / character',
 	'embedding-models': 'embedding SKUs are input-only',
-	'moderation-safety-models': 'moderation is free or self-hosted',
+	'moderation-and-safety-models': 'moderation is free or self-hosted',
 	'time-series-models': 'self-hosted open weights, no price',
-	'voice-agents': 'priced per minute, different table shape',
 };
 
 // Column label (lower-cased) -> variation. Model is the name column.
@@ -85,7 +85,7 @@ const COLUMNS = {
 // A priced row whose name is not a Mistral model: skipped if a rule matches, else reported via
 // getNotices().
 const UNTRACKED_RULES = [
-	[(row) => /^Z\.ai /.test(row.title), 'third-party model resold on the Mistral API; belongs to its own provider'],
+	[(row) => /^(?:Z\.ai |GLM )/.test(row.title), 'Z.ai model resold on the Mistral API; belongs to its own provider'],
 	[(row) => /^DeepSeek /.test(row.title), 'third-party model resold on the Mistral API; belongs to its own provider'],
 	[(row) => /^Classifier API model\b/.test(row.title), 'fine-tuned classifier SKU, not a general chat model'],
 ];
@@ -143,12 +143,16 @@ export async function collect() {
 	const html = await fetchText(SOURCE_URL);
 	notices = [];
 
-	const sections = [...html.matchAll(/<section id="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)];
-	if (!sections.some(([, id]) => id === 'generalist-models'))
-		throw new Error('mistral collector: no <section id="generalist-models"> found - markup drifted. Refusing to guess.');
+	const headings = [...html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/g)];
+	const sections = headings.map((m, i) => [
+		slugify(textOf(m[1])),
+		html.slice(m.index + m[0].length, i + 1 < headings.length ? headings[i + 1].index : html.length),
+	]);
+	if (!sections.some(([id]) => id === 'generalist-models'))
+		throw new Error('mistral collector: no "Generalist models" <h2> found - markup drifted. Refusing to guess.');
 
 	const byModel = new Map(); // canonical -> { display, known, prices, list_prices }
-	for (const [, sectionId, body] of sections) {
+	for (const [sectionId, body] of sections) {
 		if (SKIP_SECTIONS[sectionId]) continue;
 		const table = body.match(/<table[\s\S]*?<\/table>/);
 		if (!table) continue;
