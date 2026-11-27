@@ -199,7 +199,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 1,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-07-27",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -209,7 +209,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
@@ -218,7 +218,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 2,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-07-27",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -228,7 +228,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
@@ -237,7 +237,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.2,
     "effective_from": "2026-06-22",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-07-27",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -247,7 +247,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record."
+    "notes": "[provenance upgrade] first-party collector confirmed the published price; supersedes the prior inferred/provider_live record. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
@@ -618,7 +618,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 2,
     "effective_from": "2026-07-31",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-07-31",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -628,7 +628,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
@@ -637,7 +637,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 4,
     "effective_from": "2026-07-31",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-07-31",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -647,7 +647,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
@@ -961,7 +961,7 @@
     "unit": "usd_per_mtok",
     "price_usd": 0.4,
     "effective_from": "2026-09-03",
-    "effective_to": null,
+    "effective_to": "2026-11-19",
     "last_validated_at": "2026-09-03",
     "source_url": "https://docs.x.ai/developers/models",
     "source_kind": "provider_live",
@@ -971,7 +971,7 @@
       "grok-code-fast",
       "grok-code-fast-1-0825"
     ],
-    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start."
+    "notes": "[missing variation] Added by the sentinel's missing-variation pass: the provider publishes this rate alongside the input/output prices we already track, but we carried no row for it. effective_from is the OBSERVATION date, NOT a known change date - the rate is very likely older, and no dated first-party evidence exists for an earlier start. Reached end of life on 2026-11-19 per xAI's release notes (https://docs.x.ai/developers/release-notes, read 2026-11-27): \"grok-build-0.1 reached end of life on November 19, 2026 and is no longer served on the API.\" Closed at that published date; it had also left the xAI models listing the collector reads."
   },
   {
     "provider": "xai",
